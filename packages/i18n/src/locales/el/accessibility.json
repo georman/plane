@@ -1,0 +1,34 @@
+{
+  "aria_labels": {
+    "projects_sidebar": {
+      "workspace_logo": "Λογότυπο χώρου εργασίας",
+      "open_workspace_switcher": "Άνοιγμα εναλλαγής χώρου εργασίας",
+      "open_user_menu": "Άνοιγμα μενού χρήστη",
+      "open_command_palette": "Άνοιγμα παλέτας εντολών",
+      "open_extended_sidebar": "Άνοιγμα εκτεταμένης πλαϊνής μπάρας",
+      "close_extended_sidebar": "Κλείσιμο εκτεταμένης πλαϊνής μπάρας",
+      "create_favorites_folder": "Δημιουργία φακέλου αγαπημένων",
+      "open_folder": "Άνοιγμα φακέλου",
+      "close_folder": "Κλείσιμο φακέλου",
+      "open_favorites_menu": "Άνοιγμα μενού αγαπημένων",
+      "close_favorites_menu": "Κλείσιμο μενού αγαπημένων",
+      "enter_folder_name": "Εισαγάγετε όνομα φακέλου",
+      "create_new_project": "Δημιουργία νέου έργου",
+      "open_projects_menu": "Άνοιγμα μενού έργων",
+      "close_projects_menu": "Κλείσιμο μενού έργων",
+      "toggle_quick_actions_menu": "Εναλλαγή μενού γρήγορων ενεργειών",
+      "open_project_menu": "Άνοιγμα μενού έργου",
+      "close_project_menu": "Κλείσιμο μενού έργου",
+      "collapse_sidebar": "Σύμπτυξη πλαϊνής μπάρας",
+      "expand_sidebar": "Ανάπτυξη πλαϊνής μπάρας",
+      "edition_badge": "Άνοιγμα αναδυόμενου παραθύρου επί πληρωμή πλάνων"
+    },
+    "auth_forms": {
+      "clear_email": "Εκκαθάριση email",
+      "show_password": "Εμφάνιση κωδικού πρόσβασης",
+      "hide_password": "Απόκρυψη κωδικού πρόσβασης",
+      "close_alert": "Κλείσιμο ειδοποίησης",
+      "close_popover": "Κλείσιμο αναδυόμενου παραθύρου"
+    }
+  }
+}

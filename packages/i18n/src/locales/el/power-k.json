@@ -1,0 +1,192 @@
+{
+  "power_k": {
+    "actions_commands": {
+      "bulk_delete_work_items": "Μαζική διαγραφή εργασιών"
+    },
+    "contextual_actions": {
+      "work_item": {
+        "title": "Ενέργειες εργασίας",
+        "indicator": "Εργασία",
+        "change_state": "Αλλαγή κατάστασης",
+        "change_priority": "Αλλαγή προτεραιότητας",
+        "change_assignees": "Ανάθεση σε",
+        "assign_to_me": "Ανάθεση σε εμένα",
+        "unassign_from_me": "Κατάργηση ανάθεσης από εμένα",
+        "change_estimate": "Αλλαγή εκτίμησης",
+        "add_to_cycle": "Προσθήκη σε κύκλο",
+        "add_to_modules": "Προσθήκη σε ενότητες",
+        "add_labels": "Προσθήκη ετικετών",
+        "subscribe": "Εγγραφή σε ειδοποιήσεις",
+        "unsubscribe": "Κατάργηση εγγραφής από ειδοποιήσεις",
+        "delete": "Διαγραφή",
+        "copy_id": "Αντιγραφή ID",
+        "copy_id_toast_success": "Το ID της εργασίας αντιγράφηκε στο πρόχειρο.",
+        "copy_id_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του ID της εργασίας στο πρόχειρο.",
+        "copy_title": "Αντιγραφή τίτλου",
+        "copy_title_toast_success": "Ο τίτλος της εργασίας αντιγράφηκε στο πρόχειρο.",
+        "copy_title_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του τίτλου της εργασίας στο πρόχειρο.",
+        "copy_url": "Αντιγραφή URL",
+        "copy_url_toast_success": "Το URL της εργασίας αντιγράφηκε στο πρόχειρο.",
+        "copy_url_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του URL της εργασίας στο πρόχειρο."
+      },
+      "cycle": {
+        "title": "Ενέργειες κύκλου",
+        "indicator": "Κύκλος",
+        "add_to_favorites": "Προσθήκη στα αγαπημένα",
+        "remove_from_favorites": "Αφαίρεση από τα αγαπημένα",
+        "copy_url": "Αντιγραφή URL",
+        "copy_url_toast_success": "Το URL του κύκλου αντιγράφηκε στο πρόχειρο.",
+        "copy_url_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του URL του κύκλου στο πρόχειρο."
+      },
+      "module": {
+        "title": "Ενέργειες ενότητας",
+        "indicator": "Ενότητα",
+        "add_remove_members": "Προσθήκη/αφαίρεση μελών",
+        "change_status": "Αλλαγή κατάστασης",
+        "add_to_favorites": "Προσθήκη στα αγαπημένα",
+        "remove_from_favorites": "Αφαίρεση από τα αγαπημένα",
+        "copy_url": "Αντιγραφή URL",
+        "copy_url_toast_success": "Το URL της ενότητας αντιγράφηκε στο πρόχειρο.",
+        "copy_url_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του URL της ενότητας στο πρόχειρο."
+      },
+      "page": {
+        "title": "Ενέργειες σελίδας",
+        "indicator": "Σελίδα",
+        "lock": "Κλείδωμα",
+        "unlock": "Ξεκλείδωμα",
+        "make_private": "Ορισμός ως ιδιωτική",
+        "make_public": "Ορισμός ως δημόσια",
+        "archive": "Αρχειοθέτηση",
+        "restore": "Επαναφορά",
+        "add_to_favorites": "Προσθήκη στα αγαπημένα",
+        "remove_from_favorites": "Αφαίρεση από τα αγαπημένα",
+        "copy_url": "Αντιγραφή URL",
+        "copy_url_toast_success": "Το URL της σελίδας αντιγράφηκε στο πρόχειρο.",
+        "copy_url_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του URL της σελίδας στο πρόχειρο."
+      }
+    },
+    "creation_actions": {
+      "create_work_item": "Νέα εργασία",
+      "create_page": "Νέα σελίδα",
+      "create_view": "Νέα προβολή",
+      "create_cycle": "Νέος κύκλος",
+      "create_module": "Νέα ενότητα",
+      "create_project": "Νέο έργο",
+      "create_workspace": "Νέος χώρος εργασίας",
+      "create_project_automation": "Νέος αυτοματισμός"
+    },
+    "navigation_actions": {
+      "open_workspace": "Άνοιγμα χώρου εργασίας",
+      "nav_home": "Μετάβαση στην αρχική",
+      "nav_inbox": "Μετάβαση στα εισερχόμενα",
+      "nav_your_work": "Μετάβαση στην εργασία σας",
+      "nav_account_settings": "Μετάβαση στις ρυθμίσεις λογαριασμού",
+      "open_project": "Άνοιγμα έργου",
+      "nav_projects_list": "Μετάβαση στη λίστα έργων",
+      "nav_all_workspace_work_items": "Μετάβαση σε όλες τις εργασίες",
+      "nav_assigned_workspace_work_items": "Μετάβαση στις ανατεθειμένες εργασίες",
+      "nav_created_workspace_work_items": "Μετάβαση στις εργασίες που δημιουργήθηκαν",
+      "nav_subscribed_workspace_work_items": "Μετάβαση στις εργασίες με συνδρομή",
+      "nav_workspace_analytics": "Μετάβαση στα analytics χώρου εργασίας",
+      "nav_workspace_drafts": "Μετάβαση στα πρόχειρα χώρου εργασίας",
+      "nav_workspace_archives": "Μετάβαση στα αρχεία χώρου εργασίας",
+      "open_workspace_setting": "Άνοιγμα ρύθμισης χώρου εργασίας",
+      "nav_workspace_settings": "Μετάβαση στις ρυθμίσεις χώρου εργασίας",
+      "nav_project_work_items": "Μετάβαση στις εργασίες",
+      "open_project_cycle": "Άνοιγμα κύκλου",
+      "nav_project_cycles": "Μετάβαση στους κύκλους",
+      "open_project_module": "Άνοιγμα ενότητας",
+      "nav_project_modules": "Μετάβαση στις ενότητες",
+      "open_project_view": "Άνοιγμα προβολής έργου",
+      "nav_project_views": "Μετάβαση στις προβολές έργου",
+      "nav_project_pages": "Μετάβαση στις σελίδες",
+      "nav_project_intake": "Μετάβαση στην εισαγωγή αιτημάτων",
+      "nav_project_archives": "Μετάβαση στα αρχεία έργου",
+      "open_project_setting": "Άνοιγμα ρύθμισης έργου",
+      "nav_project_settings": "Μετάβαση στις ρυθμίσεις έργου",
+      "nav_workspace_active_cycle": "Μετάβαση σε όλους τους ενεργούς κύκλους",
+      "nav_project_overview": "Μετάβαση στην επισκόπηση έργου"
+    },
+    "account_actions": {
+      "sign_out": "Αποσύνδεση",
+      "workspace_invites": "Προσκλήσεις χώρου εργασίας"
+    },
+    "miscellaneous_actions": {
+      "toggle_app_sidebar": "Εναλλαγή πλαϊνής στήλης εφαρμογής",
+      "copy_current_page_url": "Αντιγραφή URL τρέχουσας σελίδας",
+      "copy_current_page_url_toast_success": "Το URL της τρέχουσας σελίδας αντιγράφηκε στο πρόχειρο.",
+      "copy_current_page_url_toast_error": "Παρουσιάστηκε σφάλμα κατά την αντιγραφή του URL της τρέχουσας σελίδας στο πρόχειρο.",
+      "focus_top_nav_search": "Εστίαση στο πεδίο αναζήτησης"
+    },
+    "preferences_actions": {
+      "update_theme": "Αλλαγή θέματος διεπαφής",
+      "update_timezone": "Αλλαγή ζώνης ώρας",
+      "update_start_of_week": "Αλλαγή πρώτης ημέρας εβδομάδας",
+      "update_language": "Αλλαγή γλώσσας διεπαφής",
+      "toast": {
+        "theme": {
+          "success": "Το θέμα ενημερώθηκε με επιτυχία.",
+          "error": "Αποτυχία ενημέρωσης θέματος. Δοκιμάστε ξανά."
+        },
+        "timezone": {
+          "success": "Η ζώνη ώρας ενημερώθηκε με επιτυχία.",
+          "error": "Αποτυχία ενημέρωσης ζώνης ώρας. Δοκιμάστε ξανά."
+        },
+        "generic": {
+          "success": "Οι προτιμήσεις ενημερώθηκαν με επιτυχία.",
+          "error": "Αποτυχία ενημέρωσης προτιμήσεων. Δοκιμάστε ξανά."
+        }
+      }
+    },
+    "help_actions": {
+      "open_keyboard_shortcuts": "Άνοιγμα συντομεύσεων πληκτρολογίου",
+      "open_plane_documentation": "Άνοιγμα τεκμηρίωσης Plane",
+      "join_forum": "Συμμετοχή στο Forum μας",
+      "report_bug": "Αναφορά σφάλματος",
+      "chat_with_us": "Συνομιλήστε μαζί μας"
+    },
+    "page_placeholders": {
+      "default": "Πληκτρολογήστε μια εντολή ή αναζήτηση",
+      "open_workspace": "Άνοιγμα χώρου εργασίας",
+      "open_project": "Άνοιγμα έργου",
+      "open_workspace_setting": "Άνοιγμα ρύθμισης χώρου εργασίας",
+      "open_project_cycle": "Άνοιγμα κύκλου",
+      "open_project_module": "Άνοιγμα ενότητας",
+      "open_project_view": "Άνοιγμα προβολής έργου",
+      "open_project_setting": "Άνοιγμα ρύθμισης έργου",
+      "update_work_item_state": "Αλλαγή κατάστασης",
+      "update_work_item_priority": "Αλλαγή προτεραιότητας",
+      "update_work_item_assignee": "Ανάθεση σε",
+      "update_work_item_estimate": "Αλλαγή εκτίμησης",
+      "update_work_item_cycle": "Προσθήκη σε κύκλο",
+      "update_work_item_module": "Προσθήκη σε ενότητες",
+      "update_work_item_labels": "Προσθήκη ετικετών",
+      "update_module_member": "Αλλαγή μελών",
+      "update_module_status": "Αλλαγή κατάστασης",
+      "update_theme": "Αλλαγή θέματος",
+      "update_timezone": "Αλλαγή ζώνης ώρας",
+      "update_start_of_week": "Αλλαγή πρώτης ημέρας εβδομάδας",
+      "update_language": "Αλλαγή γλώσσας"
+    },
+    "search_menu": {
+      "no_results": "Δεν βρέθηκαν αποτελέσματα",
+      "clear_search": "Καθαρισμός αναζήτησης",
+      "go_to_advanced_search": "Μετάβαση σε σύνθετη αναζήτηση"
+    },
+    "footer": {
+      "workspace_level": "Επίπεδο χώρου εργασίας"
+    },
+    "group_titles": {
+      "actions": "Ενέργειες",
+      "contextual": "Σχετικές με το πλαίσιο",
+      "navigation": "Πλοήγηση",
+      "create": "Δημιουργία",
+      "general": "Γενικά",
+      "settings": "Ρυθμίσεις",
+      "account": "Λογαριασμός",
+      "miscellaneous": "Διάφορα",
+      "preferences": "Προτιμήσεις",
+      "help": "Βοήθεια"
+    }
+  }
+}

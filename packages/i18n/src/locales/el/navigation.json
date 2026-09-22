@@ -1,0 +1,34 @@
+{
+  "command_k": {
+    "empty_state": {
+      "search": {
+        "title": "Δεν βρέθηκαν αποτελέσματα"
+      }
+    }
+  },
+  "sidebar": {
+    "stickies": "Σημειώσεις",
+    "your_work": "Η εργασία σας",
+    "projects": "Έργα",
+    "pages": "Σελίδες",
+    "new_work_item": "Νέα εργασία",
+    "home": "Αρχική",
+    "inbox": "Εισερχόμενα",
+    "workspace": "Χώρος εργασίας",
+    "views": "Προβολές",
+    "analytics": "Αναλυτικά στοιχεία",
+    "work_items": "Εργασίες",
+    "cycles": "Κύκλοι",
+    "modules": "Ενότητες",
+    "intake": "Εισαγωγή αιτημάτων",
+    "drafts": "Πρόχειρα",
+    "favorites": "Αγαπημένα",
+    "pro": "Pro",
+    "upgrade": "Αναβάθμιση",
+    "pi_chat": "Plane AI",
+    "epics": "Έπη",
+    "upgrade_plan": "Αναβάθμιση πλάνου",
+    "plane_pro": "Plane Pro",
+    "business": "Business"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "attachmentComponent": {
+    "uploader": {
+      "drag_and_drop": "Αφήστε αρχεία εδώ ή κάντε κλικ για μεταφόρτωση"
+    },
+    "errors": {
+      "file_too_large": {
+        "title": "Το αρχείο είναι πολύ μεγάλο.",
+        "description": "Το μέγιστο μέγεθος ανά αρχείο είναι {maxFileSize}MB"
+      },
+      "unsupported_file_type": {
+        "title": "Μη υποστηριζόμενος τύπος αρχείου.",
+        "description": "Δείτε τις υποστηριζόμενες μορφές"
+      },
+      "default": {
+        "title": "Η μεταφόρτωση απέτυχε.",
+        "description": "Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε ξανά."
+      }
+    },
+    "upgrade": {
+      "description": "Αναβαθμίστε το πλάνο σας για να δείτε αυτό το συνημμένο."
+    },
+    "aria": {
+      "click_to_upload": "Κάντε κλικ για μεταφόρτωση συνημμένου"
+    }
+  },
+  "externalEmbedComponent": {
+    "block_menu": {
+      "convert_to_embed": "Μετατροπή σε ενσωμάτωση",
+      "convert_to_link": "Μετατροπή σε σύνδεσμο",
+      "convert_to_richcard": "Μετατροπή σε εμπλουτισμένη κάρτα"
+    },
+    "placeholder": {
+      "insert_embed": "Εισαγάγετε τον σύνδεσμο ενσωμάτωσης που προτιμάτε εδώ, όπως βίντεο YouTube, σχέδιο Figma κ.λπ.",
+      "link": "Εισαγάγετε ή επικολλήστε έναν σύνδεσμο"
+    },
+    "input_modal": {
+      "embed": "Ενσωμάτωση",
+      "works_with_links": "Λειτουργεί με YouTube, Figma, Google Docs και άλλα"
+    },
+    "error": {
+      "not_valid_link": "Παρακαλώ εισαγάγετε μια έγκυρη διεύθυνση URL."
+    }
+  },
+  "ai_block": {
+    "content": {
+      "placeholder": "Περιγράψτε το περιεχόμενο αυτού του μπλοκ",
+      "generated_here": "Το περιεχόμενο AI θα δημιουργηθεί εδώ"
+    },
+    "block_types": {
+      "placeholder": "Επιλέξτε τύπο μπλοκ",
+      "summarize_page": "Σύνοψη σελίδας",
+      "custom_prompt": "Προσαρμοσμένη προτροπή"
+    },
+    "actions": {
+      "discard": "Απόρριψη",
+      "generate": "Δημιουργία",
+      "generating": "Δημιουργείται",
+      "rewriting": "Επαναδιατύπωση",
+      "rewrite": "Επαναδιατύπωση",
+      "use_this": "Χρήση αυτού",
+      "refine": "Βελτίωση"
+    }
+  }
+}

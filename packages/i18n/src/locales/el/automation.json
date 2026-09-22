@@ -1,0 +1,273 @@
+{
+  "automations": {
+    "settings": {
+      "title": "Προσαρμοσμένοι αυτοματισμοί",
+      "create_automation": "Δημιουργία αυτοματισμού"
+    },
+    "scope": {
+      "label": "Εμβέλεια",
+      "run_on": "Εκτέλεση σε"
+    },
+    "trigger": {
+      "label": "Ενεργοποιητής",
+      "add_trigger": "Προσθήκη ενεργοποιητή",
+      "sidebar_header": "Ρύθμιση ενεργοποιητή",
+      "input_label": "Ποιος είναι ο ενεργοποιητής για αυτόν τον αυτοματισμό;",
+      "input_placeholder": "Επιλέξτε μια επιλογή",
+      "section_plane_events": "Γεγονότα Plane",
+      "section_time_based": "Βάσει χρόνου",
+      "fixed_schedule": "Σταθερό πρόγραμμα",
+      "schedule": {
+        "frequency": "Συχνότητα",
+        "select_day": "Επιλογή ημέρας",
+        "day_of_month": "Ημέρα του μήνα",
+        "monthly_every": "Κάθε",
+        "monthly_day_aria": "Ημέρα {day}",
+        "time": "Ώρα",
+        "hour": "Ώρα",
+        "minute": "Λεπτό",
+        "hour_suffix": "ω",
+        "minute_suffix": "λ",
+        "am": "ΠΜ",
+        "pm": "ΜΜ",
+        "timezone": "Ζώνη ώρας",
+        "timezone_placeholder": "Επιλέξτε ζώνη ώρας",
+        "frequency_daily": "Καθημερινά",
+        "frequency_weekly": "Εβδομαδιαία",
+        "frequency_monthly": "Μηνιαία",
+        "on": "Την",
+        "validation_weekly_day_required": "Επιλέξτε τουλάχιστον μία ημέρα της εβδομάδας.",
+        "validation_monthly_date_required": "Επιλέξτε μια ημέρα του μήνα.",
+        "main_content_schedule_summary_daily": "Κάθε μέρα στις {time} ({timezone}).",
+        "main_content_schedule_summary_weekly": "Κάθε εβδομάδα τις {days} στις {time} ({timezone}).",
+        "main_content_schedule_summary_monthly": "Κάθε μήνα την ημέρα {day} στις {time} ({timezone}).",
+        "schedule_mode": "Λειτουργία προγράμματος",
+        "schedule_mode_fixed": "Σταθερό",
+        "schedule_mode_cron": "Cron",
+        "cron_expression_label": "Εισαγάγετε έκφραση Cron",
+        "cron_expression_placeholder": "0 9 * * 1-5",
+        "cron_invalid": "Μη έγκυρη έκφραση cron.",
+        "cron_preview": "Αυτή η έκφραση Cron εκτελείται \"{description}\".",
+        "main_content_cron_summary": "{description} ({timezone})."
+      },
+      "button": {
+        "previous": "Πίσω",
+        "next": "Προσθήκη ενέργειας"
+      },
+      "warning": {
+        "disabled_trigger_switching": "Δεν μπορείτε να αλλάξετε τον τύπο ενεργοποιητή μετά τη δημιουργία"
+      }
+    },
+    "condition": {
+      "label": "Παρέχεται",
+      "add_condition": "Προσθήκη συνθήκης",
+      "adding_condition": "Προσθήκη συνθήκης"
+    },
+    "action": {
+      "label": "Ενέργεια",
+      "add_action": "Προσθήκη ενέργειας",
+      "sidebar_header": "Ενέργειες",
+      "input_label": "Τι κάνει ο αυτοματισμός;",
+      "input_placeholder": "Επιλέξτε μια επιλογή",
+      "handler_name": {
+        "add_comment": "Προσθήκη σχολίου",
+        "change_property": "Αλλαγή ιδιότητας",
+        "run_script": "Εκτέλεση Script"
+      },
+      "configuration": {
+        "label": "Ρύθμιση",
+        "change_property": {
+          "placeholders": {
+            "property_name": "Επιλέξτε μια ιδιότητα",
+            "change_type": "Επιλέξτε",
+            "property_value_select": "{count, plural, one{Επιλέξτε τιμή} other{Επιλέξτε τιμές}}",
+            "property_value_select_date": "Επιλέξτε ημερομηνία"
+          },
+          "validation": {
+            "property_name_required": "Το όνομα ιδιότητας είναι υποχρεωτικό",
+            "change_type_required": "Ο τύπος αλλαγής είναι υποχρεωτικός",
+            "property_value_required": "Η τιμή ιδιότητας είναι υποχρεωτική"
+          }
+        }
+      },
+      "comment_block": {
+        "title": "Προσθήκη σχολίου"
+      },
+      "run_script_block": {
+        "title": "Εκτέλεση script"
+      },
+      "change_property_block": {
+        "title": "Αλλαγή ιδιότητας"
+      },
+      "validation": {
+        "delete_only_action": "Απενεργοποιήστε τον αυτοματισμό πριν διαγράψετε τη μόνη του ενέργεια."
+      }
+    },
+    "conjunctions": {
+      "and": "Και",
+      "or": "Ή",
+      "if": "Αν",
+      "then": "Τότε"
+    },
+    "enable": {
+      "alert": "Πατήστε 'Ενεργοποίηση' όταν ολοκληρωθεί ο αυτοματισμός σας. Μόλις ενεργοποιηθεί, ο αυτοματισμός θα είναι έτοιμος να εκτελεστεί.",
+      "validation": {
+        "required": "Ο αυτοματισμός πρέπει να έχει έναν ενεργοποιητή και τουλάχιστον μία ενέργεια για να ενεργοποιηθεί."
+      }
+    },
+    "delete": {
+      "validation": {
+        "enabled": "Ο αυτοματισμός πρέπει να απενεργοποιηθεί πριν τη διαγραφή του."
+      }
+    },
+    "table": {
+      "title": "Τίτλος αυτοματισμού",
+      "scope": "Εμβέλεια",
+      "projects": "Έργα",
+      "last_run_on": "Τελευταία εκτέλεση στις",
+      "created_on": "Δημιουργήθηκε στις",
+      "last_updated_on": "Τελευταία ενημέρωση στις",
+      "last_run_status": "Κατάσταση τελευταίας εκτέλεσης",
+      "average_duration": "Μέση διάρκεια",
+      "owner": "Ιδιοκτήτης",
+      "executions": "Εκτελέσεις"
+    },
+    "create_modal": {
+      "heading": {
+        "create": "Δημιουργία αυτοματισμού",
+        "update": "Ενημέρωση αυτοματισμού"
+      },
+      "title": {
+        "placeholder": "Ονομάστε τον αυτοματισμό σας.",
+        "required_error": "Ο τίτλος είναι υποχρεωτικός"
+      },
+      "description": {
+        "placeholder": "Περιγράψτε τον αυτοματισμό σας."
+      },
+      "submit_button": {
+        "create": "Δημιουργία αυτοματισμού",
+        "update": "Ενημέρωση αυτοματισμού"
+      }
+    },
+    "delete_modal": {
+      "heading": "Διαγραφή αυτοματισμού"
+    },
+    "activity": {
+      "filters": {
+        "show_fails": "Εμφάνιση αποτυχιών",
+        "all": "Όλα",
+        "only_activity": "Μόνο δραστηριότητα",
+        "only_run_history": "Μόνο ιστορικό εκτελέσεων"
+      },
+      "run_history": {
+        "initiator": "Εκκινητής"
+      }
+    },
+    "toasts": {
+      "create": {
+        "success": {
+          "title": "Επιτυχία!",
+          "message": "Ο αυτοματισμός δημιουργήθηκε με επιτυχία."
+        },
+        "error": {
+          "title": "Σφάλμα!",
+          "message": "Η δημιουργία του αυτοματισμού απέτυχε."
+        }
+      },
+      "update": {
+        "success": {
+          "title": "Επιτυχία!",
+          "message": "Ο αυτοματισμός ενημερώθηκε με επιτυχία."
+        },
+        "error": {
+          "title": "Σφάλμα!",
+          "message": "Η ενημέρωση του αυτοματισμού απέτυχε."
+        }
+      },
+      "enable": {
+        "success": {
+          "title": "Επιτυχία!",
+          "message": "Ο αυτοματισμός ενεργοποιήθηκε με επιτυχία."
+        },
+        "error": {
+          "title": "Σφάλμα!",
+          "message": "Η ενεργοποίηση του αυτοματισμού απέτυχε."
+        }
+      },
+      "disable": {
+        "success": {
+          "title": "Επιτυχία!",
+          "message": "Ο αυτοματισμός απενεργοποιήθηκε με επιτυχία."
+        },
+        "error": {
+          "title": "Σφάλμα!",
+          "message": "Η απενεργοποίηση του αυτοματισμού απέτυχε."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Ο αυτοματισμός διαγράφηκε",
+          "message": "Ο αυτοματισμός {name} έχει πλέον διαγραφεί από το έργο σας."
+        },
+        "error": {
+          "title": "Δεν μπορέσαμε να διαγράψουμε αυτόν τον αυτοματισμό αυτή τη φορά.",
+          "message": "Δοκιμάστε να τον διαγράψετε ξανά ή επιστρέψτε αργότερα. Αν εξακολουθεί να μην διαγράφεται, επικοινωνήστε μαζί μας."
+        }
+      },
+      "action": {
+        "create": {
+          "error": {
+            "title": "Σφάλμα!",
+            "message": "Αποτυχία δημιουργίας ενέργειας. Δοκιμάστε ξανά!"
+          }
+        },
+        "update": {
+          "error": {
+            "title": "Σφάλμα!",
+            "message": "Αποτυχία ενημέρωσης ενέργειας. Δοκιμάστε ξανά!"
+          }
+        }
+      }
+    },
+    "empty_state": {
+      "no_automations": {
+        "title": "Δεν υπάρχουν ακόμη αυτοματισμοί.",
+        "description": "Οι αυτοματισμοί σάς βοηθούν να εξαλείφετε επαναλαμβανόμενα tasks ορίζοντας ενεργοποιητές, συνθήκες και ενέργειες. Δημιουργήστε έναν για να εξοικονομήσετε χρόνο και να διατηρείτε την εργασία σε κίνηση χωρίς κόπο."
+      },
+      "upgrade": {
+        "title": "Αυτοματισμοί",
+        "description": "Οι αυτοματισμοί είναι ένας τρόπος αυτοματοποίησης tasks στο έργο σας.",
+        "sub_description": "Κερδίστε πίσω το 80% του χρόνου διαχείρισής σας όταν χρησιμοποιείτε Αυτοματισμούς."
+      }
+    },
+    "global_automations": {
+      "project_select": {
+        "label": "Επιλέξτε έργα για την εκτέλεση αυτού του αυτοματισμού",
+        "all_projects": {
+          "label": "Όλα τα έργα",
+          "description": "Ο αυτοματισμός θα εκτελείται για όλα τα έργα στον χώρο εργασίας."
+        },
+        "select_projects": {
+          "label": "Επιλογή έργων",
+          "description": "Ο αυτοματισμός θα εκτελείται για τα επιλεγμένα έργα στον χώρο εργασίας.",
+          "placeholder": "Επιλέξτε έργα"
+        }
+      },
+      "settings": {
+        "sidebar_label": "Αυτοματισμοί",
+        "title": "Αυτοματισμοί",
+        "description": "Τυποποιήστε διαδικασίες σε όλο τον χώρο εργασίας σας με καθολικούς αυτοματισμούς."
+      },
+      "table": {
+        "scope": {
+          "global": "Καθολικό",
+          "project": {
+            "label": "Έργο",
+            "multiple": "Πολλαπλά",
+            "all": "Όλα"
+          }
+        }
+      }
+    }
+  }
+}

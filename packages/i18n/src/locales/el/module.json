@@ -1,0 +1,7 @@
+{
+  "module": {
+    "label": "{count, plural, one {Ενότητα} other {Ενότητες}}",
+    "no_module": "Καμία ενότητα",
+    "select": "Προσθήκη ενοτήτων"
+  }
+}
