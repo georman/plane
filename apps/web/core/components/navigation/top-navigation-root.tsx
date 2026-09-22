@@ -22,7 +22,42 @@ import { InboxIcon } from "@plane/propel/icons";
 import useSWR from "swr";
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
 import { useUserProfile } from "@/hooks/store/user";
+// GAM addition: admin "log in as member" feature
+import { impersonationService } from "@/services/impersonation.service";
 // local imports
+
+function ImpersonationBanner() {
+  const { data } = useSWR("GAM_IMPERSONATION_STATUS", () => impersonationService.getImpersonationStatus(), {
+    refreshInterval: 0,
+    revalidateOnFocus: false,
+  });
+
+  if (!data?.is_impersonating) return null;
+
+  const handleReturn = async () => {
+    try {
+      await impersonationService.stopImpersonating();
+    } finally {
+      window.location.href = "/";
+    }
+  };
+
+  return (
+    <div className="flex w-full items-center justify-center gap-3 bg-amber-500 px-3 py-1.5 text-13 font-medium text-black">
+      <span>
+        Viewing as <strong>{data.target_user_display_name || data.target_user_email}</strong> ({data.target_user_email})
+        - logged in by {data.impersonator_email}
+      </span>
+      <button
+        type="button"
+        onClick={handleReturn}
+        className="rounded-md bg-black/10 px-2.5 py-0.5 font-semibold hover:bg-black/20"
+      >
+        Return to your account
+      </button>
+    </div>
+  );
+}
 
 function HeaderLanguageSelector() {
   // Matches ProfileSettingsLanguageAndTimezonePreferencesList's own pattern
@@ -90,11 +125,13 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
     : unreadNotificationsCount.total_unread_notifications_count;
 
   return (
-    <div
-      className={cn("z-[27] flex min-h-10 w-full items-center bg-canvas px-3.5 transition-all duration-300", {
-        "px-2": !showLabel,
-      })}
-    >
+    <>
+      <ImpersonationBanner />
+      <div
+        className={cn("z-[27] flex min-h-10 w-full items-center bg-canvas px-3.5 transition-all duration-300", {
+          "px-2": !showLabel,
+        })}
+      >
       {/* Workspace Menu */}
       <div className="flex-1 shrink-0">
         <WorkspaceMenuRoot variant="top-navigation" />
@@ -128,6 +165,7 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
           <UserMenuRoot />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 });

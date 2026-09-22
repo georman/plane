@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
 import { Disclosure } from "@headlessui/react";
+import { LogIn } from "lucide-react";
 // plane imports
 import { ROLE, EUserPermissions, EUserPermissionsLevel, MEMBER_TRACKER_ELEMENTS } from "@plane/constants";
 import { TrashIcon, SuspendedUserIcon } from "@plane/propel/icons";
@@ -22,6 +23,8 @@ import { getFileURL } from "@plane/utils";
 // hooks
 import { useMember } from "@/hooks/store/use-member";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
+// GAM addition: admin "log in as member" feature
+import { impersonationService } from "@/services/impersonation.service";
 
 export interface RowData {
   member: IWorkspaceMember;
@@ -47,6 +50,24 @@ export function NameColumn(props: NameProps) {
   // derived values
   const { avatar_url, display_name, email, first_name, id, last_name } = rowData.member;
   const isSuspended = rowData.is_active === false;
+  // GAM addition: admin "log in as member" feature - hide for self and
+  // for other admins (backend also enforces both, this is UI clarity only)
+  const canImpersonate = isAdmin && !isSuspended && id !== currentUser?.id && rowData.role !== EUserPermissions.ADMIN;
+
+  const handleImpersonate = async () => {
+    if (!workspaceSlug) return;
+    try {
+      await impersonationService.impersonateMember(workspaceSlug, id);
+      window.location.href = "/";
+    } catch (err: unknown) {
+      const error = err as { error?: string };
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: "Error!",
+        message: error?.error ?? "Could not log in as this member. Please try again.",
+      });
+    }
+  };
 
   return (
     <Disclosure>
@@ -79,6 +100,18 @@ export function NameColumn(props: NameProps) {
                 {first_name} {last_name}
               </span>
             </div>
+
+            {canImpersonate && (
+              <button
+                type="button"
+                onClick={handleImpersonate}
+                title={`Log in as ${display_name || email}`}
+                className="flex flex-shrink-0 items-center gap-1 rounded-md px-2 py-1 text-11 text-tertiary opacity-0 transition-opacity group-hover:opacity-100 hover:bg-layer-1-hover"
+              >
+                <LogIn className="size-3.5" />
+                Log in as
+              </button>
+            )}
 
             {!isSuspended && (isAdmin || id === currentUser?.id) && (
               <PopoverMenu

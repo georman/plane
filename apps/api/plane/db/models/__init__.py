@@ -8,6 +8,7 @@ from .asset import FileAsset
 from .base import BaseModel
 from .cycle import Cycle, CycleIssue, CycleUserProperties
 from .deploy_board import DeployBoard
+from .impersonation import ImpersonationLog
 from .draft import (
     DraftIssue,
     DraftIssueAssignee,

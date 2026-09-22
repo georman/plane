@@ -4,6 +4,9 @@
 
 from django.urls import path
 
+# GAM addition: admin "log in as member" feature
+from .views.impersonate import StopImpersonationEndpoint, ImpersonationStatusEndpoint
+
 from .views import (
     CSRFTokenEndpoint,
     ForgotPasswordEndpoint,
@@ -54,6 +57,9 @@ urlpatterns = [
     path("spaces/sign-up/", SignUpAuthSpaceEndpoint.as_view(), name="space-sign-up"),
     # signout
     path("sign-out/", SignOutAuthEndpoint.as_view(), name="sign-out"),
+    # GAM addition: admin "log in as member" feature
+    path("stop-impersonating/", StopImpersonationEndpoint.as_view(), name="stop-impersonating"),
+    path("impersonation-status/", ImpersonationStatusEndpoint.as_view(), name="impersonation-status"),
     path("spaces/sign-out/", SignOutAuthSpaceEndpoint.as_view(), name="space-sign-out"),
     # csrf token
     path("get-csrf-token/", CSRFTokenEndpoint.as_view(), name="get_csrf_token"),

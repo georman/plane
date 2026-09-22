@@ -4,6 +4,8 @@
 
 from django.urls import path
 
+# GAM addition: admin "log in as member" feature
+from plane.authentication.views.impersonate import ImpersonateMemberEndpoint
 
 from plane.app.views import (
     UserWorkspaceInvitationsViewSet,
@@ -98,6 +100,12 @@ urlpatterns = [
         "workspaces/<str:slug>/members/<uuid:pk>/",
         WorkSpaceMemberViewSet.as_view({"patch": "partial_update", "delete": "destroy", "get": "retrieve"}),
         name="workspace-member",
+    ),
+    # GAM addition: admin "log in as member" feature
+    path(
+        "workspaces/<str:slug>/members/<uuid:member_id>/impersonate/",
+        ImpersonateMemberEndpoint.as_view(),
+        name="workspace-member-impersonate",
     ),
     path(
         "workspaces/<str:slug>/members/leave/",
