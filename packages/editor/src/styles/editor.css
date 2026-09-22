@@ -143,8 +143,13 @@ ul[data-type="taskList"] + p.editor-paragraph-block {
 
 ul[data-type="taskList"] li > label input[type="checkbox"] {
   position: relative;
-  -webkit-appearance: none;
-  appearance: none;
+  /* GAM fix: appearance:none + a border-color CSS var that ends up
+     matching the background (seen in Stickies) made the checkbox
+     invisible - unchecked and checked both. appearance:auto restores
+     the browser's native checkbox rendering, which always has visible
+     contrast regardless of that variable. */
+  -webkit-appearance: auto;
+  appearance: auto;
   background-color: transparent;
   margin: 0;
   cursor: pointer;
