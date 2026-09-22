@@ -43,7 +43,9 @@ export function UserGreetingsView(props: IUserGreetingsView) {
     minute: "2-digit",
   }).format(currentTime);
 
-  const greeting = parseInt(hour, 10) < 12 ? "morning" : parseInt(hour, 10) < 18 ? "afternoon" : "evening";
+  const hourNum = parseInt(hour, 10);
+  const greeting =
+    hourNum < 6 ? "night" : hourNum < 12 ? "morning" : hourNum < 18 ? "afternoon" : hourNum < 22 ? "evening" : "night";
 
   return (
     <div className="my-6 flex flex-col items-center">
@@ -51,7 +53,9 @@ export function UserGreetingsView(props: IUserGreetingsView) {
         {t("good")} {t(greeting)}, {user?.first_name} {user?.last_name}
       </h2>
       <h5 className="flex items-center gap-2 font-medium text-placeholder">
-        <div>{greeting === "morning" ? "🌤️" : greeting === "afternoon" ? "🌥️" : "🌙️"}</div>
+        <div>
+          {greeting === "morning" ? "🌤️" : greeting === "afternoon" ? "🌥️" : greeting === "evening" ? "🌙️" : "⭐"}
+        </div>
         <div>
           {weekDay}, {date} {timeString}
         </div>
