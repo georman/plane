@@ -7,9 +7,12 @@
 // components
 import { observer } from "mobx-react";
 import { useParams, usePathname } from "next/navigation";
+import { Globe } from "lucide-react";
 import { cn } from "@plane/utils";
+import { SUPPORTED_LANGUAGES, useTranslation } from "@plane/i18n";
+import { CustomSelect } from "@plane/ui";
+import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { TopNavPowerK } from "@/components/navigation";
-import { HelpMenuRoot } from "@/components/workspace/sidebar/help-section/root";
 import { UserMenuRoot } from "@/components/workspace/sidebar/user-menu-root";
 import { WorkspaceMenuRoot } from "@/components/workspace/sidebar/workspace-menu-root";
 import { useAppRailPreferences } from "@/hooks/use-navigation-preferences";
@@ -18,8 +21,50 @@ import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 import { InboxIcon } from "@plane/propel/icons";
 import useSWR from "swr";
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
+import { useUserProfile } from "@/hooks/store/user";
 // local imports
-import { StarUsOnGitHubLink } from "@/app/(all)/[workspaceSlug]/(projects)/star-us-link";
+
+function HeaderLanguageSelector() {
+  // Matches ProfileSettingsLanguageAndTimezonePreferencesList's own pattern
+  // (settings/profile/content/pages/preferences/language-and-timezone-list.tsx):
+  // updateUserProfile({ language }) alone is enough - profile.store.ts's
+  // updateUserProfile action calls setLanguage() internally as soon as a
+  // language field is present, which updates i18next + localStorage +
+  // document.documentElement.lang. No need to call setLanguage ourselves here.
+  const { currentLocale } = useTranslation();
+  const { updateUserProfile } = useUserProfile();
+
+  const handleChange = async (value: string) => {
+    try {
+      await updateUserProfile({ language: value });
+    } catch (_error) {
+      setToast({ title: "Error!", message: "Failed to save language preference", type: TOAST_TYPE.ERROR });
+    }
+  };
+
+  return (
+    <Tooltip tooltipContent="Language" position="bottom">
+      <CustomSelect
+        value={currentLocale}
+        onChange={handleChange}
+        placement="bottom-end"
+        customButton={
+          <div className="flex size-8 items-center justify-center rounded-md hover:bg-layer-1-hover">
+            <Globe className="size-4 text-tertiary" />
+          </div>
+        }
+        customButtonClassName="flex items-center"
+      >
+        {SUPPORTED_LANGUAGES.map((language) => (
+          <CustomSelect.Option key={language.value} value={language.value}>
+            {language.label}
+            {currentLocale === language.value ? " ✓" : ""}
+          </CustomSelect.Option>
+        ))}
+      </CustomSelect>
+    </Tooltip>
+  );
+}
 
 export const TopNavigationRoot = observer(function TopNavigationRoot() {
   // router
@@ -77,8 +122,8 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
             }}
           />
         </Tooltip>
-        <HelpMenuRoot />
-        <StarUsOnGitHubLink />
+        {/* GAM: removed HelpMenuRoot (Plane docs/community links) and StarUsOnGitHubLink - not relevant for GAM's own instance */}
+        <HeaderLanguageSelector />
         <div className="flex size-8 items-center justify-center rounded-md hover:bg-layer-1-hover">
           <UserMenuRoot />
         </div>
