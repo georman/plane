@@ -16,12 +16,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from plane.app.permissions import ROLE, allow_permission
+from plane.authentication.session import BaseSessionAuthentication
 from plane.authentication.utils.login import user_login
 from plane.db.models import ImpersonationLog, User, Workspace, WorkspaceMember
 from plane.utils.ip_address import get_client_ip
 
 
 class ImpersonateMemberEndpoint(APIView):
+    # Plain APIView falls back to the global DRF default
+    # (rest_framework.authentication.SessionAuthentication), which enforces
+    # CSRF. Every other mutation in this codebase uses BaseSessionAuthentication
+    # instead (via BaseAPIView), which explicitly disables CSRF enforcement -
+    # the app relies on SameSite cookies for CSRF defense instead. Without
+    # this, the frontend's plain axios POST (no CSRF token attached, matching
+    # every other mutation's service call) gets silently rejected: DRF treats
+    # the CSRF failure as an authentication failure, request.user becomes
+    # anonymous, and allow_permission's fallback returns a misleading 403.
+    authentication_classes = [BaseSessionAuthentication]
+
     @allow_permission([ROLE.ADMIN], level="WORKSPACE")
     def post(self, request, slug, member_id):
         if request.session.get("impersonator_id"):
@@ -76,6 +88,8 @@ class ImpersonateMemberEndpoint(APIView):
 
 
 class StopImpersonationEndpoint(APIView):
+    authentication_classes = [BaseSessionAuthentication]
+
     def post(self, request):
         impersonator_id = request.session.get("impersonator_id")
         if not impersonator_id:
