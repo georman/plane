@@ -75,15 +75,16 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
   } = props;
   // states
   const [parentIssueListModalOpen, setParentIssueListModalOpen] = useState(false);
-  // GAM addition: Customer/Service billing lists
+  // GAM addition: Customer/Service billing
   const { data: gamCustomers } = useSWR(
     workspaceSlug ? `GAM_CUSTOMERS_${workspaceSlug}` : null,
     workspaceSlug ? () => billingService.fetchCustomers(workspaceSlug) : null
   );
-  const { data: gamServices } = useSWR(
-    workspaceSlug ? `GAM_SERVICES_${workspaceSlug}` : null,
-    workspaceSlug ? () => billingService.fetchServices(workspaceSlug) : null
-  );
+  // The Service dropdown only offers services this customer actually has a
+  // price for - there's no point picking a service GAM hasn't agreed a
+  // rate for with this client.
+  const selectedCustomer = (gamCustomers ?? []).find((customer) => customer.id === customerId);
+  const availableCustomerServices = selectedCustomer?.rates ?? [];
   // store hooks
   const { t } = useTranslation();
   const { areEstimateEnabledByProjectId } = useProjectEstimates();
@@ -185,7 +186,12 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
       <select
         value={customerId ?? ""}
         onChange={(e) => {
-          onCustomerChange(e.target.value || null);
+          const newCustomerId = e.target.value || null;
+          onCustomerChange(newCustomerId);
+          // clear the service if it isn't priced for the newly selected customer
+          const newCustomer = (gamCustomers ?? []).find((customer) => customer.id === newCustomerId);
+          const stillValid = newCustomer?.rates.some((rate) => rate.service === serviceId);
+          if (!stillValid) onServiceChange(null);
           handleFormChange();
         }}
         className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
@@ -203,12 +209,13 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
           onServiceChange(e.target.value || null);
           handleFormChange();
         }}
-        className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
+        disabled={!customerId}
+        className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <option value="">Service...</option>
-        {(gamServices ?? []).map((service) => (
-          <option key={service.id} value={service.id}>
-            {service.name}
+        <option value="">{customerId ? "Service..." : "Select a customer first"}</option>
+        {availableCustomerServices.map((rate) => (
+          <option key={rate.service} value={rate.service}>
+            {rate.service_name}
           </option>
         ))}
       </select>
