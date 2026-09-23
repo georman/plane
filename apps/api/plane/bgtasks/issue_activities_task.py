@@ -1583,6 +1583,14 @@ def issue_activity(
         # Save all the values to database
         issue_activities_created = IssueActivity.objects.bulk_create(issue_activities)
 
+        # GAM addition: moving an item into an approval state emails the client
+        try:
+            from plane.bgtasks.gam_approval_task import queue_approval_requests
+
+            queue_approval_requests(issue_activities_created)
+        except Exception as e:
+            log_exception(e)
+
         if notification:
             notifications.delay(
                 type=type,

@@ -13,9 +13,13 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from plane.app.views.gam_approval import client_approval
+
 handler404 = "plane.app.views.error_404.custom_404_view"
 
 urlpatterns = [
+    # GAM addition: public client approval page (link from the approval email)
+    path("api/gam/approval/<str:token>/", client_approval, name="gam-client-approval"),
     path("api/", include("plane.app.urls")),
     path("api/public/", include("plane.space.urls")),
     path("api/instances/", include("plane.license.urls")),

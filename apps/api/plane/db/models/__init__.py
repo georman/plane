@@ -8,6 +8,7 @@ from .asset import FileAsset
 from .base import BaseModel
 from .billing import Customer, CustomerServiceRate, IssueCustomerService, Service, ServiceTemplateItem
 from .recurrence import IssueRecurrence
+from .approval import ApprovalRequest
 from .cycle import Cycle, CycleIssue, CycleUserProperties
 from .deploy_board import DeployBoard
 from .impersonation import ImpersonationLog
