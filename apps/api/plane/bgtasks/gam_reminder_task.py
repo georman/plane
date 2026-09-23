@@ -27,7 +27,7 @@ STUCK_AFTER_DAYS = 5
 
 @shared_task
 def send_approval_reminders():
-    from plane.bgtasks.gam_approval_task import add_comment, approval_url, send_email
+    from plane.bgtasks.gam_approval_task import add_comment, approval_url, send_client_email
 
     now = timezone.now()
     if not is_working_time(now):
@@ -57,7 +57,7 @@ def send_approval_reminders():
   <p>Ευχαριστούμε,<br>{escape(brand['name'])}</p>
 </div>"""
             text = f"Υπενθύμιση: η εργασία «{issue.name}» περιμένει την έγκρισή σας.\n\n{url}\n\n{brand['name']}"
-            send_email(approval.recipient_email, f"Υπενθύμιση έγκρισης: {issue.name} – {brand['name']}", html, text)
+            send_client_email(approval.recipient_email, f"Υπενθύμιση έγκρισης: {issue.name} – {brand['name']}", html, text)
             approval.reminder_count += 1
             approval.last_reminder_at = now
             approval.save(update_fields=["reminder_count", "last_reminder_at"])

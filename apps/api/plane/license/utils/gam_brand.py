@@ -15,6 +15,9 @@ BRAND_KEYS = {
     "GAM_SUPPORT_EMAIL": "info@gam.gr",
     "GAM_BRAND_WEBSITE": "",
     "GAM_BRAND_LOGO": "",  # storage key of the uploaded logo; empty = built-in logo
+    # Client emails stay in test mode (all sent to GAM_TEST_EMAIL) until switched to "live"
+    "GAM_CLIENT_EMAILS": "test",
+    "GAM_TEST_EMAIL": "info@gam.gr",
 }
 BRAND_CATEGORY = "BRANDING"
 LOGO_PATH = "/api/instances/brand-logo/"
@@ -38,3 +41,13 @@ def get_brand():
         "logo_url": f"{web_url()}{LOGO_PATH}?v={logo_key.rsplit('/', 1)[-1][:8]}" if logo_key
         else f"{web_url()}{DEFAULT_LOGO_PATH}",
     }
+
+
+def client_email_settings():
+    """("live", None) or ("test", address that receives every client email instead)."""
+    values = dict(
+        InstanceConfiguration.objects.filter(key__in=["GAM_CLIENT_EMAILS", "GAM_TEST_EMAIL"]).values_list("key", "value")
+    )
+    mode = (values.get("GAM_CLIENT_EMAILS") or "test").strip().lower()
+    test_email = (values.get("GAM_TEST_EMAIL") or "").strip() or BRAND_KEYS["GAM_TEST_EMAIL"]
+    return ("live", None) if mode == "live" else ("test", test_email)

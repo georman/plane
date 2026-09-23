@@ -23,7 +23,7 @@ from plane.db.models import (
     IssueCustomerService,
     State,
 )
-from plane.license.utils.gam_brand import get_brand
+from plane.license.utils.gam_brand import client_email_settings, get_brand
 from plane.license.utils.instance_value import get_email_configuration
 from plane.settings.storage import S3Storage
 from plane.utils.exception_logger import log_exception
@@ -69,6 +69,21 @@ def send_email(to, subject, html, text, files=()):
     for name, content, mime in files:
         msg.attach(name, content, mime)
     msg.send()
+
+
+def send_client_email(to, subject, html, text, files=()):
+    """Every email meant for a client goes through here. In test mode it goes to the test address instead."""
+    mode, test_email = client_email_settings()
+    if mode == "live":
+        send_email(to, subject, html, text, files)
+        return to
+    banner = (
+        '<div style="background:#fff4e5;border:1px solid #f0a020;padding:10px 14px;margin-bottom:16px;'
+        'font-family:Arial,sans-serif;font-size:14px">🧪 <strong>ΔΟΚΙΜΗ / TEST</strong> – '
+        f"σε κανονική λειτουργία θα πήγαινε στο <strong>{escape(to)}</strong></div>"
+    )
+    send_email(test_email, f"[ΔΟΚΙΜΗ → {to}] {subject}", banner + html, f"[TEST - would go to {to}]\n\n{text}", files)
+    return test_email
 
 
 def render_request_email(issue, url, attached_names, other_count):
@@ -144,11 +159,12 @@ def send_approval_request(issue_id, state_id, actor_id):
                 other_count += 1
 
         html, text = render_request_email(issue, approval_url(approval), attached_names, other_count)
-        send_email(email, f"Έγκριση: {issue.name} – {get_brand()['name']}", html, text, files)
+        delivered_to = send_client_email(email, f"Έγκριση: {issue.name} – {get_brand()['name']}", html, text, files)
 
         approval.sent_at = timezone.now()
         approval.save(update_fields=["sent_at"])
-        add_comment(issue, actor_id, f"<p>📧 Στάλθηκε email έγκρισης στο {escape(email)}.</p>")
+        note = "" if delivered_to == email else f" (δοκιμαστική λειτουργία: στάλθηκε στο {escape(delivered_to)})"
+        add_comment(issue, actor_id, f"<p>📧 Στάλθηκε email έγκρισης στο {escape(email)}{note}.</p>")
         logging.getLogger("plane.worker").info("GAM approval request sent for %s", issue_id)
     except Exception as e:
         log_exception(e)
