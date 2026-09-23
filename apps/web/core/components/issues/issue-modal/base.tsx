@@ -11,7 +11,7 @@ import { useParams } from "next/navigation";
 // Plane imports
 import { useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import type { TBaseIssue, TIssue } from "@plane/types";
+import type { TBaseIssue, TIssue, TIssueRecurrenceFrequency } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // hooks
@@ -71,6 +71,9 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
   // GAM addition: Customer/Service billing
   const [gamCustomerId, setGamCustomerId] = useState<string | null>(null);
   const [gamServiceId, setGamServiceId] = useState<string | null>(null);
+  // GAM addition: repeating work items (savedRepeat = what's stored, to know when to clear it)
+  const [gamRepeat, setGamRepeat] = useState<TIssueRecurrenceFrequency | null>(null);
+  const [gamSavedRepeat, setGamSavedRepeat] = useState<TIssueRecurrenceFrequency | null>(null);
   // store hooks
   const { t } = useTranslation();
   const { workspaceSlug, projectId: routerProjectId, cycleId, moduleId, workItem } = useParams();
@@ -154,6 +157,23 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, workspaceSlug, data?.id, data?.sourceIssueId, data?.project_id]);
+
+  // GAM addition: repeating work items - only an existing item has a stored
+  // repeat setting; a duplicate or a new item starts as "does not repeat".
+  useEffect(() => {
+    if (!isOpen) return;
+    setGamRepeat(null);
+    setGamSavedRepeat(null);
+    if (!workspaceSlug || !data?.id || !data?.project_id) return;
+    billingService
+      .fetchIssueRecurrence(workspaceSlug.toString(), data.project_id, data.id)
+      .then((recurrence) => {
+        setGamRepeat(recurrence?.frequency ?? null);
+        setGamSavedRepeat(recurrence?.frequency ?? null);
+      })
+      .catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, workspaceSlug, data?.id, data?.project_id]);
 
   const addIssueToCycle = async (issue: TIssue, cycleId: string) => {
     if (!workspaceSlug || !issue.project_id) return;
@@ -419,6 +439,16 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
           console.error("Could not save customer/service for this work item", error);
         }
       }
+      // GAM addition: repeating work items - best-effort as above
+      if (response?.id && response?.project_id && gamRepeat !== gamSavedRepeat) {
+        try {
+          if (gamRepeat)
+            await billingService.setIssueRecurrence(workspaceSlug.toString(), response.project_id, response.id, gamRepeat);
+          else await billingService.deleteIssueRecurrence(workspaceSlug.toString(), response.project_id, response.id);
+        } catch (error) {
+          console.error("Could not save the repeat setting for this work item", error);
+        }
+      }
     } finally {
       if (response != undefined && onSubmit) await onSubmit(response);
     }
@@ -459,6 +489,9 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
     serviceId: gamServiceId,
     onCustomerChange: setGamCustomerId,
     onServiceChange: setGamServiceId,
+    // GAM addition: repeating work items
+    repeat: gamRepeat,
+    onRepeatChange: setGamRepeat,
   };
 
   return (

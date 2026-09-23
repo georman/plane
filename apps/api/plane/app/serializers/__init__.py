@@ -8,6 +8,7 @@ from .billing import (
     CustomerServiceRateSerializer,
     IssueCustomerServiceSerializer,
     ServiceSerializer,
+    ServiceTemplateItemSerializer,
 )
 from .user import (
     UserSerializer,

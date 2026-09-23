@@ -8,11 +8,19 @@
 
 export type TCustomerBillingType = "retainer" | "per_job";
 
+export interface IServiceTemplateItem {
+  id: string;
+  service_id: string;
+  name: string;
+  sequence: number;
+}
+
 export interface IService {
   id: string;
   workspace_id: string;
   name: string;
   is_active: boolean;
+  template_items: IServiceTemplateItem[];
 }
 
 export interface ICustomerServiceRate {
@@ -40,4 +48,14 @@ export interface IIssueCustomerService {
   customer_name: string;
   service: string;
   service_name: string;
+}
+
+// GAM addition: repeating work items
+export type TIssueRecurrenceFrequency = "weekly" | "monthly" | "yearly";
+
+export interface IIssueRecurrence {
+  id: string;
+  issue: string;
+  frequency: TIssueRecurrenceFrequency;
+  next_run_date: string;
 }

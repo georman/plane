@@ -111,3 +111,26 @@ class IssueCustomerService(BaseModel):
 
     def __str__(self):
         return f"{self.issue_id}: {self.customer.name} / {self.service.name}"
+
+
+class ServiceTemplateItem(BaseModel):
+    """One checklist step of a service (e.g. Logo: Brief, Sketches, 4 proposals, ...).
+
+    When a work item is first linked to a service, each active step is created
+    as a sub-item of it, in sequence order.
+    """
+
+    service = models.ForeignKey(
+        Service, on_delete=models.CASCADE, related_name="template_items"
+    )
+    name = models.CharField(max_length=255)
+    sequence = models.FloatField(default=65535)
+
+    class Meta:
+        db_table = "gam_service_template_items"
+        verbose_name = "Service Template Item"
+        verbose_name_plural = "Service Template Items"
+        ordering = ("sequence", "created_at")
+
+    def __str__(self):
+        return f"{self.service.name}: {self.name}"

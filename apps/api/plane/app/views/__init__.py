@@ -6,8 +6,10 @@ from .billing import (
     CustomerServiceRateViewSet,
     CustomerViewSet,
     IssueCustomerServiceEndpoint,
+    ServiceTemplateItemViewSet,
     ServiceViewSet,
 )
+from .recurrence import IssueRecurrenceEndpoint
 from .project.base import (
     ProjectViewSet,
     ProjectIdentifierEndpoint,

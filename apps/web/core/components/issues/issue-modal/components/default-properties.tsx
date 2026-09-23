@@ -13,7 +13,7 @@ import { ETabIndices, EUserPermissions, EUserPermissionsLevel } from "@plane/con
 import { useTranslation } from "@plane/i18n";
 import { ParentPropertyIcon } from "@plane/propel/icons";
 // types
-import type { ISearchIssueResponse, TIssue } from "@plane/types";
+import type { ISearchIssueResponse, TIssue, TIssueRecurrenceFrequency } from "@plane/types";
 // ui
 import { CustomMenu } from "@plane/ui";
 import { getDate, renderFormattedPayloadDate, getTabIndex } from "@plane/utils";
@@ -53,6 +53,9 @@ type TIssueDefaultPropertiesProps = {
   serviceId: string | null;
   onCustomerChange: (customerId: string | null) => void;
   onServiceChange: (serviceId: string | null) => void;
+  // GAM addition: repeating work items
+  repeat?: TIssueRecurrenceFrequency | null;
+  onRepeatChange?: (repeat: TIssueRecurrenceFrequency | null) => void;
 };
 
 export const IssueDefaultProperties = observer(function IssueDefaultProperties(props: TIssueDefaultPropertiesProps) {
@@ -72,6 +75,8 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
     serviceId,
     onCustomerChange,
     onServiceChange,
+    repeat = null,
+    onRepeatChange = () => {},
   } = props;
   // states
   const [parentIssueListModalOpen, setParentIssueListModalOpen] = useState(false);
@@ -218,6 +223,21 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
             {rate.service_name}
           </option>
         ))}
+      </select>
+      {/* GAM addition: repeating work items */}
+      <select
+        value={repeat ?? ""}
+        onChange={(e) => {
+          onRepeatChange((e.target.value || null) as TIssueRecurrenceFrequency | null);
+          handleFormChange();
+        }}
+        className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
+        aria-label="Repeat"
+      >
+        <option value="">Does not repeat</option>
+        <option value="weekly">Repeats weekly</option>
+        <option value="monthly">Repeats monthly</option>
+        <option value="yearly">Repeats yearly</option>
       </select>
       <Controller
         control={control}

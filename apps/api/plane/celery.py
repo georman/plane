@@ -56,6 +56,11 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.deletion_task.hard_delete",
         "schedule": crontab(hour=0, minute=0),  # UTC 00:00
     },
+    # GAM addition: repeating work items (06:00 Athens in summer, 05:00 in winter)
+    "gam-create-due-recurring-items": {
+        "task": "plane.bgtasks.gam_recurrence_task.create_due_recurring_items",
+        "schedule": crontab(hour=3, minute=0),  # UTC 03:00
+    },
     "check-every-day-to-archive-and-close": {
         "task": "plane.bgtasks.issue_automation_task.archive_and_close_old_issues",
         "schedule": crontab(hour=1, minute=0),  # UTC 01:00

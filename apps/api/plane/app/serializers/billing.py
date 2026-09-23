@@ -6,15 +6,24 @@
 
 from rest_framework import serializers
 
-from plane.db.models import Customer, CustomerServiceRate, IssueCustomerService, Service
+from plane.db.models import Customer, CustomerServiceRate, IssueCustomerService, Service, ServiceTemplateItem
 
 from .base import BaseSerializer
 
 
+class ServiceTemplateItemSerializer(BaseSerializer):
+    class Meta:
+        model = ServiceTemplateItem
+        fields = ["id", "service_id", "name", "sequence"]
+        read_only_fields = ["service"]
+
+
 class ServiceSerializer(BaseSerializer):
+    template_items = ServiceTemplateItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Service
-        fields = ["id", "workspace_id", "name", "is_active"]
+        fields = ["id", "workspace_id", "name", "is_active", "template_items"]
         read_only_fields = ["workspace"]
 
 

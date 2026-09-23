@@ -7,7 +7,15 @@
  */
 
 import { API_BASE_URL } from "@plane/constants";
-import type { ICustomer, ICustomerServiceRate, IIssueCustomerService, IService } from "@plane/types";
+import type {
+  ICustomer,
+  ICustomerServiceRate,
+  IIssueCustomerService,
+  IIssueRecurrence,
+  IService,
+  IServiceTemplateItem,
+  TIssueRecurrenceFrequency,
+} from "@plane/types";
 import { APIService } from "@/services/api.service";
 
 export class BillingService extends APIService {
@@ -43,6 +51,39 @@ export class BillingService extends APIService {
     return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/`).catch((error) => {
       throw error?.response?.data;
     });
+  }
+
+  async createServiceTemplateItem(
+    workspaceSlug: string,
+    serviceId: string,
+    data: { name: string }
+  ): Promise<IServiceTemplateItem> {
+    return this.post(`/api/workspaces/${workspaceSlug}/services/${serviceId}/template-items/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateServiceTemplateItem(
+    workspaceSlug: string,
+    serviceId: string,
+    itemId: string,
+    data: Partial<Pick<IServiceTemplateItem, "name" | "sequence">>
+  ): Promise<IServiceTemplateItem> {
+    return this.patch(`/api/workspaces/${workspaceSlug}/services/${serviceId}/template-items/${itemId}/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async deleteServiceTemplateItem(workspaceSlug: string, serviceId: string, itemId: string): Promise<void> {
+    return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/template-items/${itemId}/`).catch(
+      (error) => {
+        throw error?.response?.data;
+      }
+    );
   }
 
   async fetchCustomers(workspaceSlug: string): Promise<ICustomer[]> {
@@ -131,6 +172,42 @@ export class BillingService extends APIService {
       .catch((error) => {
         throw error?.response?.data;
       });
+  }
+
+  // GAM addition: repeating work items
+  async fetchIssueRecurrence(
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string
+  ): Promise<IIssueRecurrence | null> {
+    return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`)
+      .then((response) => response?.data ?? null)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async setIssueRecurrence(
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    frequency: TIssueRecurrenceFrequency
+  ): Promise<IIssueRecurrence> {
+    return this.put(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`, {
+      frequency,
+    })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async deleteIssueRecurrence(workspaceSlug: string, projectId: string, issueId: string): Promise<void> {
+    return this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`).catch(
+      (error) => {
+        throw error?.response?.data;
+      }
+    );
   }
 }
 

@@ -17,6 +17,7 @@ from plane.app.serializers import (
     CustomerServiceRateSerializer,
     IssueCustomerServiceSerializer,
     ServiceSerializer,
+    ServiceTemplateItemSerializer,
 )
 from plane.db.models import (
     Customer,
@@ -24,6 +25,7 @@ from plane.db.models import (
     Issue,
     IssueCustomerService,
     Service,
+    ServiceTemplateItem,
     Workspace,
 )
 
@@ -39,6 +41,7 @@ class ServiceViewSet(BaseViewSet):
             super()
             .get_queryset()
             .filter(workspace__slug=self.kwargs.get("slug"))
+            .prefetch_related("template_items")
             .order_by("name")
         )
 
@@ -176,6 +179,66 @@ class CustomerServiceRateViewSet(BaseViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
+class ServiceTemplateItemViewSet(BaseViewSet):
+    """Nested under a Service: the checklist steps created as sub-items of new work items."""
+
+    serializer_class = ServiceTemplateItemSerializer
+    model = ServiceTemplateItem
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(service__workspace__slug=self.kwargs.get("slug"))
+            .filter(service_id=self.kwargs.get("service_id"))
+            .order_by("sequence", "created_at")
+        )
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def list(self, request, slug, service_id):
+        items = self.get_queryset()
+        return Response(ServiceTemplateItemSerializer(items, many=True).data, status=status.HTTP_200_OK)
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def create(self, request, slug, service_id):
+        service = Service.objects.get(pk=service_id, workspace__slug=slug)
+        serializer = ServiceTemplateItemSerializer(data=request.data)
+        if serializer.is_valid():
+            if "sequence" not in request.data:
+                last = self.get_queryset().order_by("-sequence").first()
+                serializer.save(service=service, sequence=(last.sequence + 10000) if last else 10000)
+            else:
+                serializer.save(service=service)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def partial_update(self, request, *args, **kwargs):
+        serializer = ServiceTemplateItemSerializer(instance=self.get_object(), data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+
+def create_service_sub_items(issue, service_id, user):
+    """Create the service's checklist steps as sub-items, unless the item already has sub-items."""
+    if Issue.issue_objects.filter(parent=issue).exists():
+        return
+    for step in ServiceTemplateItem.objects.filter(service_id=service_id).order_by("sequence", "created_at"):
+        Issue(
+            name=step.name,
+            parent=issue,
+            project_id=issue.project_id,
+            workspace_id=issue.workspace_id,
+            created_by=user,
+        ).save()
+
+
 class IssueCustomerServiceEndpoint(BaseAPIView):
     """Which customer + service a specific work item is for. One per issue (upsert)."""
 
@@ -197,9 +260,14 @@ class IssueCustomerServiceEndpoint(BaseAPIView):
                 {"error": "Both customer and service are required."}, status=status.HTTP_400_BAD_REQUEST
             )
         issue = Issue.objects.get(pk=issue_id, project_id=project_id, workspace__slug=slug)
+        previous_service_id = (
+            IssueCustomerService.objects.filter(issue=issue).values_list("service_id", flat=True).first()
+        )
         link, _ = IssueCustomerService.objects.update_or_create(
             issue=issue, defaults={"customer_id": customer_id, "service_id": service_id}
         )
+        if str(previous_service_id) != str(service_id):
+            create_service_sub_items(issue, service_id, request.user)
         return Response(IssueCustomerServiceSerializer(link).data, status=status.HTTP_200_OK)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")

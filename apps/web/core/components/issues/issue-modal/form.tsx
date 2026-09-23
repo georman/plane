@@ -18,7 +18,7 @@ import type { EditorRefApi } from "@plane/editor";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import type { TIssue, TWorkspaceDraftIssue } from "@plane/types";
+import type { TIssue, TIssueRecurrenceFrequency, TWorkspaceDraftIssue } from "@plane/types";
 // hooks
 import { ToggleSwitch } from "@plane/ui";
 import {
@@ -74,6 +74,9 @@ export interface IssueFormProps {
   serviceId?: string | null;
   onCustomerChange?: (customerId: string | null) => void;
   onServiceChange?: (serviceId: string | null) => void;
+  // GAM addition: repeating work items
+  repeat?: TIssueRecurrenceFrequency | null;
+  onRepeatChange?: (repeat: TIssueRecurrenceFrequency | null) => void;
 }
 
 export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormProps) {
@@ -103,6 +106,9 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
     serviceId = null,
     onCustomerChange = () => {},
     onServiceChange = () => {},
+    // GAM addition: repeating work items
+    repeat = null,
+    onRepeatChange = () => {},
   } = props;
 
   // states
@@ -452,6 +458,8 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
                   serviceId={serviceId}
                   onCustomerChange={onCustomerChange}
                   onServiceChange={onServiceChange}
+                  repeat={repeat}
+                  onRepeatChange={onRepeatChange}
                 />
               </div>
               {showActionButtons && (
