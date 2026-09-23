@@ -130,16 +130,20 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
   }, [data?.project_id, data?.id, data?.sourceIssueId, projectId, isOpen, activeProjectId]);
 
   // GAM addition: Customer/Service billing - load the existing link when
-  // editing an existing issue, reset the selection for a fresh create form.
+  // editing an existing issue OR duplicating one (data.sourceIssueId is set
+  // by the native "Duplicate work item" action, so a duplicate defaults to
+  // the same customer/service as the original - still editable before save).
+  // Resets for a genuinely fresh create form.
   useEffect(() => {
     if (!isOpen) return;
-    if (!workspaceSlug || !data?.id || !data?.project_id) {
+    const sourceId = data?.id ?? data?.sourceIssueId;
+    if (!workspaceSlug || !sourceId || !data?.project_id) {
       setGamCustomerId(null);
       setGamServiceId(null);
       return;
     }
     billingService
-      .fetchIssueCustomerService(workspaceSlug.toString(), data.project_id, data.id)
+      .fetchIssueCustomerService(workspaceSlug.toString(), data.project_id, sourceId)
       .then((link) => {
         setGamCustomerId(link?.customer ?? null);
         setGamServiceId(link?.service ?? null);
@@ -149,7 +153,7 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
         setGamServiceId(null);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, workspaceSlug, data?.id, data?.project_id]);
+  }, [isOpen, workspaceSlug, data?.id, data?.sourceIssueId, data?.project_id]);
 
   const addIssueToCycle = async (issue: TIssue, cycleId: string) => {
     if (!workspaceSlug || !issue.project_id) return;
