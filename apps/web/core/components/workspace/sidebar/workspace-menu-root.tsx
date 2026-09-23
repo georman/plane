@@ -12,6 +12,7 @@ import { CirclePlus, LogOut, Mails } from "lucide-react";
 // ui
 import { Menu, Transition } from "@headlessui/react";
 // plane imports
+import { EUserPermissions } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { ChevronDownIcon } from "@plane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
@@ -23,7 +24,7 @@ import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useWorkspace } from "@/hooks/store/use-workspace";
-import { useUser, useUserProfile } from "@/hooks/store/user";
+import { useUser, useUserProfile, useUserPermissions } from "@/hooks/store/user";
 import { useInstance } from "@/hooks/store/use-instance";
 // components
 import { WorkspaceLogo } from "../logo";
@@ -42,8 +43,14 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   const { signOut } = useUser();
   const { updateUserProfile } = useUserProfile();
   const { currentWorkspace: activeWorkspace, workspaces } = useWorkspace();
+  const { getWorkspaceRoleByWorkspaceSlug } = useUserPermissions();
   // derived values
-  const isWorkspaceCreationDisabled = config?.is_workspace_creation_disabled ?? false;
+  const isGuest =
+    getWorkspaceRoleByWorkspaceSlug(activeWorkspace?.slug ?? "") === EUserPermissions.GUEST;
+  // GAM: clients (Guests) only ever belong to their own single project.
+  // "Create workspace" and "Workspace invites" are staff-only concepts that
+  // just confuse a client and expose the word "workspace" for no reason.
+  const isWorkspaceCreationDisabled = (config?.is_workspace_creation_disabled ?? false) || isGuest;
   // translation
   const { t } = useTranslation();
   // local state
@@ -199,15 +206,17 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                       </Link>
                     )}
 
-                    <Link href="/invitations" className="w-full" onClick={handleItemClick}>
-                      <Menu.Item
-                        as="div"
-                        className="flex items-center gap-2 rounded-sm px-2 py-1 text-13 font-medium text-secondary hover:bg-layer-transparent-hover"
-                      >
-                        <Mails className="h-4 w-4 flex-shrink-0" />
-                        {t("workspace_invites")}
-                      </Menu.Item>
-                    </Link>
+                    {!isGuest && (
+                      <Link href="/invitations" className="w-full" onClick={handleItemClick}>
+                        <Menu.Item
+                          as="div"
+                          className="flex items-center gap-2 rounded-sm px-2 py-1 text-13 font-medium text-secondary hover:bg-layer-transparent-hover"
+                        >
+                          <Mails className="h-4 w-4 flex-shrink-0" />
+                          {t("workspace_invites")}
+                        </Menu.Item>
+                      </Link>
+                    )}
 
                     <div className="w-full">
                       <Menu.Item

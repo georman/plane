@@ -7,9 +7,11 @@
 import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import { Ellipsis } from "lucide-react";
+import { useParams } from "next/navigation";
 import { Disclosure, Transition } from "@headlessui/react";
 // plane imports
 import {
+  EUserPermissions,
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS,
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS,
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS,
@@ -23,6 +25,7 @@ import { SidebarNavItem } from "@/components/sidebar/sidebar-navigation";
 // store hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import useLocalStorage from "@/hooks/use-local-storage";
+import { useUserPermissions } from "@/hooks/store/user";
 import {
   usePersonalNavigationPreferences,
   useWorkspaceNavigationPreferences,
@@ -31,6 +34,7 @@ import { SidebarItemBase } from "./sidebar-item";
 
 export const SidebarMenuItems = observer(function SidebarMenuItems() {
   // routers
+  const { workspaceSlug } = useParams();
   const { setValue: toggleWorkspaceMenu, storedValue: isWorkspaceMenuOpen } = useLocalStorage<boolean>(
     "is_workspace_menu_open",
     true
@@ -38,6 +42,13 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
 
   // store hooks
   const { isExtendedSidebarOpened, toggleExtendedSidebar } = useAppTheme();
+  const { getWorkspaceRoleByWorkspaceSlug } = useUserPermissions();
+  // GAM: Guests (clients) only ever have their own project - the
+  // workspace-wide "Workspace" section (all-projects browser + "More"
+  // extended nav) is redundant and confusing for them; their own project's
+  // nav renders separately below regardless of this.
+  const isGuest =
+    getWorkspaceRoleByWorkspaceSlug((workspaceSlug as string) ?? "") === EUserPermissions.GUEST;
   // hooks
   const { preferences: personalPreferences } = usePersonalNavigationPreferences();
   const { preferences: workspacePreferences } = useWorkspaceNavigationPreferences();
@@ -102,6 +113,7 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
           <SidebarItemBase key={`static_${_index}`} item={item} />
         ))}
       </div>
+      {!isGuest && (
       <Disclosure as="div" className="flex flex-col" defaultOpen={!!isWorkspaceMenuOpen}>
         <div className="group flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-placeholder hover:bg-layer-transparent-hover">
           <Disclosure.Button
@@ -178,6 +190,7 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
           )}
         </Transition>
       </Disclosure>
+      )}
     </>
   );
 });

@@ -51,6 +51,13 @@ class WorkSpaceMemberViewSet(BaseViewSet):
         if workspace_member.role > 5:
             serializer = WorkspaceMemberAdminSerializer(workspace_members, fields=("id", "member", "role"), many=True)
         else:
+            # GAM: Guests are client accounts, often one per client. The full
+            # workspace roster would let one client see every other client's
+            # guest account (and every staff member), so scope Guests down to
+            # members of the project(s) they themselves belong to.
+            workspace_members = workspace_members.filter(
+                member_id__in=self._guest_visible_member_ids(slug=slug, guest=request.user)
+            )
             serializer = WorkSpaceMemberSerializer(workspace_members, fields=("id", "member", "role"), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -70,8 +77,23 @@ class WorkSpaceMemberViewSet(BaseViewSet):
         if workspace_member.role > ROLE.GUEST.value:
             serializer = WorkspaceMemberAdminSerializer(member, fields=("id", "member", "role"))
         else:
+            if member.member_id not in self._guest_visible_member_ids(slug=slug, guest=request.user):
+                return Response(
+                    {"error": "Workspace member not found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
             serializer = WorkSpaceMemberSerializer(member, fields=("id", "member", "role"))
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _guest_visible_member_ids(slug, guest):
+        """Member ids of everyone who shares a project with this guest (incl. the guest)."""
+        guest_project_ids = ProjectMember.objects.filter(
+            workspace__slug=slug, member=guest, is_active=True
+        ).values_list("project_id", flat=True)
+        return ProjectMember.objects.filter(
+            workspace__slug=slug, project_id__in=guest_project_ids, is_active=True
+        ).values_list("member_id", flat=True).distinct()
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def partial_update(self, request, slug, pk):
