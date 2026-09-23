@@ -39,6 +39,11 @@ RUN apk add --no-cache --virtual .build-deps \
     rm -rf /var/cache/apk/*
 
 
+# GAM addition: PDF generation for monthly billing statements (WeasyPrint),
+# with fonts that cover Greek
+RUN apk add --no-cache pango font-dejavu && \
+    pip install --no-cache-dir weasyprint==66.0
+
 # Add in Django deps and generate Django's static files
 COPY manage.py manage.py
 COPY plane plane/

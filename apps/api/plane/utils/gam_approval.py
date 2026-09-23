@@ -54,13 +54,32 @@ def corrections_state(project_id):
     return None
 
 
-def make_token(approval_request_id):
-    return signing.dumps(str(approval_request_id), salt=TOKEN_SALT)
+def make_token(approval):
+    """Signed link token. It carries the request's token_version, so bumping the version kills older links."""
+    return signing.dumps(f"{approval.id}:{approval.token_version}", salt=TOKEN_SALT)
 
 
 def read_token(token):
-    """Returns the approval request id, or None if the link is invalid or expired."""
+    """(approval request id, token version), or (None, None) if the link is invalid or expired."""
     try:
-        return signing.loads(token, salt=TOKEN_SALT, max_age=TOKEN_MAX_AGE)
+        value = signing.loads(token, salt=TOKEN_SALT, max_age=TOKEN_MAX_AGE)
     except signing.BadSignature:
-        return None
+        return None, None
+    approval_id, _, version = str(value).partition(":")
+    return approval_id, int(version) if version.isdigit() else 1
+
+
+def batch_posts(issue):
+    """Sub-items that carry files are the proposals the client reviews one by one (e.g. IG posts).
+    Sub-items without files are internal checklist steps and are left out."""
+    from plane.db.models import FileAsset, Issue
+
+    children = Issue.issue_objects.filter(parent=issue).exclude(state__group="cancelled").order_by("sequence_id")
+    with_files = FileAsset.objects.filter(
+        issue_id__in=children.values("id"),
+        entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+        is_uploaded=True,
+        deleted_at__isnull=True,
+    ).values_list("issue_id", flat=True)
+    ids = set(with_files)
+    return [child for child in children if child.id in ids]

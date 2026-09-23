@@ -28,6 +28,8 @@ class ApprovalRequest(BaseModel):
     responded_at = models.DateTimeField(null=True, blank=True)
     response = models.CharField(max_length=20, choices=RESPONSE_CHOICES, null=True, blank=True)
     note = models.TextField(blank=True)
+    # Bumped every time a new link is emailed; older links stop working
+    token_version = models.PositiveIntegerField(default=1)
     reminder_count = models.PositiveIntegerField(default=0)
     last_reminder_at = models.DateTimeField(null=True, blank=True)
 
@@ -39,3 +41,19 @@ class ApprovalRequest(BaseModel):
 
     def __str__(self):
         return f"{self.issue_id} -> {self.recipient_email} ({self.response or 'pending'})"
+
+
+class ApprovalItemDecision(BaseModel):
+    """The client's answer for one post (sub-item) inside a batch approval."""
+
+    approval = models.ForeignKey(ApprovalRequest, on_delete=models.CASCADE, related_name="decisions")
+    issue = models.ForeignKey("db.Issue", on_delete=models.CASCADE, related_name="gam_approval_decisions")
+    response = models.CharField(max_length=20, choices=ApprovalRequest.RESPONSE_CHOICES)
+    note = models.TextField(blank=True)
+    decided_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "gam_approval_item_decisions"
+        verbose_name = "Approval Item Decision"
+        verbose_name_plural = "Approval Item Decisions"
+        unique_together = ("approval", "issue")

@@ -20,7 +20,7 @@ import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Input } from "@plane/ui";
-import type { TCustomerBillingType } from "@plane/types";
+import type { TCustomerBillingType, TCustomerLanguage } from "@plane/types";
 // components
 import { NotAuthorizedView } from "@/components/auth-screens/not-authorized-view";
 import { PageHead } from "@/components/core/page-title";
@@ -159,6 +159,7 @@ function CustomersSettingsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
+  const [language, setLanguage] = useState<TCustomerLanguage>("el");
   const [billingType, setBillingType] = useState<TCustomerBillingType>("per_job");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -189,15 +190,27 @@ function CustomersSettingsPage() {
         name: name.trim(),
         contact_email: contactEmail.trim(),
         billing_type: billingType,
+        language,
       });
       setName("");
       setContactEmail("");
       setBillingType("per_job");
+      setLanguage("el");
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
       setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not create customer." });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // GAM: the language this client receives emails, approval pages and billing PDFs in
+  const handleLanguageChange = async (customerId: string, newLanguage: TCustomerLanguage) => {
+    try {
+      await billingService.updateCustomer(slug, customerId, { language: newLanguage });
+      mutate(CUSTOMERS_SWR_KEY(slug));
+    } catch (error: any) {
+      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not change the language." });
     }
   };
 
@@ -241,6 +254,15 @@ function CustomersSettingsPage() {
             <option value="per_job">Per-job</option>
             <option value="retainer">Retainer</option>
           </select>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as TCustomerLanguage)}
+            className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
+            aria-label="Language the customer receives emails in"
+          >
+            <option value="el">Ελληνικά</option>
+            <option value="en">English</option>
+          </select>
           <Button variant="primary" onClick={handleCreate} disabled={isSubmitting || !name.trim()}>
             Add customer
           </Button>
@@ -274,6 +296,16 @@ function CustomersSettingsPage() {
                         {customer.rates.length} rate{customer.rates.length === 1 ? "" : "s"} set
                       </span>
                     </button>
+                    <select
+                      value={customer.language ?? "el"}
+                      onChange={(e) => handleLanguageChange(customer.id, e.target.value as TCustomerLanguage)}
+                      className="mr-3 rounded-sm border border-subtle bg-surface-1 px-2 py-1 text-12"
+                      aria-label={`Language for ${customer.name}`}
+                      title="Language of emails, approval pages and billing PDFs"
+                    >
+                      <option value="el">Ελληνικά</option>
+                      <option value="en">English</option>
+                    </select>
                     <button
                       type="button"
                       onClick={() => handleDelete(customer.id)}

@@ -14,12 +14,15 @@ from drf_spectacular.views import (
 )
 
 from plane.app.views.gam_approval import client_approval
+from plane.app.views.gam_billing import billing_review
 
 handler404 = "plane.app.views.error_404.custom_404_view"
 
 urlpatterns = [
     # GAM addition: public client approval page (link from the approval email)
     path("api/gam/approval/<str:token>/", client_approval, name="gam-client-approval"),
+    # GAM addition: "Approve & send" for monthly billing statements (link emailed to GAM only)
+    path("api/gam/billing/<str:token>/", billing_review, name="gam-billing-review"),
     path("api/", include("plane.app.urls")),
     path("api/public/", include("plane.space.urls")),
     path("api/instances/", include("plane.license.urls")),

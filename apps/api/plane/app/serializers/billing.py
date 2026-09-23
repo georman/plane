@@ -47,6 +47,7 @@ class CustomerSerializer(BaseSerializer):
             "name",
             "contact_email",
             "billing_type",
+            "language",
             "is_active",
             "rates",
         ]

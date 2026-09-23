@@ -40,14 +40,19 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
   const {
     handleSubmit,
     control,
+    register,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<TBrandingFormValues>({
     defaultValues: {
       GAM_BRAND_NAME: config["GAM_BRAND_NAME"],
       GAM_SUPPORT_EMAIL: config["GAM_SUPPORT_EMAIL"],
       GAM_BRAND_WEBSITE: config["GAM_BRAND_WEBSITE"],
+      GAM_CLIENT_EMAILS: config["GAM_CLIENT_EMAILS"] || "test",
+      GAM_TEST_EMAIL: config["GAM_TEST_EMAIL"] || "info@gam.gr",
     },
   });
+  const clientEmailMode = watch("GAM_CLIENT_EMAILS");
 
   // Reload the public instance info so every open tab picks up the new brand
   const refreshBrand = async () => {
@@ -63,6 +68,8 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
         GAM_BRAND_NAME: formData.GAM_BRAND_NAME.trim(),
         GAM_SUPPORT_EMAIL: formData.GAM_SUPPORT_EMAIL.trim(),
         GAM_BRAND_WEBSITE: formData.GAM_BRAND_WEBSITE.trim(),
+        GAM_CLIENT_EMAILS: formData.GAM_CLIENT_EMAILS === "live" ? "live" : "test",
+        GAM_TEST_EMAIL: formData.GAM_TEST_EMAIL.trim(),
       });
       await refreshBrand();
       setToast({ type: TOAST_TYPE.SUCCESS, title: "Saved", message: "Branding updated. Open pages update on reload." });
@@ -137,6 +144,44 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
           error={Boolean(errors.GAM_BRAND_WEBSITE)}
           required={false}
         />
+      </div>
+
+      <div className="space-y-3 border-t border-subtle pt-8">
+        <h4 className="text-13 text-tertiary">Client emails</h4>
+        <p className="text-12 text-tertiary">
+          Approval requests, reminders and billing emails to clients. In test mode every one of them goes to the test
+          address instead, marked with the client it was meant for.
+        </p>
+        <div className="grid w-full grid-cols-1 gap-x-16 gap-y-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="client-email-mode" className="text-13 text-tertiary">
+              Mode
+            </label>
+            <select
+              id="client-email-mode"
+              {...register("GAM_CLIENT_EMAILS")}
+              className="rounded-md border border-subtle bg-surface-1 px-3 py-2 text-13"
+            >
+              <option value="test">Test – send everything to the test address</option>
+              <option value="live">Live – send to clients</option>
+            </select>
+            {clientEmailMode === "live" && (
+              <p className="text-12 font-medium text-danger-primary">
+                Live: clients will receive real emails after you save.
+              </p>
+            )}
+          </div>
+          <ControllerInput
+            control={control}
+            type="text"
+            name="GAM_TEST_EMAIL"
+            label="Test address"
+            description="Receives all client emails while in test mode."
+            placeholder="info@gam.gr"
+            error={Boolean(errors.GAM_TEST_EMAIL)}
+            required
+          />
+        </div>
       </div>
       <div>
         <Button variant="primary" size="lg" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>

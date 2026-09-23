@@ -89,7 +89,12 @@ export interface IInstanceAdmin {
 }
 
 // GAM addition: white-label brand settings
-export type TInstanceBrandConfigurationKeys = "GAM_BRAND_NAME" | "GAM_SUPPORT_EMAIL" | "GAM_BRAND_WEBSITE";
+export type TInstanceBrandConfigurationKeys =
+  | "GAM_BRAND_NAME"
+  | "GAM_SUPPORT_EMAIL"
+  | "GAM_BRAND_WEBSITE"
+  | "GAM_CLIENT_EMAILS"
+  | "GAM_TEST_EMAIL";
 
 export type TInstanceConfigurationKeys =
   | TInstanceBrandConfigurationKeys

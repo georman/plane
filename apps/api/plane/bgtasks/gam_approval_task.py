@@ -27,7 +27,8 @@ from plane.license.utils.gam_brand import client_email_settings, get_brand
 from plane.license.utils.instance_value import get_email_configuration
 from plane.settings.storage import S3Storage
 from plane.utils.exception_logger import log_exception
-from plane.utils.gam_approval import is_approval_state, make_token
+from plane.utils.gam_approval import batch_posts, is_approval_state, make_token
+from plane.utils.gam_client_texts import client_language, texts
 
 # Proof files are attached to the email up to this total size; the approval page shows all of them
 MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
@@ -55,7 +56,7 @@ def proof_files(issue):
 
 def approval_url(approval):
     base = os.environ.get("WEB_URL", "https://project.gam.gr").rstrip("/")
-    return f"{base}/api/gam/approval/{make_token(approval.id)}/"
+    return f"{base}/api/gam/approval/{make_token(approval)}/"
 
 
 def send_email(to, subject, html, text, files=()):
@@ -86,32 +87,62 @@ def send_client_email(to, subject, html, text, files=()):
     return test_email
 
 
-def render_request_email(issue, url, attached_names, other_count):
-    name = escape(issue.name)
-    brand = get_brand()
-    brand_name = escape(brand["name"])
-    if attached_names:
-        files_line = "Θα βρείτε τα αρχεία συνημμένα: " + escape(", ".join(attached_names)) + "."
-        if other_count:
-            files_line += f" Άλλα {other_count} αρχεία θα τα δείτε στη σελίδα έγκρισης."
-    else:
-        files_line = "Τα αρχεία θα τα δείτε στη σελίδα έγκρισης."
-    html = f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#17201c">
-  <img src="{escape(brand['logo_url'])}" alt="{brand_name}" width="120" style="margin:16px 0">
-  <p>Γεια σας,</p>
-  <p>Η εργασία <strong>«{name}»</strong> είναι έτοιμη για την έγκρισή σας. {files_line}</p>
-  <p style="margin:28px 0">
-    <a href="{url}" style="background:#1f6f4a;color:#ffffff;text-decoration:none;padding:14px 26px;border-radius:8px;font-weight:bold;display:inline-block">Δείτε και εγκρίνετε</a>
-  </p>
-  <p>Στη σελίδα που θα ανοίξει μπορείτε να πατήσετε <strong>Έγκριση</strong> ή <strong>Ζητώ αλλαγές</strong> και να μας γράψετε τι θέλετε να αλλάξει.</p>
-  <p style="color:#5a6862;font-size:13px">Your approval is needed: open the link to approve or request changes.</p>
-  <p>Ευχαριστούμε,<br>{brand_name}</p>
+def email_shell(brand, language, body_html):
+    t = texts(language)
+    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#17201c">
+  <img src="{escape(brand['logo_url'])}" alt="{escape(brand['name'])}" width="120" style="margin:16px 0">
+  <p>{t['greeting']}</p>
+  {body_html}
+  <p>{t['thanks']}<br>{escape(brand['name'])}</p>
 </div>"""
-    text = (
-        f"Γεια σας,\n\nΗ εργασία «{issue.name}» είναι έτοιμη για την έγκρισή σας.\n\n"
-        f"Δείτε και εγκρίνετε: {url}\n\nΕυχαριστούμε,\n{brand['name']}"
+
+
+def email_button(url, label):
+    return (
+        f'<p style="margin:28px 0"><a href="{url}" style="background:#1f6f4a;color:#ffffff;text-decoration:none;'
+        f'padding:14px 26px;border-radius:8px;font-weight:bold;display:inline-block">{label}</a></p>'
     )
+
+
+def render_request_email(issue, url, attached_names, other_count, language, post_count=0):
+    brand = get_brand()
+    t = texts(language)
+    name = escape(issue.name)
+    if attached_names:
+        files_line = t["email_files_attached"].format(files=escape(", ".join(attached_names)))
+        if other_count:
+            files_line += t["email_files_more"].format(count=other_count)
+    else:
+        files_line = t["email_files_page"]
+    intro = (
+        t["email_intro_batch"].format(name=name, count=post_count) if post_count else t["email_intro"].format(name=name)
+    )
+    howto = t["email_howto_batch"] if post_count else t["email_howto"]
+    body = (
+        f"<p>{intro} {files_line}</p>{email_button(url, t['email_button'])}<p>{howto}</p>"
+        f'<p style="color:#5a6862;font-size:13px">{t["email_link_note"]}</p>'
+    )
+    html = email_shell(brand, language, body)
+    text = f"{issue.name}\n\n{url}\n\n{brand['name']}"
     return html, text
+
+
+def collect_email_files(issues):
+    """Attach proof files from these items, up to MAX_ATTACHMENTS / MAX_ATTACHMENT_BYTES."""
+    storage = S3Storage()
+    files, names, total, other = [], [], 0, 0
+    for issue in issues:
+        for asset in proof_files(issue):
+            size = int(asset.size or asset.attributes.get("size") or 0)
+            file_name = asset.attributes.get("name") or "file"
+            if len(files) < MAX_ATTACHMENTS and total + size <= MAX_ATTACHMENT_BYTES:
+                body = storage.s3_client.get_object(Bucket=storage.aws_storage_bucket_name, Key=asset.asset.name)
+                files.append((file_name, body["Body"].read(), asset.attributes.get("type") or "application/octet-stream"))
+                names.append(file_name)
+                total += size
+            else:
+                other += 1
+    return files, names, other
 
 
 @shared_task
@@ -145,21 +176,14 @@ def send_approval_request(issue_id, state_id, actor_id):
             issue=issue, state_id=state_id, recipient_email=email, requested_by_id=actor_id
         )
 
-        storage = S3Storage()
-        files, attached_names, total, other_count = [], [], 0, 0
-        for asset in proof_files(issue):
-            size = int(asset.size or asset.attributes.get("size") or 0)
-            file_name = asset.attributes.get("name") or "file"
-            if len(files) < MAX_ATTACHMENTS and total + size <= MAX_ATTACHMENT_BYTES:
-                body = storage.s3_client.get_object(Bucket=storage.aws_storage_bucket_name, Key=asset.asset.name)
-                files.append((file_name, body["Body"].read(), asset.attributes.get("type") or "application/octet-stream"))
-                attached_names.append(file_name)
-                total += size
-            else:
-                other_count += 1
-
-        html, text = render_request_email(issue, approval_url(approval), attached_names, other_count)
-        delivered_to = send_client_email(email, f"Έγκριση: {issue.name} – {get_brand()['name']}", html, text, files)
+        language = client_language(issue)
+        posts = batch_posts(issue)
+        files, attached_names, other_count = collect_email_files(posts or [issue])
+        html, text = render_request_email(
+            issue, approval_url(approval), attached_names, other_count, language, post_count=len(posts)
+        )
+        subject = texts(language)["email_subject"].format(name=issue.name, brand=get_brand()["name"])
+        delivered_to = send_client_email(email, subject, html, text, files)
 
         approval.sent_at = timezone.now()
         approval.save(update_fields=["sent_at"])

@@ -18,6 +18,7 @@ from django.utils import timezone
 from plane.db.models import ApprovalRequest, Issue, IssueActivity, IssueAssignee
 from plane.license.utils.gam_brand import get_brand
 from plane.utils.exception_logger import log_exception
+from plane.utils.gam_client_texts import client_language, texts
 from plane.utils.gam_worktime import TZ, is_working_time, working_days_between
 
 APPROVAL_REMINDER_AFTER_DAYS = 3
@@ -27,7 +28,13 @@ STUCK_AFTER_DAYS = 5
 
 @shared_task
 def send_approval_reminders():
-    from plane.bgtasks.gam_approval_task import add_comment, approval_url, send_client_email
+    from plane.bgtasks.gam_approval_task import (
+        add_comment,
+        approval_url,
+        email_button,
+        email_shell,
+        send_client_email,
+    )
 
     now = timezone.now()
     if not is_working_time(now):
@@ -45,19 +52,22 @@ def send_approval_reminders():
             last = approval.last_reminder_at or approval.sent_at
             if working_days_between(last, now) < APPROVAL_REMINDER_AFTER_DAYS:
                 continue
+            # A new link for every email: older links stop working
+            approval.token_version += 1
+            approval.save(update_fields=["token_version"])
             url = approval_url(approval)
-            html = f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#17201c">
-  <img src="{escape(brand['logo_url'])}" alt="{escape(brand['name'])}" width="120" style="margin:16px 0">
-  <p>Γεια σας,</p>
-  <p>Σας υπενθυμίζουμε ότι η εργασία <strong>«{escape(issue.name)}»</strong> περιμένει την έγκρισή σας.</p>
-  <p style="margin:28px 0">
-    <a href="{url}" style="background:#1f6f4a;color:#ffffff;text-decoration:none;padding:14px 26px;border-radius:8px;font-weight:bold;display:inline-block">Δείτε και εγκρίνετε</a>
-  </p>
-  <p style="color:#5a6862;font-size:13px">Reminder: your approval is still needed.</p>
-  <p>Ευχαριστούμε,<br>{escape(brand['name'])}</p>
-</div>"""
-            text = f"Υπενθύμιση: η εργασία «{issue.name}» περιμένει την έγκρισή σας.\n\n{url}\n\n{brand['name']}"
-            send_client_email(approval.recipient_email, f"Υπενθύμιση έγκρισης: {issue.name} – {brand['name']}", html, text)
+            language = client_language(issue)
+            t = texts(language)
+            body = (
+                f"<p>{t['reminder_intro'].format(name=escape(issue.name))}</p>"
+                f"{email_button(url, t['email_button'])}"
+                f'<p style="color:#5a6862;font-size:13px">{t["email_link_note"]}</p>'
+            )
+            html = email_shell(brand, language, body)
+            text = f"{issue.name}\n\n{url}\n\n{brand['name']}"
+            send_client_email(
+                approval.recipient_email, t["reminder_subject"].format(name=issue.name, brand=brand["name"]), html, text
+            )
             approval.reminder_count += 1
             approval.last_reminder_at = now
             approval.save(update_fields=["reminder_count", "last_reminder_at"])

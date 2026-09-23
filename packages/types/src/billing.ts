@@ -8,6 +8,9 @@
 
 export type TCustomerBillingType = "retainer" | "per_job";
 
+// GAM: language of everything the client receives
+export type TCustomerLanguage = "el" | "en";
+
 export interface IServiceTemplateItem {
   id: string;
   service_id: string;
@@ -37,6 +40,7 @@ export interface ICustomer {
   name: string;
   contact_email: string;
   billing_type: TCustomerBillingType;
+  language: TCustomerLanguage;
   is_active: boolean;
   rates: ICustomerServiceRate[];
 }

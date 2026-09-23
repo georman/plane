@@ -346,6 +346,7 @@ CELERY_IMPORTS = (
     "plane.bgtasks.gam_approval_task",
     "plane.bgtasks.gam_sla_task",
     "plane.bgtasks.gam_reminder_task",
+    "plane.bgtasks.gam_billing_task",
     "plane.license.bgtasks.telemetry_metrics",
     # management tasks
     "plane.bgtasks.dummy_data_task",

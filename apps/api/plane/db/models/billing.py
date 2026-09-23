@@ -50,6 +50,9 @@ class Customer(BaseModel):
     billing_type = models.CharField(
         max_length=20, choices=BILLING_TYPE_CHOICES, default="per_job"
     )
+    # Language of everything the client receives (emails, approval page, billing PDF)
+    LANGUAGE_CHOICES = (("el", "Ελληνικά"), ("en", "English"))
+    language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default="el")
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -134,3 +137,32 @@ class ServiceTemplateItem(BaseModel):
 
     def __str__(self):
         return f"{self.service.name}: {self.name}"
+
+
+class BillingStatement(BaseModel):
+    """A customer's monthly statement. Drafts are emailed to GAM for review and
+    only reach the client after someone presses "Approve & send"."""
+
+    STATUS_CHOICES = (("draft", "Draft, waiting for review"), ("sent", "Sent to client"))
+
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="statements")
+    period = models.DateField(help_text="First day of the billed month")
+    lines = models.JSONField(default=list)
+    deliverables = models.JSONField(default=list)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    language = models.CharField(max_length=5, default="el")
+    pdf_key = models.CharField(max_length=500, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
+    token_version = models.PositiveIntegerField(default=1)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    sent_to = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        db_table = "gam_billing_statements"
+        verbose_name = "Billing Statement"
+        verbose_name_plural = "Billing Statements"
+        unique_together = ("customer", "period")
+        ordering = ("-period", "customer__name")
+
+    def __str__(self):
+        return f"{self.customer.name} {self.period:%Y-%m}: {self.total}"

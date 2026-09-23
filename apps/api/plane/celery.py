@@ -70,6 +70,10 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.gam_reminder_task.send_approval_reminders",
         "schedule": crontab(minute=15),  # hourly; only acts during working hours
     },
+    "gam-monthly-billing": {
+        "task": "plane.bgtasks.gam_billing_task.generate_monthly_statements",
+        "schedule": crontab(day_of_month=1, hour=6, minute=0),  # drafts to GAM for review
+    },
     "gam-daily-digest": {
         "task": "plane.bgtasks.gam_reminder_task.send_daily_digest",
         "schedule": crontab(hour=5, minute=30),  # 08:30 Athens summer / 07:30 winter
