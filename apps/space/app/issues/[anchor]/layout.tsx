@@ -18,9 +18,10 @@ import { PageNotFound } from "@/components/ui/not-found";
 import { usePublish, usePublishList } from "@/hooks/store/publish";
 import { useIssueFilter } from "@/hooks/store/use-issue-filter";
 import type { Route } from "./+types/layout";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
-const DEFAULT_TITLE = "Plane";
-const DEFAULT_DESCRIPTION = "Made with Plane, an AI-powered work management platform with publishing capabilities.";
+const DEFAULT_TITLE = `${brandName()}`;
+const DEFAULT_DESCRIPTION = `Made with ${brandName()}, an AI-powered work management platform with publishing capabilities.`;
 
 interface IssueMetadata {
   name?: string;

@@ -36,6 +36,7 @@ from plane.settings.redis import redis_instance
 from plane.utils.exception_logger import log_exception
 from plane.utils.issue_relation_mapper import get_inverse_relation
 from plane.utils.uuid import is_valid_uuid
+from plane.license.utils.gam_brand import get_brand  # GAM addition: white label
 
 
 def extract_ids(data: dict | None, primary_key: str, fallback_key: str) -> set[str]:
@@ -503,7 +504,7 @@ def track_archive_at(
             )
         else:
             if requested_data.get("automation"):
-                comment = "Plane has archived the issue"
+                comment = f"{get_brand()['name']} has archived the issue"
                 new_value = "archive"
             else:
                 comment = "Actor has archived the issue"
@@ -546,7 +547,7 @@ def track_closed_to(
                 field="state",
                 project_id=project_id,
                 workspace_id=workspace_id,
-                comment="Plane updated the state to ",
+                comment=f"{get_brand()['name']} updated the state to ",
                 old_identifier=None,
                 new_identifier=updated_state.id,
                 epoch=epoch,
@@ -1583,11 +1584,13 @@ def issue_activity(
         # Save all the values to database
         issue_activities_created = IssueActivity.objects.bulk_create(issue_activities)
 
-        # GAM addition: moving an item into an approval state emails the client
+        # GAM addition: approval emails to clients and first-response SLAs
         try:
             from plane.bgtasks.gam_approval_task import queue_approval_requests
+            from plane.bgtasks.gam_sla_task import handle_activities as update_slas
 
             queue_approval_requests(issue_activities_created)
+            update_slas(issue_activities_created)
         except Exception as e:
             log_exception(e)
 

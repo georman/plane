@@ -14,6 +14,7 @@ import type { TControllerInputFormField } from "@/components/common/controller-i
 import { ControllerInput } from "@/components/common/controller-input";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { brandHelpUrl } from "@plane/i18n"; // GAM addition: white label
 
 type IInstanceAIForm = {
   config: IFormattedInstanceConfiguration;
@@ -131,7 +132,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
           <Lightbulb className="size-4" />
           <div>
             If you have a preferred AI models vendor, please get in{" "}
-            <a className="font-medium underline" href="https://plane.so/contact">
+            <a className="font-medium underline" href={`${brandHelpUrl()}`}>
               touch with us.
             </a>
           </div>

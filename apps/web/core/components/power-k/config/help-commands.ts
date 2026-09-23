@@ -9,6 +9,7 @@ import { FileText, GithubIcon, MessageSquare, Rocket } from "lucide-react";
 import type { TPowerKCommandConfig } from "@/components/power-k/core/types";
 // hooks
 import { usePowerK } from "@/hooks/store/use-power-k";
+import { brandHelpUrl } from "@plane/i18n"; // GAM addition: white label
 
 /**
  * Help commands - Help related commands
@@ -37,7 +38,7 @@ export const usePowerKHelpCommands = (): TPowerKCommandConfig[] => {
       i18n_title: "power_k.help_actions.open_plane_documentation",
       icon: FileText,
       action: () => {
-        window.open("https://docs.plane.so/", "_blank", "noopener,noreferrer");
+        window.open(`${brandHelpUrl()}`, "_blank", "noopener,noreferrer");
       },
       isEnabled: () => true,
       isVisible: () => true,
@@ -50,7 +51,7 @@ export const usePowerKHelpCommands = (): TPowerKCommandConfig[] => {
       i18n_title: "power_k.help_actions.join_forum",
       icon: MessageSquare,
       action: () => {
-        window.open("https://forum.plane.so", "_blank", "noopener,noreferrer");
+        window.open(`${brandHelpUrl()}`, "_blank", "noopener,noreferrer");
       },
       isEnabled: () => true,
       isVisible: () => true,

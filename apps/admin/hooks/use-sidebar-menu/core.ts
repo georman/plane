@@ -4,13 +4,14 @@
  * See the LICENSE file for details.
  */
 
-import { Image, BrainCog, Cog, Mail } from "lucide-react";
+import { Image, BrainCog, Cog, Mail, Palette } from "lucide-react";
 // plane imports
 import { LockIcon, WorkspaceIcon } from "@plane/propel/icons";
 // types
 import type { TSidebarMenuItem } from "./types";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
-export type TCoreSidebarMenuKey = "general" | "email" | "workspace" | "authentication" | "ai" | "image";
+export type TCoreSidebarMenuKey = "general" | "branding" | "email" | "workspace" | "authentication" | "ai" | "image";
 
 export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem> = {
   general: {
@@ -18,6 +19,13 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
     name: "General",
     description: "Identify your instances and get key details.",
     href: `/general/`,
+  },
+  // GAM addition: white-label brand settings
+  branding: {
+    Icon: Palette,
+    name: "Branding",
+    description: "Name, support email, website and logo.",
+    href: `/branding/`,
   },
   email: {
     Icon: Mail,
@@ -45,7 +53,7 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
   },
   image: {
     Icon: Image,
-    name: "Images in Plane",
+    name: `Images in ${brandName()}`,
     description: "Allow third-party image libraries.",
     href: `/image/`,
   },

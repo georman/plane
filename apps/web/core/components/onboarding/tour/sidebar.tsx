@@ -9,6 +9,7 @@ import { CycleIcon, ModuleIcon, PageIcon, ViewsIcon, WorkItemsIcon } from "@plan
 import type { ISvgIcons } from "@plane/propel/icons";
 // types
 import type { TTourSteps } from "./root";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 const sidebarOptions: {
   key: TTourSteps;
@@ -53,7 +54,7 @@ export function TourSidebar({ step, setStep }: Props) {
       <h3 className="text-16 font-medium">
         Let{"'"}s get started!
         <br />
-        Get more out of Plane.
+        Get more out of {brandName()}.
       </h3>
       <div className="mt-8 space-y-5">
         {sidebarOptions.map((option) => (

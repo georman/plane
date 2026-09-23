@@ -17,13 +17,15 @@ from django.views.decorators.csrf import csrf_exempt
 from plane.bgtasks.gam_approval_task import add_comment, proof_files
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.db.models import ApprovalRequest
+from plane.license.utils.gam_brand import get_brand
 from plane.settings.storage import S3Storage
 from plane.utils.gam_approval import corrections_state, next_state_after, read_token
+from plane.utils.gam_worktime import TZ
 
 PAGE = """<!doctype html>
 <html lang="el"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title} – GAM</title>
+<title>{title} – {brand_name}</title>
 <style>
   body {{ margin:0; background:#f5f7f6; color:#17201c; font:16px/1.55 Arial, Helvetica, sans-serif; }}
   main {{ max-width:680px; margin:0 auto; padding:24px 16px 48px; }}
@@ -40,13 +42,17 @@ PAGE = """<!doctype html>
   .ok {{ color:#1f6f4a; }} .warn {{ color:#b42318; }}
 </style></head>
 <body><main>
-<img src="https://project.gam.gr/assets/gam-logo.png" alt="GAM" width="110">
+<img src="{logo_url}" alt="{brand_name}" width="110">
 {body}
 </main></body></html>"""
 
 
 def page(title, body, status=200):
-    return HttpResponse(PAGE.format(title=escape(title), body=body), status=status)
+    brand = get_brand()
+    return HttpResponse(
+        PAGE.format(title=escape(title), body=body, brand_name=escape(brand["name"]), logo_url=escape(brand["logo_url"])),
+        status=status,
+    )
 
 
 def message_page(title, text, css="muted"):
@@ -105,7 +111,7 @@ def client_approval(request, token):
         return message_page(
             "Έχετε ήδη απαντήσει",
             f"Για την εργασία «{escape(issue.name)}» {answer} στις "
-            f"{timezone.localtime(approval.responded_at):%d/%m/%Y %H:%M}. Ευχαριστούμε!",
+            f"{approval.responded_at.astimezone(TZ):%d/%m/%Y %H:%M}. Ευχαριστούμε!",
         )
     if issue.state_id != approval.state_id or issue.deleted_at:
         return message_page(

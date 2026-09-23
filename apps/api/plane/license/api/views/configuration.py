@@ -27,6 +27,7 @@ from plane.license.api.serializers import InstanceConfigurationSerializer
 from plane.license.utils.encryption import encrypt_data
 from plane.utils.cache import cache_response, invalidate_cache
 from plane.license.utils.instance_value import get_email_configuration
+from plane.license.utils.gam_brand import get_brand  # GAM addition: white label
 
 
 class InstanceConfigurationEndpoint(BaseAPIView):
@@ -114,8 +115,8 @@ class EmailCredentialCheckEndpoint(BaseAPIView):
             use_ssl=EMAIL_USE_SSL == "1",
         )
         # Prepare email details
-        subject = "Email Notification from Plane"
-        message = "This is a sample email notification sent from Plane application."
+        subject = f"Email Notification from {get_brand()['name']}"
+        message = f"This is a sample email notification sent from {get_brand()['name']}."
         # Send the email
         try:
             msg = EmailMultiAlternatives(

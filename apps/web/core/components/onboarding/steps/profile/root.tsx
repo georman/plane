@@ -26,6 +26,7 @@ import { AuthService } from "@/services/auth.service";
 import { CommonOnboardingHeader } from "../common";
 import { MarketingConsent } from "./consent";
 import { SetPasswordRoot } from "./set-password";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type Props = {
   handleStepChange: (step: EOnboardingSteps, skipInvites?: boolean) => void;
@@ -147,7 +148,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       {/* Header */}
-      <CommonOnboardingHeader title="Create your profile." description="This is how you will appear in Plane." />
+      <CommonOnboardingHeader title="Create your profile." description={`This is how you will appear in ${brandName()}.`} />
 
       {/* Profile Picture Section */}
       <Controller

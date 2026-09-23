@@ -5,8 +5,8 @@
  */
 
 import { Link } from "react-router";
+import { brandSupportEmail } from "@plane/i18n"; // GAM addition: white label
 // helpers
-import { SUPPORT_EMAIL } from "@plane/constants";
 
 export enum EPageTypes {
   INIT = "INIT",
@@ -167,7 +167,7 @@ const errorCodeMessages: {
   },
   [EAuthenticationErrorCodes.USER_ACCOUNT_DEACTIVATED]: {
     title: `User account deactivated`,
-    message: () => `User account deactivated. Please contact ${SUPPORT_EMAIL ? SUPPORT_EMAIL : "administrator"}.`,
+    message: () => `User account deactivated. Please contact ${brandSupportEmail() || "administrator"}.`,
   },
 
   [EAuthenticationErrorCodes.USER_DOES_NOT_EXIST]: {

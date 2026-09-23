@@ -14,6 +14,7 @@ import { useInstance } from "@/hooks/store";
 // components
 import type { Route } from "./+types/page";
 import { InstanceSignInForm } from "./sign-in-form";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 function HomePage() {
   // store hooks
@@ -46,5 +47,5 @@ export default observer(HomePage);
 
 export const meta: Route.MetaFunction = () => [
   { title: "Admin – Instance Setup & Sign-In" },
-  { name: "description", content: "Configure your Plane instance or sign in to the admin portal." },
+  { name: "description", content: `Configure your ${brandName()} instance or sign in to the admin portal.` },
 ];

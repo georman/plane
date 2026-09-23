@@ -23,6 +23,7 @@ from plane.license.utils.instance_value import get_configuration_value
 from plane.utils.cache import cache_response, invalidate_cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
+from plane.license.utils.gam_brand import get_brand
 
 
 class InstanceEndpoint(BaseAPIView):
@@ -165,6 +166,9 @@ class InstanceEndpoint(BaseAPIView):
 
         data["instance_changelog_url"] = settings.INSTANCE_CHANGELOG_URL
         data["is_self_managed"] = settings.IS_SELF_MANAGED
+
+        # GAM addition: white-label brand (name, support email, website, logo)
+        data["brand"] = get_brand()
 
         instance_data = serializer.data
         instance_data["workspaces_exist"] = Workspace.objects.count() >= 1

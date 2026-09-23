@@ -28,6 +28,7 @@ import useIntegrationPopup from "@/hooks/use-integration-popup";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // services
 import { IntegrationService } from "@/services/integrations";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type Props = {
   integration: IAppIntegration;
@@ -37,12 +38,12 @@ const integrationDetails: { [key: string]: any } = {
   github: {
     logo: GithubLogo,
     installed: "Activate GitHub on individual projects to sync with specific repositories.",
-    notInstalled: "Connect with GitHub with your Plane workspace to sync project work items.",
+    notInstalled: `Connect with GitHub with your ${brandName()} workspace to sync project work items.`,
   },
   slack: {
     logo: SlackLogo,
     installed: "Activate Slack on individual projects to sync with specific channels.",
-    notInstalled: "Connect with Slack with your Plane workspace to sync project work items.",
+    notInstalled: `Connect with Slack with your ${brandName()} workspace to sync project work items.`,
   },
 };
 

@@ -23,6 +23,7 @@ import { useAuthenticationModes } from "@/hooks/oauth";
 import { useInstance } from "@/hooks/store";
 // types
 import type { Route } from "./+types/page";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(_props: Route.ComponentProps) {
   // theme
@@ -171,6 +172,6 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Authentication Settings - Plane Web" }];
+export const meta: Route.MetaFunction = () => [{ title: `Authentication Settings - ${brandName()} Web` }];
 
 export default InstanceAuthenticationPage;

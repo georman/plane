@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { setBrand } from "@plane/i18n";
 import { observable, action, makeObservable, runInAction } from "mobx";
 // types
 import type { IInstance, IInstanceConfig } from "@plane/types";
@@ -63,6 +64,8 @@ export class InstanceStore implements IInstanceStore {
         this.isLoading = false;
         this.instance = instanceInfo.instance;
         this.config = instanceInfo.config;
+        // GAM addition: white-label brand from the admin panel
+        setBrand(instanceInfo.config?.brand);
       });
     } catch (error) {
       runInAction(() => {

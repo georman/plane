@@ -61,6 +61,14 @@ export interface IInstanceConfig {
   has_llm_configured: boolean;
   file_size_limit: number | undefined;
   is_smtp_configured: boolean;
+  // GAM addition: white-label brand
+  brand?: {
+    name: string;
+    support_email: string;
+    website: string;
+    logo_url: string;
+    has_custom_logo?: boolean;
+  };
   app_base_url: string | undefined;
   space_base_url: string | undefined;
   admin_base_url: string | undefined;
@@ -80,7 +88,11 @@ export interface IInstanceAdmin {
   user_detail: IUserLite;
 }
 
+// GAM addition: white-label brand settings
+export type TInstanceBrandConfigurationKeys = "GAM_BRAND_NAME" | "GAM_SUPPORT_EMAIL" | "GAM_BRAND_WEBSITE";
+
 export type TInstanceConfigurationKeys =
+  | TInstanceBrandConfigurationKeys
   | TInstanceAIConfigurationKeys
   | TInstanceEmailConfigurationKeys
   | TInstanceImageConfigurationKeys

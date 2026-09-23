@@ -7,6 +7,7 @@
 import Link from "next/link";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type TIssueUser = {
   activityId: string;
@@ -27,7 +28,7 @@ export function IssueCreatorDisplay(props: TIssueUser) {
   return (
     <>
       {customUserName ? (
-        <span className="font-medium text-primary">{customUserName || "Plane"}</span>
+        <span className="font-medium text-primary">{customUserName || `${brandName()}`}</span>
       ) : (
         <Link
           href={`/${activity?.workspace_detail?.slug}/profile/${activity?.actor_detail?.id}`}

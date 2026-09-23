@@ -23,9 +23,10 @@ import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
-const APP_TITLE = "Plane Publish | Make your Plane boards public with one-click";
-const APP_DESCRIPTION = "Plane Publish is a customer feedback management tool built on top of plane.so";
+const APP_TITLE = `${brandName()} Publish | Make your ${brandName()} boards public with one-click`;
+const APP_DESCRIPTION = `${brandName()} Publish lets you share boards publicly`;
 
 export const links: Route.LinksFunction = () => [
   { rel: "apple-touch-icon", sizes: "180x180", href: appleTouchIcon },
@@ -64,6 +65,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div id="editor-portal" />
         <AppProviders>{children}</AppProviders>
         <Scripts />
+        {/* GAM white label: runtime safety net, served by the web container */}
+        <script src="/gam-branding.js" defer />
       </body>
     </html>
   );
@@ -74,7 +77,7 @@ export const meta: Route.MetaFunction = () => [
   { name: "description", content: APP_DESCRIPTION },
   { property: "og:title", content: APP_TITLE },
   { property: "og:description", content: APP_DESCRIPTION },
-  { property: "og:url", content: "https://sites.plane.so/" },
+  { property: "og:url", content: "/" },
   {
     name: "keywords",
     content:

@@ -23,6 +23,7 @@ from plane.db.models import (
     IssueCustomerService,
     State,
 )
+from plane.license.utils.gam_brand import get_brand
 from plane.license.utils.instance_value import get_email_configuration
 from plane.settings.storage import S3Storage
 from plane.utils.exception_logger import log_exception
@@ -72,6 +73,8 @@ def send_email(to, subject, html, text, files=()):
 
 def render_request_email(issue, url, attached_names, other_count):
     name = escape(issue.name)
+    brand = get_brand()
+    brand_name = escape(brand["name"])
     if attached_names:
         files_line = "Θα βρείτε τα αρχεία συνημμένα: " + escape(", ".join(attached_names)) + "."
         if other_count:
@@ -79,7 +82,7 @@ def render_request_email(issue, url, attached_names, other_count):
     else:
         files_line = "Τα αρχεία θα τα δείτε στη σελίδα έγκρισης."
     html = f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#17201c">
-  <img src="https://project.gam.gr/assets/gam-logo.png" alt="GAM" width="120" style="margin:16px 0">
+  <img src="{escape(brand['logo_url'])}" alt="{brand_name}" width="120" style="margin:16px 0">
   <p>Γεια σας,</p>
   <p>Η εργασία <strong>«{name}»</strong> είναι έτοιμη για την έγκρισή σας. {files_line}</p>
   <p style="margin:28px 0">
@@ -87,11 +90,11 @@ def render_request_email(issue, url, attached_names, other_count):
   </p>
   <p>Στη σελίδα που θα ανοίξει μπορείτε να πατήσετε <strong>Έγκριση</strong> ή <strong>Ζητώ αλλαγές</strong> και να μας γράψετε τι θέλετε να αλλάξει.</p>
   <p style="color:#5a6862;font-size:13px">Your approval is needed: open the link to approve or request changes.</p>
-  <p>Ευχαριστούμε,<br>GAM</p>
+  <p>Ευχαριστούμε,<br>{brand_name}</p>
 </div>"""
     text = (
         f"Γεια σας,\n\nΗ εργασία «{issue.name}» είναι έτοιμη για την έγκρισή σας.\n\n"
-        f"Δείτε και εγκρίνετε: {url}\n\nΕυχαριστούμε,\nGAM"
+        f"Δείτε και εγκρίνετε: {url}\n\nΕυχαριστούμε,\n{brand['name']}"
     )
     return html, text
 
@@ -141,7 +144,7 @@ def send_approval_request(issue_id, state_id, actor_id):
                 other_count += 1
 
         html, text = render_request_email(issue, approval_url(approval), attached_names, other_count)
-        send_email(email, f"Έγκριση: {issue.name} – GAM", html, text, files)
+        send_email(email, f"Έγκριση: {issue.name} – {get_brand()['name']}", html, text, files)
 
         approval.sent_at = timezone.now()
         approval.save(update_fields=["sent_at"])

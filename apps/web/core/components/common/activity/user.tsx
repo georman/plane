@@ -11,6 +11,7 @@ import type { TWorkspaceBaseActivity } from "@plane/types";
 // store hooks
 import { useMember } from "@/hooks/store/use-member";
 import { useWorkspace } from "@/hooks/store/use-workspace";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type TUser = {
   activity: TWorkspaceBaseActivity;
@@ -29,7 +30,7 @@ export const User = observer(function User(props: TUser) {
   return (
     <>
       {customUserName || actorDetail?.display_name?.includes("-intake") ? (
-        <span className="font-medium text-primary">{customUserName || "Plane"}</span>
+        <span className="font-medium text-primary">{customUserName || `${brandName()}`}</span>
       ) : (
         <Link
           href={`/${workspaceDetail?.slug}/profile/${actorDetail?.id}`}

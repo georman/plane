@@ -6,9 +6,10 @@
 
 import { Outlet } from "react-router";
 import type { Route } from "./+types/layout";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 export const meta: Route.MetaFunction = () => [
-  { title: "Sign up - Plane" },
+  { title: `Sign up - ${brandName()}` },
   { name: "robots", content: "index, nofollow" },
 ];
 

@@ -5,6 +5,7 @@
  */
 
 import { EmptyStateDetailed } from "@plane/propel/empty-state";
+import { brandHelpUrl } from "@plane/i18n"; // GAM addition: white label
 
 type TProductUpdatesFallbackProps = {
   description: string;
@@ -16,8 +17,8 @@ export function ProductUpdatesFallback(props: TProductUpdatesFallbackProps) {
   // derived values
   const changelogUrl =
     variant === "cloud"
-      ? "https://plane.so/changelog?category=cloud"
-      : "https://plane.so/changelog?category=self-hosted";
+      ? `${brandHelpUrl()}`
+      : `${brandHelpUrl()}`;
 
   return (
     <div className="py-8">

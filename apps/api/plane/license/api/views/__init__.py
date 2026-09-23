@@ -26,3 +26,6 @@ from .workspace import (
     InstanceWorkSpaceAvailabilityCheckEndpoint,
     InstanceWorkSpaceEndpoint,
 )
+
+# GAM addition: brand logo
+from .gam_brand import BrandLogoEndpoint

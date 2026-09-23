@@ -7,7 +7,8 @@
 import Link from "next/link";
 // plane packages
 import type { TAdminAuthErrorInfo } from "@plane/constants";
-import { SUPPORT_EMAIL, EAdminAuthErrorCodes } from "@plane/constants";
+import { EAdminAuthErrorCodes } from "@plane/constants";
+import { brandSupportEmail } from "@plane/i18n"; // GAM addition: white label
 
 export enum EErrorAlertType {
   BANNER_ALERT = "BANNER_ALERT",
@@ -71,7 +72,7 @@ const errorCodeMessages: {
   },
   [EAdminAuthErrorCodes.ADMIN_USER_DEACTIVATED]: {
     title: `User account deactivated`,
-    message: () => `User account deactivated. Please contact ${SUPPORT_EMAIL ? SUPPORT_EMAIL : "administrator"}.`,
+    message: () => `User account deactivated. Please contact ${brandSupportEmail() || "administrator"}.`,
   },
 };
 

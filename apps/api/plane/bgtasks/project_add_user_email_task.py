@@ -19,6 +19,7 @@ from plane.utils.email import generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
 from plane.db.models import ProjectMember
 from plane.db.models import User
+from plane.license.utils.gam_brand import get_brand  # GAM addition: white label
 
 
 @shared_task
@@ -55,7 +56,7 @@ def project_add_user_email(current_site, project_member_id, invitor_id):
         ) = get_email_configuration()
 
         # Set the subject
-        subject = "You have been invited to a Plane project"
+        subject = f"You have been invited to a {get_brand()['name']} project"
 
         # Render the email template
         html_content = render_to_string("emails/notifications/project_addition.html", context)

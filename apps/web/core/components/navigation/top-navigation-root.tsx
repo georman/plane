@@ -9,7 +9,7 @@ import { observer } from "mobx-react";
 import { useParams, usePathname } from "next/navigation";
 import { Globe } from "lucide-react";
 import { cn } from "@plane/utils";
-import { SUPPORTED_LANGUAGES, useTranslation } from "@plane/i18n";
+import { brandName, SUPPORTED_LANGUAGES, useTranslation } from "@plane/i18n";
 import { CustomSelect } from "@plane/ui";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { TopNavPowerK } from "@/components/navigation";

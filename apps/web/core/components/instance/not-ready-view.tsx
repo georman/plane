@@ -12,6 +12,7 @@ import GradientBgLogo from "@/app/assets/auth/gradient-bg-logo.webp?url";
 import DefaultLayout from "@/layouts/default-layout";
 import { PlaneLockup } from "@plane/propel/icons";
 import { Button } from "@plane/propel/button";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 export function InstanceNotReady() {
   return (
@@ -37,9 +38,9 @@ export function InstanceNotReady() {
           </div>
           <div className="flex h-full w-full flex-col items-center justify-center gap-7">
             <div className="flex flex-col items-center gap-11">
-              <img src={GradientLogo} className="h-24 w-40 object-contain" alt="Plane Logo" />
+              <img src={GradientLogo} className="h-24 w-40 object-contain" alt={`${brandName()} Logo`} />
               <div className="flex max-w-124 flex-col items-center gap-3">
-                <h1 className="text-h2-semibold text-primary">Welcome to Plane</h1>
+                <h1 className="text-h2-semibold text-primary">Welcome to {brandName()}</h1>
                 <p className="text-center text-body-md-regular text-secondary">
                   Set up your instance and create your first workspace to begin managing projects and work.
                 </p>

@@ -141,4 +141,23 @@ export class InstanceService extends APIService {
         throw error?.response?.data;
       });
   }
+
+  // GAM addition: white-label brand logo
+  async uploadBrandLogo(file: File): Promise<void> {
+    const formData = new FormData();
+    formData.append("logo", file);
+    return this.post("/api/instances/brand-logo/", formData, { headers: { "Content-Type": "multipart/form-data" } })
+      .then(() => undefined)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeBrandLogo(): Promise<void> {
+    return this.delete("/api/instances/brand-logo/")
+      .then(() => undefined)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
 }

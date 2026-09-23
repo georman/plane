@@ -5,6 +5,7 @@
  */
 
 import { CheckIcon } from "@plane/propel/icons";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type Props = {
   isChecked: boolean;
@@ -23,7 +24,7 @@ export function MarketingConsent({ isChecked, handleChange }: Props) {
       >
         {isChecked && <CheckIcon className="h-3 w-3 text-on-color" />}
       </button>
-      <span className="text-13 text-tertiary">I agree to Plane marketing communications</span>
+      <span className="text-13 text-tertiary">I agree to {brandName()} marketing communications</span>
     </div>
   );
 }

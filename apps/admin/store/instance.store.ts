@@ -5,6 +5,7 @@
  */
 
 import { set } from "lodash-es";
+import { setBrand } from "@plane/i18n";
 import { observable, action, computed, makeObservable, runInAction } from "mobx";
 // plane internal packages
 import type { TInstanceStatus } from "@plane/constants";
@@ -112,6 +113,8 @@ export class InstanceStore implements IInstanceStore {
         this.isLoading = false;
         this.instance = instanceInfo.instance;
         this.config = instanceInfo.config;
+        // GAM addition: white-label brand from the admin panel
+        setBrand(instanceInfo.config?.brand);
       });
       return instanceInfo;
     } catch (error) {

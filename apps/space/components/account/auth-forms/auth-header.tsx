@@ -6,6 +6,7 @@
 
 // helpers
 import { EAuthModes } from "@/types/auth";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 type TAuthHeader = {
   authMode: EAuthModes;
@@ -27,7 +28,7 @@ const Titles: TAuthHeaderDetails = {
   },
   [EAuthModes.SIGN_UP]: {
     header: "View, comment, and do more",
-    subHeader: "Sign up or log in to work with Plane work items and Pages.",
+    subHeader: `Sign up or log in to work with ${brandName()} work items and Pages.`,
   },
 };
 

@@ -12,10 +12,19 @@ import { SUPPORTED_LANGUAGES, FALLBACK_LANGUAGE, LANGUAGE_STORAGE_KEY } from "..
 import { NAMESPACES, DEFAULT_NAMESPACE } from "../constants/namespaces";
 
 import type { i18n as I18nInstance } from "i18next";
+import { applyBrand, subscribeToBrand } from "../brand";
 
 export const i18nInstance: I18nInstance = i18n.createInstance();
 
+// GAM addition: every translated string shows the white-label brand instead of "Plane"
+const brandPostProcessor = {
+  type: "postProcessor" as const,
+  name: "gamBrand",
+  process: (value: string) => applyBrand(value),
+};
+
 i18nInstance
+  .use(brandPostProcessor)
   .use(ICU)
   .use(initReactI18next)
   .use(resourcesToBackend((language: string, namespace: string) => import(`../locales/${language}/${namespace}.json`)));
@@ -45,8 +54,14 @@ export const initPromise = i18nInstance
     // intent here so this isn't accidentally flipped.
     returnObjects: false,
     react: { useSuspense: false },
+    postProcess: ["gamBrand"],
   })
   // Eagerly pre-load all namespaces for the initial language so they're cached
   // before any component renders. This prevents the re-render cascade that occurs
   // when react-i18next triggers concurrent async loads for unloaded namespaces.
   .then(() => i18nInstance.loadNamespaces(NAMESPACES));
+
+// GAM addition: re-render translated text if the brand name changes after load
+subscribeToBrand(() => {
+  void i18nInstance.changeLanguage(i18nInstance.language);
+});

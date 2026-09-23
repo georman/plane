@@ -21,3 +21,18 @@ export { setLanguage } from "./core/set-language";
 
 // Constants
 export { FALLBACK_LANGUAGE, SUPPORTED_LANGUAGES, LANGUAGE_STORAGE_KEY } from "./constants/language";
+
+// GAM addition: white-label brand
+export {
+  applyBrand,
+  applyBrandToDocument,
+  brandHelpUrl,
+  brandLogoUrl,
+  brandName,
+  brandSupportEmail,
+  DEFAULT_BRAND,
+  getBrand,
+  setBrand,
+  subscribeToBrand,
+} from "./brand";
+export type { TBrand } from "./brand";

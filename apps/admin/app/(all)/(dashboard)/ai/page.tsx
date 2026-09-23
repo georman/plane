@@ -15,6 +15,7 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceAIForm } from "./form";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentProps) {
   // store
@@ -26,7 +27,7 @@ const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentP
     <PageWrapper
       header={{
         title: "AI features for all your workspaces",
-        description: "Configure your AI API credentials so Plane AI features are turned on for all your workspaces.",
+        description: `Configure your AI API credentials so ${brandName()} AI features are turned on for all your workspaces.`,
       }}
     >
       {formattedConfig ? (

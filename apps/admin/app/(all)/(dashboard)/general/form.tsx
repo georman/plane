@@ -16,6 +16,7 @@ import { Input, ToggleSwitch } from "@plane/ui";
 import { ControllerInput } from "@/components/common/controller-input";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { brandHelpUrl, brandName } from "@plane/i18n"; // GAM addition: white label
 
 export interface IGeneralConfigurationForm {
   instance: IInstance;
@@ -107,12 +108,12 @@ export const GeneralConfigurationForm = observer(function GeneralConfigurationFo
               </div>
             </div>
             <div className="grow">
-              <div className="text-13 leading-5 font-medium text-primary">Let Plane collect anonymous usage data</div>
+              <div className="text-13 leading-5 font-medium text-primary">Let {brandName()} collect anonymous usage data</div>
               <div className="text-11 leading-5 font-regular text-tertiary">
-                No PII is collected.This anonymized data is used to understand how you use Plane and build new features
+                No PII is collected.This anonymized data is used to understand how you use {brandName()} and build new features
                 in line with{" "}
                 <a
-                  href="https://developers.plane.so/self-hosting/telemetry"
+                  href={`${brandHelpUrl()}`}
                   target="_blank"
                   className="text-accent-primary hover:underline"
                   rel="noreferrer"

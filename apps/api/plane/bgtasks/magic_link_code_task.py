@@ -17,6 +17,7 @@ from django.template.loader import render_to_string
 from plane.license.utils.instance_value import get_email_configuration
 from plane.utils.email import generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
+from plane.license.utils.gam_brand import get_brand  # GAM addition: white label
 
 
 @shared_task
@@ -33,7 +34,7 @@ def magic_link(email, key, token):
         ) = get_email_configuration()
 
         # Send the mail
-        subject = f"Your unique Plane login code is {token}"
+        subject = f"Your unique {get_brand()['name']} login code is {token}"
         context = {"code": token, "email": email}
 
         html_content = render_to_string("emails/auth/magic_signin.html", context)

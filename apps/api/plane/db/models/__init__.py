@@ -9,6 +9,7 @@ from .base import BaseModel
 from .billing import Customer, CustomerServiceRate, IssueCustomerService, Service, ServiceTemplateItem
 from .recurrence import IssueRecurrence
 from .approval import ApprovalRequest
+from .sla import IssueSLA
 from .cycle import Cycle, CycleIssue, CycleUserProperties
 from .deploy_board import DeployBoard
 from .impersonation import ImpersonationLog

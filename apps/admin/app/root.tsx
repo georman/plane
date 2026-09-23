@@ -20,8 +20,9 @@ import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
-const APP_TITLE = "Plane | Simple, extensible, open-source project management tool.";
+const APP_TITLE = `${brandName()} | Project management`;
 const APP_DESCRIPTION =
   "Open-source project management tool to manage work items, sprints, and product roadmaps with peace of mind.";
 
@@ -53,6 +54,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <body className="antialiased" suppressHydrationWarning>
         <AppProviders>{children}</AppProviders>
         <Scripts />
+        {/* GAM white label: runtime safety net, served by the web container */}
+        <script src="/gam-branding.js" defer />
       </body>
     </html>
   );
@@ -63,7 +66,7 @@ export const meta: Route.MetaFunction = () => [
   { name: "description", content: APP_DESCRIPTION },
   { property: "og:title", content: APP_TITLE },
   { property: "og:description", content: APP_DESCRIPTION },
-  { property: "og:url", content: "https://plane.so/" },
+  { property: "og:url", content: "/" },
   {
     name: "keywords",
     content:

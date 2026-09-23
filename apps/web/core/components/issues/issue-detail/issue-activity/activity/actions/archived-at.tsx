@@ -11,6 +11,7 @@ import { ArchiveIcon } from "@plane/propel/icons";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
 import { IssueActivityBlockComponent } from "./";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 // ui
 
 type TIssueArchivedAtActivity = { activityId: string; ends: "top" | "bottom" | undefined };
@@ -37,7 +38,7 @@ export const IssueArchivedAtActivity = observer(function IssueArchivedAtActivity
       }
       activityId={activityId}
       ends={ends}
-      customUserName={activity.new_value === "archive" ? "Plane" : undefined}
+      customUserName={activity.new_value === "archive" ? `${brandName()}` : undefined}
     >
       {activity.new_value === "restore" ? "restored the work item" : "archived the work item"}.
     </IssueActivityBlockComponent>

@@ -9,6 +9,7 @@ from django.utils.html import strip_tags
 
 # Module imports
 from plane.license.utils.instance_value import get_email_configuration
+from plane.license.utils.gam_brand import get_brand  # GAM addition: white label
 
 
 class Command(BaseCommand):
@@ -44,7 +45,7 @@ class Command(BaseCommand):
             timeout=30,
         )
         # Prepare email details
-        subject = "Test email from Plane"
+        subject = f"Test email from {get_brand()['name']}"
 
         html_content = render_to_string("emails/test_email.html")
         text_content = strip_tags(html_content)

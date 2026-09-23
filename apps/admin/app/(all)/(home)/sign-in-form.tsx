@@ -20,6 +20,7 @@ import { FormHeader } from "@/components/instance/form-header";
 import { AuthBanner } from "./auth-banner";
 import { AuthHeader } from "./auth-header";
 import { authErrorHandler } from "./auth-helpers";
+import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 // service initialization
 const authService = new AuthService();
@@ -114,7 +115,7 @@ export function InstanceSignInForm() {
       <div className="mt-10 flex w-full flex-grow flex-col items-center justify-center py-6">
         <div className="relative flex w-full max-w-[22.5rem] flex-col gap-6">
           <FormHeader
-            heading="Manage your Plane instance"
+            heading={`Manage your ${brandName()} instance`}
             subHeading="Configure instance-wide settings to secure your instance"
           />
           <form

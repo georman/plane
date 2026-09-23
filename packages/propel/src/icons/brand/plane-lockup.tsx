@@ -8,17 +8,16 @@ import * as React from "react";
 
 import type { ISvgIcons } from "../type";
 
-// Replaced with GAM's own logo (GAM branding, not Plane's). The image is
-// served from /assets/gam-logo.png via a separate docker-compose volume
-// mount on the web container (see /dockerstor/stacks/plane/branding on
-// docker01), not bundled into this build - keep that mount in sync if this
-// path ever changes.
+// GAM white label: the brand logo from the admin panel (God mode > Branding).
+// /api/instances/brand-logo/ serves the uploaded logo, or redirects to the
+// built-in /assets/gam-logo.png (a docker-compose volume mount on the web
+// container, see /dockerstor/stacks/plane/branding) when none is uploaded.
 export function PlaneLockup({ width = "253", height = "53", className }: ISvgIcons) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/assets/gam-logo.png"
-      alt="GAM"
+      src="/api/instances/brand-logo/"
+      alt="Logo"
       width={width}
       height={height}
       className={className}

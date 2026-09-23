@@ -61,6 +61,19 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.gam_recurrence_task.create_due_recurring_items",
         "schedule": crontab(hour=3, minute=0),  # UTC 03:00
     },
+    # GAM addition: SLA checks, approval reminders, morning digest (UTC times)
+    "gam-check-slas": {
+        "task": "plane.bgtasks.gam_sla_task.check_slas",
+        "schedule": crontab(minute="*/5"),
+    },
+    "gam-approval-reminders": {
+        "task": "plane.bgtasks.gam_reminder_task.send_approval_reminders",
+        "schedule": crontab(minute=15),  # hourly; only acts during working hours
+    },
+    "gam-daily-digest": {
+        "task": "plane.bgtasks.gam_reminder_task.send_daily_digest",
+        "schedule": crontab(hour=5, minute=30),  # 08:30 Athens summer / 07:30 winter
+    },
     "check-every-day-to-archive-and-close": {
         "task": "plane.bgtasks.issue_automation_task.archive_and_close_old_issues",
         "schedule": crontab(hour=1, minute=0),  # UTC 01:00
