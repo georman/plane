@@ -3,6 +3,12 @@
 # See the LICENSE file for details.
 
 from .base import BaseSerializer
+from .billing import (
+    CustomerSerializer,
+    CustomerServiceRateSerializer,
+    IssueCustomerServiceSerializer,
+    ServiceSerializer,
+)
 from .user import (
     UserSerializer,
     UserLiteSerializer,

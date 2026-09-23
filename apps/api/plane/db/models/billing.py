@@ -1,0 +1,113 @@
+# Copyright (c) 2023-present Plane Software, Inc. and contributors
+# SPDX-License-Identifier: AGPL-3.0-only
+# See the LICENSE file for details.
+#
+# GAM addition: a workspace-wide Customer/Service/rate system for monthly
+# billing. Plane CE has no custom-fields system and Labels/Modules are
+# project-scoped, so client identity, service type, and agreed price
+# couldn't be tracked consistently across projects - these models fill
+# that gap. See plane_stack.md memory for the full billing model
+# (retainer vs per-job customers).
+
+from django.db import models
+
+from .base import BaseModel
+
+
+class Service(BaseModel):
+    """A type of billable work (Design, CTP, SEO, IG Posts, ...). Workspace-wide."""
+
+    workspace = models.ForeignKey(
+        "db.Workspace", on_delete=models.CASCADE, related_name="services"
+    )
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "gam_services"
+        verbose_name = "Service"
+        verbose_name_plural = "Services"
+        unique_together = ("workspace", "name")
+        ordering = ("name",)
+
+    def __str__(self):
+        return self.name
+
+
+class Customer(BaseModel):
+    """A GAM client. Workspace-wide, independent of which project(s) their work lives in."""
+
+    BILLING_TYPE_CHOICES = (
+        ("retainer", "Retainer (flat monthly fee)"),
+        ("per_job", "Per-job (priced per item)"),
+    )
+
+    workspace = models.ForeignKey(
+        "db.Workspace", on_delete=models.CASCADE, related_name="customers"
+    )
+    name = models.CharField(max_length=255)
+    contact_email = models.CharField(max_length=255, blank=True)
+    billing_type = models.CharField(
+        max_length=20, choices=BILLING_TYPE_CHOICES, default="per_job"
+    )
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "gam_customers"
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
+        unique_together = ("workspace", "name")
+        ordering = ("name",)
+
+    def __str__(self):
+        return self.name
+
+
+class CustomerServiceRate(BaseModel):
+    """The agreed price for one (customer, service) pair.
+
+    For a retainer customer this is a flat amount per month for that
+    service line (e.g. Acme / Monthly posts / EUR 300). For a per-job
+    customer it's the price per item of that service (e.g. Globex /
+    Design / EUR 100).
+    """
+
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name="rates"
+    )
+    service = models.ForeignKey(
+        Service, on_delete=models.CASCADE, related_name="rates"
+    )
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = "gam_customer_service_rates"
+        verbose_name = "Customer Service Rate"
+        verbose_name_plural = "Customer Service Rates"
+        unique_together = ("customer", "service")
+        ordering = ("customer__name", "service__name")
+
+    def __str__(self):
+        return f"{self.customer.name} / {self.service.name}: {self.price}"
+
+
+class IssueCustomerService(BaseModel):
+    """Links a work item to the customer it was done for and the service it is."""
+
+    issue = models.OneToOneField(
+        "db.Issue", on_delete=models.CASCADE, related_name="customer_service"
+    )
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name="issues"
+    )
+    service = models.ForeignKey(
+        Service, on_delete=models.CASCADE, related_name="issues"
+    )
+
+    class Meta:
+        db_table = "gam_issue_customer_service"
+        verbose_name = "Issue Customer/Service"
+        verbose_name_plural = "Issue Customer/Services"
+
+    def __str__(self):
+        return f"{self.issue_id}: {self.customer.name} / {self.service.name}"

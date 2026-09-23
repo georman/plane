@@ -8,6 +8,9 @@ from django.urls import path
 from plane.authentication.views.impersonate import ImpersonateMemberEndpoint
 
 from plane.app.views import (
+    CustomerServiceRateViewSet,
+    CustomerViewSet,
+    ServiceViewSet,
     UserWorkspaceInvitationsViewSet,
     WorkSpaceViewSet,
     WorkspaceJoinEndpoint,
@@ -106,6 +109,41 @@ urlpatterns = [
         "workspaces/<str:slug>/members/<uuid:member_id>/impersonate/",
         ImpersonateMemberEndpoint.as_view(),
         name="workspace-member-impersonate",
+    ),
+    # GAM addition: Customer/Service billing system
+    path(
+        "workspaces/<str:slug>/services/",
+        ServiceViewSet.as_view({"get": "list", "post": "create"}),
+        name="workspace-service",
+    ),
+    path(
+        "workspaces/<str:slug>/services/<uuid:pk>/",
+        ServiceViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="workspace-service",
+    ),
+    path(
+        "workspaces/<str:slug>/customers/",
+        CustomerViewSet.as_view({"get": "list", "post": "create"}),
+        name="workspace-customer",
+    ),
+    path(
+        "workspaces/<str:slug>/customers/<uuid:pk>/",
+        CustomerViewSet.as_view(
+            {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
+        ),
+        name="workspace-customer",
+    ),
+    path(
+        "workspaces/<str:slug>/customers/<uuid:customer_id>/rates/",
+        CustomerServiceRateViewSet.as_view({"get": "list", "post": "create"}),
+        name="workspace-customer-rate",
+    ),
+    path(
+        "workspaces/<str:slug>/customers/<uuid:customer_id>/rates/<uuid:pk>/",
+        CustomerServiceRateViewSet.as_view(
+            {"patch": "partial_update", "delete": "destroy"}
+        ),
+        name="workspace-customer-rate",
     ),
     path(
         "workspaces/<str:slug>/members/leave/",
