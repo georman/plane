@@ -7,6 +7,7 @@
 # (customer, service). Workspace-admin only, this is financial config data.
 
 from django.db import IntegrityError
+
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -14,11 +15,19 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers import (
     CustomerSerializer,
     CustomerServiceRateSerializer,
+    IssueCustomerServiceSerializer,
     ServiceSerializer,
 )
-from plane.db.models import Customer, CustomerServiceRate, Service, Workspace
+from plane.db.models import (
+    Customer,
+    CustomerServiceRate,
+    Issue,
+    IssueCustomerService,
+    Service,
+    Workspace,
+)
 
-from .base import BaseViewSet
+from .base import BaseAPIView, BaseViewSet
 
 
 class ServiceViewSet(BaseViewSet):
@@ -165,3 +174,37 @@ class CustomerServiceRateViewSet(BaseViewSet):
     @allow_permission([ROLE.ADMIN], level="WORKSPACE")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+
+class IssueCustomerServiceEndpoint(BaseAPIView):
+    """Which customer + service a specific work item is for. One per issue (upsert)."""
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")
+    def get(self, request, slug, project_id, issue_id):
+        link = IssueCustomerService.objects.filter(
+            issue_id=issue_id, issue__project_id=project_id, issue__workspace__slug=slug
+        ).first()
+        if not link:
+            return Response(None, status=status.HTTP_200_OK)
+        return Response(IssueCustomerServiceSerializer(link).data, status=status.HTTP_200_OK)
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")
+    def put(self, request, slug, project_id, issue_id):
+        customer_id = request.data.get("customer")
+        service_id = request.data.get("service")
+        if not customer_id or not service_id:
+            return Response(
+                {"error": "Both customer and service are required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        issue = Issue.objects.get(pk=issue_id, project_id=project_id, workspace__slug=slug)
+        link, _ = IssueCustomerService.objects.update_or_create(
+            issue=issue, defaults={"customer_id": customer_id, "service_id": service_id}
+        )
+        return Response(IssueCustomerServiceSerializer(link).data, status=status.HTTP_200_OK)
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")
+    def delete(self, request, slug, project_id, issue_id):
+        IssueCustomerService.objects.filter(
+            issue_id=issue_id, issue__project_id=project_id, issue__workspace__slug=slug
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

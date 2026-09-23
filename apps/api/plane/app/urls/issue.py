@@ -5,6 +5,8 @@
 from django.urls import path
 
 from plane.app.views import (
+    # GAM addition: Customer/Service billing link
+    IssueCustomerServiceEndpoint,
     BulkCreateIssueLabelsEndpoint,
     BulkDeleteIssuesEndpoint,
     SubIssuesEndpoint,
@@ -48,6 +50,12 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/issues-detail/",
         IssueDetailEndpoint.as_view(),
         name="project-issue-detail",
+    ),
+    # GAM addition: Customer/Service billing link
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issues/<uuid:issue_id>/customer-service/",
+        IssueCustomerServiceEndpoint.as_view(),
+        name="issue-customer-service",
     ),
     # updated v1 paginated issues
     # updated v2 paginated issues
