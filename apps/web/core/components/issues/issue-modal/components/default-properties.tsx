@@ -8,6 +8,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import useSWR from "swr";
 import { ETabIndices, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { ParentPropertyIcon } from "@plane/propel/icons";
@@ -32,6 +33,8 @@ import { useProjectEstimates } from "@/hooks/store/estimates";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
+// GAM addition: Customer/Service billing
+import { billingService } from "@/services/billing.service";
 
 type TIssueDefaultPropertiesProps = {
   control: Control<TIssue>;
@@ -45,6 +48,11 @@ type TIssueDefaultPropertiesProps = {
   isDraft: boolean;
   handleFormChange: () => void;
   setSelectedParentIssue: (issue: ISearchIssueResponse) => void;
+  // GAM addition: Customer/Service billing
+  customerId: string | null;
+  serviceId: string | null;
+  onCustomerChange: (customerId: string | null) => void;
+  onServiceChange: (serviceId: string | null) => void;
 };
 
 export const IssueDefaultProperties = observer(function IssueDefaultProperties(props: TIssueDefaultPropertiesProps) {
@@ -60,9 +68,22 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
     isDraft,
     handleFormChange,
     setSelectedParentIssue,
+    customerId,
+    serviceId,
+    onCustomerChange,
+    onServiceChange,
   } = props;
   // states
   const [parentIssueListModalOpen, setParentIssueListModalOpen] = useState(false);
+  // GAM addition: Customer/Service billing lists
+  const { data: gamCustomers } = useSWR(
+    workspaceSlug ? `GAM_CUSTOMERS_${workspaceSlug}` : null,
+    workspaceSlug ? () => billingService.fetchCustomers(workspaceSlug) : null
+  );
+  const { data: gamServices } = useSWR(
+    workspaceSlug ? `GAM_SERVICES_${workspaceSlug}` : null,
+    workspaceSlug ? () => billingService.fetchServices(workspaceSlug) : null
+  );
   // store hooks
   const { t } = useTranslation();
   const { areEstimateEnabledByProjectId } = useProjectEstimates();
@@ -160,6 +181,37 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
           </div>
         )}
       />
+      {/* GAM addition: Customer/Service billing */}
+      <select
+        value={customerId ?? ""}
+        onChange={(e) => {
+          onCustomerChange(e.target.value || null);
+          handleFormChange();
+        }}
+        className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
+      >
+        <option value="">Customer...</option>
+        {(gamCustomers ?? []).map((customer) => (
+          <option key={customer.id} value={customer.id}>
+            {customer.name}
+          </option>
+        ))}
+      </select>
+      <select
+        value={serviceId ?? ""}
+        onChange={(e) => {
+          onServiceChange(e.target.value || null);
+          handleFormChange();
+        }}
+        className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
+      >
+        <option value="">Service...</option>
+        {(gamServices ?? []).map((service) => (
+          <option key={service.id} value={service.id}>
+            {service.name}
+          </option>
+        ))}
+      </select>
       <Controller
         control={control}
         name="start_date"

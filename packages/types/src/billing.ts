@@ -32,3 +32,12 @@ export interface ICustomer {
   is_active: boolean;
   rates: ICustomerServiceRate[];
 }
+
+export interface IIssueCustomerService {
+  id: string;
+  issue: string;
+  customer: string;
+  customer_name: string;
+  service: string;
+  service_name: string;
+}

@@ -69,6 +69,11 @@ export interface IssueFormProps {
   isProjectSelectionDisabled?: boolean;
   showActionButtons?: boolean;
   dataResetProperties?: any[];
+  // GAM addition: Customer/Service billing
+  customerId?: string | null;
+  serviceId?: string | null;
+  onCustomerChange?: (customerId: string | null) => void;
+  onServiceChange?: (serviceId: string | null) => void;
 }
 
 export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormProps) {
@@ -93,6 +98,11 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
     isProjectSelectionDisabled = false,
     showActionButtons = true,
     dataResetProperties = [],
+    // GAM addition: Customer/Service billing
+    customerId = null,
+    serviceId = null,
+    onCustomerChange = () => {},
+    onServiceChange = () => {},
   } = props;
 
   // states
@@ -438,6 +448,10 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
                   isDraft={isDraft}
                   handleFormChange={handleFormChange}
                   setSelectedParentIssue={setSelectedParentIssue}
+                  customerId={customerId}
+                  serviceId={serviceId}
+                  onCustomerChange={onCustomerChange}
+                  onServiceChange={onServiceChange}
                 />
               </div>
               {showActionButtons && (

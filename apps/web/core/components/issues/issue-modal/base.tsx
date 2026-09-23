@@ -26,6 +26,8 @@ import { useIssuesActions } from "@/hooks/use-issues-actions";
 // services
 import { FileService } from "@/services/file.service";
 const fileService = new FileService();
+// GAM addition: Customer/Service billing
+import { billingService } from "@/services/billing.service";
 // local imports
 import { CreateIssueToastActionItems } from "../create-issue-toast-action-items";
 import { DraftIssueLayout } from "./draft-issue-layout";
@@ -66,6 +68,9 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
   const [description, setDescription] = useState<string | undefined>(undefined);
   const [uploadedAssetIds, setUploadedAssetIds] = useState<string[]>([]);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  // GAM addition: Customer/Service billing
+  const [gamCustomerId, setGamCustomerId] = useState<string | null>(null);
+  const [gamServiceId, setGamServiceId] = useState<string | null>(null);
   // store hooks
   const { t } = useTranslation();
   const { workspaceSlug, projectId: routerProjectId, cycleId, moduleId, workItem } = useParams();
@@ -123,6 +128,28 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
     return () => setDescription(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.project_id, data?.id, data?.sourceIssueId, projectId, isOpen, activeProjectId]);
+
+  // GAM addition: Customer/Service billing - load the existing link when
+  // editing an existing issue, reset the selection for a fresh create form.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!workspaceSlug || !data?.id || !data?.project_id) {
+      setGamCustomerId(null);
+      setGamServiceId(null);
+      return;
+    }
+    billingService
+      .fetchIssueCustomerService(workspaceSlug.toString(), data.project_id, data.id)
+      .then((link) => {
+        setGamCustomerId(link?.customer ?? null);
+        setGamServiceId(link?.service ?? null);
+      })
+      .catch(() => {
+        setGamCustomerId(null);
+        setGamServiceId(null);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, workspaceSlug, data?.id, data?.project_id]);
 
   const addIssueToCycle = async (issue: TIssue, cycleId: string) => {
     if (!workspaceSlug || !issue.project_id) return;
@@ -375,6 +402,19 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
       if (beforeFormSubmit) await beforeFormSubmit();
       if (!data?.id) response = await handleCreateIssue(payload, is_draft_issue);
       else response = await handleUpdateIssue(payload);
+
+      // GAM addition: Customer/Service billing - best-effort, never blocks
+      // the work item itself from being created/updated if this fails.
+      if (response?.id && response?.project_id && gamCustomerId && gamServiceId) {
+        try {
+          await billingService.setIssueCustomerService(workspaceSlug.toString(), response.project_id, response.id, {
+            customer: gamCustomerId,
+            service: gamServiceId,
+          });
+        } catch (error) {
+          console.error("Could not save customer/service for this work item", error);
+        }
+      }
     } finally {
       if (response != undefined && onSubmit) await onSubmit(response);
     }
@@ -410,6 +450,11 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
     isDuplicateModalOpen: isDuplicateModalOpen,
     handleDuplicateIssueModal: handleDuplicateIssueModal,
     isProjectSelectionDisabled: isProjectSelectionDisabled,
+    // GAM addition: Customer/Service billing
+    customerId: gamCustomerId,
+    serviceId: gamServiceId,
+    onCustomerChange: setGamCustomerId,
+    onServiceChange: setGamServiceId,
   };
 
   return (

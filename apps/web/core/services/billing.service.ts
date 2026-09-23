@@ -7,7 +7,7 @@
  */
 
 import { API_BASE_URL } from "@plane/constants";
-import type { ICustomer, ICustomerServiceRate, IService } from "@plane/types";
+import type { ICustomer, ICustomerServiceRate, IIssueCustomerService, IService } from "@plane/types";
 import { APIService } from "@/services/api.service";
 
 export class BillingService extends APIService {
@@ -106,6 +106,31 @@ export class BillingService extends APIService {
         throw error?.response?.data;
       }
     );
+  }
+
+  async fetchIssueCustomerService(
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string
+  ): Promise<IIssueCustomerService | null> {
+    return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/customer-service/`)
+      .then((response) => response?.data ?? null)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async setIssueCustomerService(
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    data: { customer: string; service: string }
+  ): Promise<IIssueCustomerService> {
+    return this.put(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/customer-service/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 }
 
