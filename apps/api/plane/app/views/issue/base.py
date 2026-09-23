@@ -76,6 +76,18 @@ from plane.utils.timezone_converter import user_timezone_converter
 
 from .. import BaseAPIView, BaseViewSet
 
+# GAM: names of the standardized pipeline states (see plane_stack.md memory)
+# that a client Guest is allowed to see. Work isn't shown to clients until
+# it's ready for their review - earlier internal stages (New request,
+# Quotation, Approved, In progress, Internal review) stay staff-only.
+GAM_GUEST_VISIBLE_STATE_NAMES = [
+    "Client approval",
+    "Corrections",
+    "Ready for delivery",
+    "Delivered",
+    "Invoiced",
+]
+
 
 class IssueListEndpoint(BaseAPIView):
     filter_backends = (ComplexFilterBackend,)
@@ -307,18 +319,24 @@ class IssueViewSet(BaseViewSet):
             entity_identifier=project_id,
             user_id=request.user.id,
         )
-        if (
-            ProjectMember.objects.filter(
-                workspace__slug=slug,
-                project_id=project_id,
-                member=request.user,
-                role=5,
-                is_active=True,
-            ).exists()
-            and not project.guest_view_all_features
-        ):
-            issue_queryset = issue_queryset.filter(created_by=request.user)
-            filtered_issue_queryset = filtered_issue_queryset.filter(created_by=request.user)
+        is_guest_member = ProjectMember.objects.filter(
+            workspace__slug=slug,
+            project_id=project_id,
+            member=request.user,
+            role=5,
+            is_active=True,
+        ).exists()
+        if is_guest_member:
+            if not project.guest_view_all_features:
+                issue_queryset = issue_queryset.filter(created_by=request.user)
+                filtered_issue_queryset = filtered_issue_queryset.filter(created_by=request.user)
+            # GAM: clients only see work once it reaches Client approval or
+            # later - earlier internal stages (New request, Quotation,
+            # Approved, In progress, Internal review) stay staff-only.
+            issue_queryset = issue_queryset.filter(state__name__in=GAM_GUEST_VISIBLE_STATE_NAMES)
+            filtered_issue_queryset = filtered_issue_queryset.filter(
+                state__name__in=GAM_GUEST_VISIBLE_STATE_NAMES
+            )
 
         if group_by:
             if sub_group_by:
@@ -1043,6 +1061,7 @@ class IssueDetailEndpoint(BaseAPIView):
                     project__project_projectmember__is_active=True,
                     project__project_projectmember__role=ROLE.GUEST.value,
                     project__guest_view_all_features=True,
+                    state__name__in=GAM_GUEST_VISIBLE_STATE_NAMES,
                 )
                 | Q(
                     project__project_projectmember__member=self.request.user,
@@ -1050,6 +1069,7 @@ class IssueDetailEndpoint(BaseAPIView):
                     project__project_projectmember__role=ROLE.GUEST.value,
                     project__guest_view_all_features=False,
                     created_by=self.request.user,
+                    state__name__in=GAM_GUEST_VISIBLE_STATE_NAMES,
                 )
             )
             .values("id")
