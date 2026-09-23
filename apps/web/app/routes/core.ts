@@ -280,6 +280,15 @@ export const coreRoutes: RouteConfigEntry[] = [
             ":workspaceSlug/settings/webhooks/:webhookId",
             "./(all)/[workspaceSlug]/(settings)/settings/(workspace)/webhooks/[webhookId]/page.tsx"
           ),
+          // GAM addition: Customer/Service billing settings
+          route(
+            ":workspaceSlug/settings/services",
+            "./(all)/[workspaceSlug]/(settings)/settings/(workspace)/services/page.tsx"
+          ),
+          route(
+            ":workspaceSlug/settings/customers",
+            "./(all)/[workspaceSlug]/(settings)/settings/(workspace)/customers/page.tsx"
+          ),
         ]),
 
         // --------------------------------------------------------------------

@@ -62,6 +62,21 @@ export const WORKSPACE_SETTINGS: Record<TWorkspaceSettingsTabs, TWorkspaceSettin
     access: [EUserWorkspaceRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/webhooks/`,
   },
+  // GAM addition: Customer/Service billing settings
+  services: {
+    key: "services",
+    i18n_label: "workspace_settings.settings.services.title",
+    href: `/settings/services`,
+    access: [EUserWorkspaceRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/services/`,
+  },
+  customers: {
+    key: "customers",
+    i18n_label: "workspace_settings.settings.customers.title",
+    href: `/settings/customers`,
+    access: [EUserWorkspaceRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/customers/`,
+  },
 };
 
 export const WORKSPACE_SETTINGS_ACCESS = Object.fromEntries(
@@ -75,6 +90,10 @@ export const GROUPED_WORKSPACE_SETTINGS: Record<WORKSPACE_SETTINGS_CATEGORY, TWo
     // GAM: removed "billing-and-plans" - self-hosted CE has no billing/plans concept
     WORKSPACE_SETTINGS["export"],
   ],
-  [WORKSPACE_SETTINGS_CATEGORY.FEATURES]: [],
+  [WORKSPACE_SETTINGS_CATEGORY.FEATURES]: [
+    // GAM addition: Customer/Service billing settings
+    WORKSPACE_SETTINGS["services"],
+    WORKSPACE_SETTINGS["customers"],
+  ],
   [WORKSPACE_SETTINGS_CATEGORY.DEVELOPER]: [WORKSPACE_SETTINGS["webhooks"]],
 };

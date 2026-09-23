@@ -484,6 +484,16 @@
         "heading": "Scripts",
         "new_script": "New Script",
         "description": "Automate your workflows with custom scripts and automation rules."
+      },
+      "services": {
+        "heading": "Services",
+        "description": "The types of billable work GAM offers (Design, CTP, SEO, IG Posts, ...).",
+        "title": "Services"
+      },
+      "customers": {
+        "heading": "Customers",
+        "description": "GAM's clients and their agreed price per service.",
+        "title": "Customers"
       }
     },
     "empty_state": {
