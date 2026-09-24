@@ -120,21 +120,21 @@ def render_statement_html(statement):
     return f"""<!doctype html><html lang="{statement.language}"><head><meta charset="utf-8"><style>
   @page {{ size: A4; margin: 18mm 16mm; }}
   body {{ font-family: "DejaVu Sans", sans-serif; font-size: 10.5pt; color: #17201c; }}
-  header {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }}
+  table.head {{ margin: 0 0 18px; }} table.head td {{ border: none; padding: 0; }}
   h1 {{ font-size: 18pt; margin: 0 0 4px; }} h2 {{ font-size: 12pt; margin: 22px 0 6px; }}
   .muted {{ color: #5a6862; }}
   table {{ width: 100%; border-collapse: collapse; margin-top: 12px; }}
   th, td {{ padding: 7px 6px; border-bottom: 1px solid #d7dfdb; text-align: left; vertical-align: top; }}
-  th {{ font-size: 9pt; text-transform: uppercase; letter-spacing: .04em; color: #5a6862; }}
+  th {{ font-size: 9pt; font-weight: bold; color: #5a6862; }}
   td.n, th.n {{ text-align: right; white-space: nowrap; }} td.d {{ white-space: nowrap; color: #5a6862; }}
   tfoot td {{ font-weight: bold; font-size: 12pt; border-bottom: none; }}
 </style></head><body>
-<header>
-  <div><h1>{t['title']}</h1>
+<table class="head"><tr>
+  <td><h1>{t['title']}</h1>
     <div>{t['customer']}: <strong>{escape(customer.name)}</strong></div>
-    <div>{t['period']}: {month_label(statement.period, statement.language)}</div></div>
-  <img src="{escape(brand['logo_url'])}" style="width:90px">
-</header>
+    <div>{t['period']}: {month_label(statement.period, statement.language)}</div></td>
+  <td style="text-align:right;width:110px"><img src="{escape(brand['logo_url'])}" style="width:90px"></td>
+</tr></table>
 <table><thead><tr><th>{first_column}</th><th>{t['date'] if customer.billing_type != 'retainer' else ''}</th><th class="n">{t['amount']}</th></tr></thead>
 <tbody>{rows}</tbody>
 <tfoot><tr><td colspan="2">{t['total']}</td><td class="n">{money(statement.total)}</td></tr></tfoot></table>

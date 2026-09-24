@@ -1591,6 +1591,11 @@ def issue_activity(
 
             queue_approval_requests(issue_activities_created)
             update_slas(issue_activities_created)
+            # The "created" activity is saved on its own, not in issue_activities_created
+            if type == "issue.activity.created" and issue_id:
+                from plane.bgtasks.gam_sla_task import start_sla
+
+                start_sla(issue_id)
         except Exception as e:
             log_exception(e)
 
