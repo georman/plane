@@ -116,6 +116,8 @@ class Project(BaseModel):
     logo_props = models.JSONField(default=dict)
     default_state = models.ForeignKey("db.State", on_delete=models.SET_NULL, null=True, related_name="default_state")
     archived_at = models.DateTimeField(null=True)
+    # GAM: shown nested under this project in the sidebar (one level; display only)
+    parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="children")
     # timezone
     TIMEZONE_CHOICES = tuple(zip(pytz.common_timezones, pytz.common_timezones))
     timezone = models.CharField(max_length=255, default="UTC", choices=TIMEZONE_CHOICES)
@@ -145,6 +147,9 @@ class Project(BaseModel):
         return f"{self.name} <{self.workspace.name}>"
 
     FORBIDDEN_IDENTIFIER_CHARS_PATTERN = r"^.*[&+,:;$^}{*=?@#|'<>.()%!-].*$"
+    # GAM: project names may use punctuation (e.g. "project.gam.gr", "Prepress & Printing");
+    # only < and > are blocked so a name can never carry HTML
+    FORBIDDEN_NAME_CHARS_PATTERN = r"^.*[<>].*$"
 
     class Meta:
         unique_together = [

@@ -5,10 +5,15 @@
 from django.urls import path
 
 
-from plane.app.views import StateViewSet, IntakeStateEndpoint
+from plane.app.views import StateViewSet, IntakeStateEndpoint, ProjectStateTemplateEndpoint
 
 
 urlpatterns = [
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/state-template/",
+        ProjectStateTemplateEndpoint.as_view(),
+        name="project-state-template",
+    ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/states/",
         StateViewSet.as_view({"get": "list", "post": "create"}),

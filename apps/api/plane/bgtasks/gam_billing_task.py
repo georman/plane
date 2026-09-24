@@ -4,9 +4,9 @@
 #
 # GAM addition: monthly billing statements.
 # On the 1st of each month a statement for the previous month is built for
-# every active customer: retainer customers get their fixed monthly lines plus
-# the list of what was delivered; per-job customers get one priced line per
-# completed work item. Each statement is a PDF (WeasyPrint) emailed to GAM for
+# every active customer: one fixed line per monthly service (with the list of
+# what was delivered under those services) and one priced line per completed
+# work item of a per-job service. Each statement is a PDF (WeasyPrint) emailed to GAM for
 # review with an "Approve & send" link; only that sends it to the client, in
 # the client's language, through the client-email test/live switch.
 
@@ -38,6 +38,7 @@ TEXTS = {
         "title": "Μηνιαία κατάσταση", "period": "Περίοδος", "customer": "Πελάτης", "service": "Υπηρεσία",
         "item": "Εργασία", "date": "Ολοκλήρωση", "amount": "Ποσό", "total": "Σύνολο",
         "retainer_note": "Σταθερή μηνιαία συνεργασία.", "delivered": "Τι παραδόθηκε αυτόν τον μήνα",
+        "monthly": "μηνιαία χρέωση",
         "nothing": "Δεν ολοκληρώθηκαν εργασίες αυτόν τον μήνα.", "no_price": "χωρίς συμφωνημένη τιμή",
         "email_subject": "Μηνιαία κατάσταση {month} – {brand}",
         "email_body": "Σας στέλνουμε συνημμένη τη μηνιαία κατάσταση για τον μήνα {month}.",
@@ -46,6 +47,7 @@ TEXTS = {
         "title": "Monthly statement", "period": "Period", "customer": "Customer", "service": "Service",
         "item": "Work item", "date": "Completed", "amount": "Amount", "total": "Total",
         "retainer_note": "Fixed monthly agreement.", "delivered": "Delivered this month",
+        "monthly": "monthly fee",
         "nothing": "No work items were completed this month.", "no_price": "no agreed price",
         "email_subject": "Monthly statement {month} – {brand}",
         "email_body": "Please find attached your monthly statement for {month}.",
@@ -61,6 +63,10 @@ def previous_month(today=None):
     today = today or timezone.now().astimezone(TZ).date()
     year, month = (today.year - 1, 12) if today.month == 1 else (today.year, today.month - 1)
     return date(year, month, 1)
+
+
+def t_monthly(customer):
+    return TEXTS.get(customer.language, TEXTS["el"])["monthly"]
 
 
 def build_statement(customer, period):
@@ -85,16 +91,22 @@ def build_statement(customer, period):
             "service": link.service.name,
             "date": link.issue.completed_at.astimezone(TZ).strftime("%d/%m/%Y"),
             "price": str(rates[link.service_id].price) if link.service_id in rates else None,
+            "monthly": link.service.billing_type == "monthly",
         }
         for link in completed
     ]
-    if customer.billing_type == "retainer":
-        lines = [{"label": r.service.name, "amount": str(r.price)} for r in rates.values()]
-    else:
-        lines = [
-            {"label": f"{d['ref']} {d['name']} ({d['service']})", "date": d["date"], "amount": d["price"]}
-            for d in deliverables
-        ]
+    # Monthly services: one fixed line each; their work items are listed as deliverables only
+    lines = [
+        {"label": f"{r.service.name} – {t_monthly(customer)}", "amount": str(r.price)}
+        for r in rates.values()
+        if r.service.billing_type == "monthly"
+    ]
+    lines += [
+        {"label": f"{d['ref']} {d['name']} ({d['service']})", "date": d["date"], "amount": d["price"]}
+        for d in deliverables
+        if not d["monthly"]
+    ]
+    deliverables = [d for d in deliverables if d["monthly"]]
     total = sum((Decimal(line["amount"]) for line in lines if line.get("amount")), Decimal("0"))
     return lines, deliverables, total
 
@@ -110,13 +122,12 @@ def render_statement_html(statement):
         for line in statement.lines
     ) or f"<tr><td colspan='3'><em>{t['nothing']}</em></td></tr>"
     delivered = ""
-    if customer.billing_type == "retainer":
+    if statement.deliverables:
         items = "".join(
             f"<li>{escape(d['ref'])} {escape(d['name'])} <span class='muted'>({escape(d['service'])}, {d['date']})</span></li>"
             for d in statement.deliverables
         ) or f"<li><em>{t['nothing']}</em></li>"
         delivered = f"<p class='muted'>{t['retainer_note']}</p><h2>{t['delivered']}</h2><ul>{items}</ul>"
-    first_column = t["service"] if customer.billing_type == "retainer" else t["item"]
     return f"""<!doctype html><html lang="{statement.language}"><head><meta charset="utf-8"><style>
   @page {{ size: A4; margin: 18mm 16mm; }}
   body {{ font-family: "DejaVu Sans", sans-serif; font-size: 10.5pt; color: #17201c; }}
@@ -135,7 +146,7 @@ def render_statement_html(statement):
     <div>{t['period']}: {month_label(statement.period, statement.language)}</div></td>
   <td style="text-align:right;width:110px"><img src="{escape(brand['logo_url'])}" style="width:90px"></td>
 </tr></table>
-<table><thead><tr><th>{first_column}</th><th>{t['date'] if customer.billing_type != 'retainer' else ''}</th><th class="n">{t['amount']}</th></tr></thead>
+<table><thead><tr><th>{t['item']}</th><th>{t['date']}</th><th class="n">{t['amount']}</th></tr></thead>
 <tbody>{rows}</tbody>
 <tfoot><tr><td colspan="2">{t['total']}</td><td class="n">{money(statement.total)}</td></tr></tfoot></table>
 {delivered}

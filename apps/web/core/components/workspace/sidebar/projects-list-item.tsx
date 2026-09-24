@@ -56,6 +56,9 @@ type Props = {
   disableDrop?: boolean;
   isLastChild: boolean;
   renderInExtendedSidebar?: boolean;
+  // GAM: sidebar grouping - nesting level and "drop onto a project to put it inside"
+  depth?: number;
+  handleOnProjectNest?: (sourceId: string | undefined, destinationId: string | undefined) => void;
 };
 
 export const SidebarProjectsListItem = observer(function SidebarProjectsListItem(props: Props) {
@@ -68,6 +71,8 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
     handleOnProjectDrop,
     projectListType,
     renderInExtendedSidebar = false,
+    depth = 0,
+    handleOnProjectNest,
   } = props;
   // store hooks
   const { t } = useTranslation();
@@ -84,7 +89,7 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const isProjectListOpen = getIsProjectListOpen(projectId);
-  const [instruction, setInstruction] = useState<"DRAG_OVER" | "DRAG_BELOW" | undefined>(undefined);
+  const [instruction, setInstruction] = useState<"DRAG_OVER" | "DRAG_BELOW" | "NEST" | undefined>(undefined);
   // refs
   const actionSectionRef = useRef<HTMLButtonElement | null>(null);
   const projectRef = useRef<HTMLDivElement | null>(null);
@@ -187,10 +192,13 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
             currentLevel: 0,
             indentPerLevel: 0,
             mode: isLastChild ? "last-in-group" : "standard",
+            // GAM: only top-level projects can hold other projects
+            block: handleOnProjectNest && depth === 0 ? [] : ["make-child"],
           });
         },
         onDrag: ({ self }) => {
           const extractedInstruction = extractInstruction(self?.data)?.type;
+          if (extractedInstruction === "make-child" && handleOnProjectNest) return setInstruction("NEST");
           // check if the highlight is to be shown above or below
           setInstruction(
             extractedInstruction
@@ -206,6 +214,10 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
         onDrop: ({ self, source }) => {
           setInstruction(undefined);
           const extractedInstruction = extractInstruction(self?.data)?.type;
+          if (extractedInstruction === "make-child" && handleOnProjectNest) {
+            handleOnProjectNest(source?.data?.id as string | undefined, self?.data?.id as string | undefined);
+            return;
+          }
           const currentInstruction = extractedInstruction
             ? extractedInstruction === "reorder-below" && isLastChild
               ? "DRAG_BELOW"
@@ -223,7 +235,7 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
       })
     );
     // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
-  }, [projectId, isLastChild, projectListType, handleOnProjectDrop]);
+  }, [projectId, isLastChild, projectListType, handleOnProjectDrop, handleOnProjectNest, depth]);
 
   useEffect(() => {
     if (isMenuActive) toggleAnySidebarDropdown(true);
@@ -286,7 +298,9 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
           id={`sidebar-${projectId}-${projectListType}`}
           className={cn("relative", {
             "bg-layer-1 opacity-60": isDragging,
+            "rounded-md bg-layer-transparent-active ring-1 ring-accent-strong": instruction === "NEST",
           })}
+          style={depth ? { paddingLeft: `${depth * 14}px` } : undefined}
           ref={projectRef}
         >
           <DropIndicator classNames="absolute top-0" isVisible={instruction === "DRAG_OVER"} />

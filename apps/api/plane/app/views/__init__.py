@@ -10,6 +10,7 @@ from .billing import (
     ServiceViewSet,
 )
 from .recurrence import IssueRecurrenceEndpoint
+from .state_template import ProjectStateTemplateEndpoint, StateTemplateItemViewSet, StateTemplateViewSet
 from .project.base import (
     ProjectViewSet,
     ProjectIdentifierEndpoint,

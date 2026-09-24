@@ -20,7 +20,7 @@ import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import type { IService, IServiceTemplateItem } from "@plane/types";
+import type { IService, IServiceTemplateItem, TServiceBillingType } from "@plane/types";
 import { Input } from "@plane/ui";
 // components
 import { NotAuthorizedView } from "@/components/auth-screens/not-authorized-view";
@@ -62,6 +62,15 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
     } catch (error: any) {
       setName(service.name);
       showError(error, "Could not rename service.");
+    }
+  };
+
+  const handleBillingTypeChange = async (billingType: TServiceBillingType) => {
+    try {
+      await billingService.updateService(slug, service.id, { billing_type: billingType });
+      refresh();
+    } catch (error: any) {
+      showError(error, "Could not change the billing type.");
     }
   };
 
@@ -136,6 +145,16 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
           className="flex-1 border-transparent hover:border-subtle"
           aria-label="Service name"
         />
+        <select
+          value={service.billing_type ?? "per_job"}
+          onChange={(e) => handleBillingTypeChange(e.target.value as TServiceBillingType)}
+          className="shrink-0 rounded-sm border border-subtle bg-surface-1 px-2 py-1 text-12"
+          aria-label={`Billing for ${service.name}`}
+          title={translate("gam.billing_type_hint")}
+        >
+          <option value="per_job">{translate("gam.per_job")}</option>
+          <option value="monthly">{translate("gam.monthly")}</option>
+        </select>
         <span className="shrink-0 text-12 text-tertiary">
           {translate("gam.steps", { count: steps.length })}
         </span>
@@ -223,6 +242,7 @@ function ServicesSettingsPage() {
   const { allowPermissions } = useUserPermissions();
   const { currentWorkspace } = useWorkspace();
   const [newServiceName, setNewServiceName] = useState("");
+  const [newBillingType, setNewBillingType] = useState<TServiceBillingType>("per_job");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canPerformWorkspaceAdminActions = allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.WORKSPACE);
@@ -245,8 +265,9 @@ function ServicesSettingsPage() {
     if (!name) return;
     setIsSubmitting(true);
     try {
-      await billingService.createService(slug, { name });
+      await billingService.createService(slug, { name, billing_type: newBillingType });
       setNewServiceName("");
+      setNewBillingType("per_job");
       mutate(SERVICES_SWR_KEY(slug));
     } catch (error: any) {
       showError(error, "Could not create service.");
@@ -272,17 +293,26 @@ function ServicesSettingsPage() {
           title={t("workspace_settings.settings.services.title")}
           description={t("workspace_settings.settings.services.description")}
         />
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <Input
             type="text"
             value={newServiceName}
             onChange={(e) => setNewServiceName(e.target.value)}
             placeholder={translate("gam.service_placeholder")}
-            className="w-80"
+            className="w-full sm:w-80"
             onKeyDown={(e) => {
               if (e.key === "Enter") handleCreate();
             }}
           />
+          <select
+            value={newBillingType}
+            onChange={(e) => setNewBillingType(e.target.value as TServiceBillingType)}
+            className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
+            aria-label="Billing type"
+          >
+            <option value="per_job">{translate("gam.per_job")}</option>
+            <option value="monthly">{translate("gam.monthly")}</option>
+          </select>
           <Button variant="primary" onClick={handleCreate} disabled={isSubmitting || !newServiceName.trim()}>
             {translate("gam.add_service")}
           </Button>

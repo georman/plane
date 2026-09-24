@@ -6,7 +6,8 @@
  * GAM addition: Customer/Service billing types.
  */
 
-export type TCustomerBillingType = "retainer" | "per_job";
+// GAM: monthly services are one fixed line a month; per-job services are billed per completed item
+export type TServiceBillingType = "per_job" | "monthly";
 
 // GAM: language of everything the client receives
 export type TCustomerLanguage = "el" | "en";
@@ -22,6 +23,7 @@ export interface IService {
   id: string;
   workspace_id: string;
   name: string;
+  billing_type: TServiceBillingType;
   is_active: boolean;
   template_items: IServiceTemplateItem[];
 }
@@ -31,6 +33,7 @@ export interface ICustomerServiceRate {
   customer_id: string;
   service: string;
   service_name: string;
+  service_billing_type: TServiceBillingType;
   price: string;
 }
 
@@ -39,7 +42,6 @@ export interface ICustomer {
   workspace_id: string;
   name: string;
   contact_email: string;
-  billing_type: TCustomerBillingType;
   language: TCustomerLanguage;
   is_active: boolean;
   rates: ICustomerServiceRate[];

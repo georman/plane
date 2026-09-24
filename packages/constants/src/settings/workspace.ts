@@ -70,6 +70,13 @@ export const WORKSPACE_SETTINGS: Record<TWorkspaceSettingsTabs, TWorkspaceSettin
     access: [EUserWorkspaceRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/services/`,
   },
+  "state-templates": {
+    key: "state-templates",
+    i18n_label: "workspace_settings.settings.state_templates.title",
+    href: `/settings/state-templates`,
+    access: [EUserWorkspaceRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/state-templates/`,
+  },
   customers: {
     key: "customers",
     i18n_label: "workspace_settings.settings.customers.title",
@@ -94,6 +101,7 @@ export const GROUPED_WORKSPACE_SETTINGS: Record<WORKSPACE_SETTINGS_CATEGORY, TWo
     // GAM addition: Customer/Service billing settings
     WORKSPACE_SETTINGS["services"],
     WORKSPACE_SETTINGS["customers"],
+    WORKSPACE_SETTINGS["state-templates"],
   ],
   [WORKSPACE_SETTINGS_CATEGORY.DEVELOPER]: [WORKSPACE_SETTINGS["webhooks"]],
 };

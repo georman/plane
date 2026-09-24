@@ -47,10 +47,7 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.email_notification_task.stack_email_notification",
         "schedule": crontab(minute="*/5"),  # Every 5 minutes
     },
-    "push-instance-metrics": {
-        "task": "plane.license.bgtasks.telemetry_metrics.push_instance_metrics",
-        "schedule": schedule(run_every=timedelta(minutes=METRICS_PUSH_INTERVAL_MINUTES)),
-    },
+    # GAM: no usage metrics are sent to Plane (telemetry.plane.so)
     # Occurs once every day
     "check-every-day-to-delete-hard-delete": {
         "task": "plane.bgtasks.deletion_task.hard_delete",

@@ -12,6 +12,8 @@ from plane.app.views import (
     CustomerViewSet,
     ServiceTemplateItemViewSet,
     ServiceViewSet,
+    StateTemplateItemViewSet,
+    StateTemplateViewSet,
     UserWorkspaceInvitationsViewSet,
     WorkSpaceViewSet,
     WorkspaceJoinEndpoint,
@@ -131,6 +133,26 @@ urlpatterns = [
         "workspaces/<str:slug>/services/<uuid:service_id>/template-items/<uuid:pk>/",
         ServiceTemplateItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="workspace-service-template-item",
+    ),
+    path(
+        "workspaces/<str:slug>/state-templates/",
+        StateTemplateViewSet.as_view({"get": "list", "post": "create"}),
+        name="workspace-state-template",
+    ),
+    path(
+        "workspaces/<str:slug>/state-templates/<uuid:pk>/",
+        StateTemplateViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="workspace-state-template",
+    ),
+    path(
+        "workspaces/<str:slug>/state-templates/<uuid:template_id>/items/",
+        StateTemplateItemViewSet.as_view({"post": "create"}),
+        name="workspace-state-template-item",
+    ),
+    path(
+        "workspaces/<str:slug>/state-templates/<uuid:template_id>/items/<uuid:pk>/",
+        StateTemplateItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="workspace-state-template-item",
     ),
     path(
         "workspaces/<str:slug>/customers/",

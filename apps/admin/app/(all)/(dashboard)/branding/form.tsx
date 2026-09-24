@@ -213,7 +213,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
             Upload new logo
           </Button>
           {hasCustomLogo && (
-            <Button variant="link-danger" onClick={handleRemoveLogo} disabled={isUploading}>
+            <Button variant="error-outline" onClick={handleRemoveLogo} disabled={isUploading}>
               Use built-in logo
             </Button>
           )}

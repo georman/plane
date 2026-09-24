@@ -15,6 +15,7 @@ from .billing import (
     ServiceTemplateItem,
 )
 from .recurrence import IssueRecurrence
+from .state_template import StateTemplate, StateTemplateItem
 from .approval import ApprovalItemDecision, ApprovalRequest
 from .sla import IssueSLA
 from .cycle import Cycle, CycleIssue, CycleUserProperties

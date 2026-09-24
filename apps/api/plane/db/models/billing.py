@@ -21,6 +21,13 @@ class Service(BaseModel):
         "db.Workspace", on_delete=models.CASCADE, related_name="services"
     )
     name = models.CharField(max_length=255)
+    # Monthly services are billed as one fixed line per month (the customer's
+    # price); per-job services are billed once for every completed work item.
+    BILLING_TYPE_CHOICES = (
+        ("per_job", "Per job"),
+        ("monthly", "Monthly"),
+    )
+    billing_type = models.CharField(max_length=20, choices=BILLING_TYPE_CHOICES, default="per_job")
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -37,19 +44,11 @@ class Service(BaseModel):
 class Customer(BaseModel):
     """A GAM client. Workspace-wide, independent of which project(s) their work lives in."""
 
-    BILLING_TYPE_CHOICES = (
-        ("retainer", "Retainer (flat monthly fee)"),
-        ("per_job", "Per-job (priced per item)"),
-    )
-
     workspace = models.ForeignKey(
         "db.Workspace", on_delete=models.CASCADE, related_name="customers"
     )
     name = models.CharField(max_length=255)
     contact_email = models.CharField(max_length=255, blank=True)
-    billing_type = models.CharField(
-        max_length=20, choices=BILLING_TYPE_CHOICES, default="per_job"
-    )
     # Language of everything the client receives (emails, approval page, billing PDF)
     LANGUAGE_CHOICES = (("el", "Ελληνικά"), ("en", "English"))
     language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default="el")
@@ -69,10 +68,9 @@ class Customer(BaseModel):
 class CustomerServiceRate(BaseModel):
     """The agreed price for one (customer, service) pair.
 
-    For a retainer customer this is a flat amount per month for that
-    service line (e.g. Acme / Monthly posts / EUR 300). For a per-job
-    customer it's the price per item of that service (e.g. Globex /
-    Design / EUR 100).
+    For a monthly service this is a flat amount per month (e.g. Acme /
+    IG Posts / EUR 300). For a per-job service it's the price per completed
+    work item (e.g. Globex / Design / EUR 100).
     """
 
     customer = models.ForeignKey(

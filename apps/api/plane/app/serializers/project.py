@@ -36,11 +36,25 @@ class ProjectSerializer(BaseSerializer):
         fields = "__all__"
         read_only_fields = ["workspace", "deleted_at"]
 
+    # GAM: sidebar grouping - one level only, same workspace
+    def validate_parent(self, parent):
+        if parent is None:
+            return parent
+        if self.instance and parent.id == self.instance.id:
+            raise serializers.ValidationError("A project cannot be inside itself.")
+        if parent.workspace_id != self.context.get("workspace_id", parent.workspace_id):
+            raise serializers.ValidationError("The parent project must be in the same workspace.")
+        if parent.parent_id:
+            raise serializers.ValidationError("The parent project is itself inside another project.")
+        if self.instance and Project.objects.filter(parent=self.instance).exists():
+            raise serializers.ValidationError("This project has projects inside it.")
+        return parent
+
     def validate_name(self, name):
         project_id = self.instance.id if self.instance else None
         workspace_id = self.context["workspace_id"]
 
-        if re.match(Project.FORBIDDEN_IDENTIFIER_CHARS_PATTERN, name):
+        if re.match(Project.FORBIDDEN_NAME_CHARS_PATTERN, name):
             raise serializers.ValidationError(detail="PROJECT_NAME_CANNOT_CONTAIN_SPECIAL_CHARACTERS")
 
         project = Project.objects.filter(name=name, workspace_id=workspace_id)

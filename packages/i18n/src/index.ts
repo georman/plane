@@ -38,4 +38,4 @@ export {
 export type { TBrand } from "./brand";
 
 // GAM addition: translate outside React components (and in components without the hook)
-export { translate, translateOr } from "./core/translate";
+export { translate, translateOr, stateDisplayName } from "./core/translate";

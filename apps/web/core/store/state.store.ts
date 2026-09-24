@@ -9,6 +9,7 @@ import { action, computed, makeObservable, observable, runInAction } from "mobx"
 import { computedFn } from "mobx-utils";
 // plane imports
 import { STATE_GROUPS } from "@plane/constants";
+import { stateDisplayName } from "@plane/i18n";
 import type { IIntakeState, IState } from "@plane/types";
 // helpers
 import { sortStates } from "@plane/utils";
@@ -57,6 +58,7 @@ export interface IStateStore {
   ) => Promise<void>;
 
   getStatePercentageInGroup: (stateId: string | null | undefined) => number | undefined;
+  relocalizeStates: () => void;
 }
 
 export class StateStore implements IStateStore {
@@ -68,6 +70,8 @@ export class StateStore implements IStateStore {
   rootStore: RootStore;
   router;
   stateService: ProjectStateService;
+  // GAM: stored (Greek) names, since stateMap holds the names in the viewer's language
+  storedNames: Record<string, string> = {};
 
   constructor(_rootStore: RootStore) {
     makeObservable(this, {
@@ -89,11 +93,25 @@ export class StateStore implements IStateStore {
       // state actions
       markStateAsDefault: action,
       moveStatePosition: action,
+      relocalizeStates: action,
     });
     this.stateService = new ProjectStateService();
     this.router = _rootStore.router;
     this.rootStore = _rootStore;
   }
+
+  /** GAM: the state as shown to the viewer (pipeline state names in their language) */
+  localize = (state: IState): IState => {
+    this.storedNames[state.id] = state.name;
+    return { ...state, name: stateDisplayName(state.name) };
+  };
+
+  /** GAM: re-show the state names after the interface language changes */
+  relocalizeStates = () => {
+    Object.entries(this.storedNames).forEach(([stateId, storedName]) => {
+      if (this.stateMap[stateId]) set(this.stateMap, [stateId, "name"], stateDisplayName(storedName));
+    });
+  };
 
   /**
    * Returns the stateMap belongs to a specific workspace
@@ -220,7 +238,7 @@ export class StateStore implements IStateStore {
     const statesResponse = await this.stateService.getStates(workspaceSlug, projectId);
     runInAction(() => {
       statesResponse.forEach((state) => {
-        set(this.stateMap, [state.id], state);
+        set(this.stateMap, [state.id], this.localize(state));
       });
       set(this.fetchedMap, projectId, true);
     });
@@ -251,7 +269,7 @@ export class StateStore implements IStateStore {
     const statesResponse = await this.stateService.getWorkspaceStates(workspaceSlug);
     runInAction(() => {
       statesResponse.forEach((state) => {
-        set(this.stateMap, [state.id], state);
+        set(this.stateMap, [state.id], this.localize(state));
       });
       set(this.fetchedMap, workspaceSlug, true);
     });
@@ -268,7 +286,7 @@ export class StateStore implements IStateStore {
   createState = async (workspaceSlug: string, projectId: string, data: Partial<IState>) =>
     await this.stateService.createState(workspaceSlug, projectId, data).then((response) => {
       runInAction(() => {
-        set(this.stateMap, [response?.id], response);
+        if (response) set(this.stateMap, [response.id], this.localize(response));
       });
       return response;
     });
@@ -283,11 +301,20 @@ export class StateStore implements IStateStore {
    */
   updateState = async (workspaceSlug: string, projectId: string, stateId: string, data: Partial<IState>) => {
     const originalState = this.stateMap[stateId];
+    // GAM: an unchanged translated name keeps the stored name
+    const storedName = this.storedNames[stateId];
+    if (data.name !== undefined && storedName !== undefined && data.name === stateDisplayName(storedName))
+      data = { ...data, name: storedName };
     try {
       runInAction(() => {
-        set(this.stateMap, [stateId], { ...this.stateMap?.[stateId], ...data });
+        set(this.stateMap, [stateId], {
+          ...this.stateMap?.[stateId],
+          ...data,
+          ...(data.name !== undefined ? { name: stateDisplayName(data.name) } : {}),
+        });
       });
       const response = await this.stateService.patchState(workspaceSlug, projectId, stateId, data);
+      if (data.name !== undefined) this.storedNames[stateId] = data.name;
       return response;
     } catch (error) {
       runInAction(() => {

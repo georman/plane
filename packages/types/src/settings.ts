@@ -18,7 +18,8 @@ export type TWorkspaceSettingsTabs =
   | "webhooks"
   // GAM addition: Customer/Service billing settings
   | "services"
-  | "customers";
+  | "customers"
+  | "state-templates";
 export type TWorkspaceSettingsItem = {
   key: TWorkspaceSettingsTabs;
   i18n_label: string;

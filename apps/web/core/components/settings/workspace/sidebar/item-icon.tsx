@@ -5,7 +5,7 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { ArrowUpToLine, Building, CreditCard, Tag, Users, Webhook } from "lucide-react";
+import { ArrowUpToLine, Building, CreditCard, ListOrdered, Tag, Users, Webhook } from "lucide-react";
 // plane imports
 import type { ISvgIcons } from "@plane/propel/icons";
 import type { TWorkspaceSettingsTabs } from "@plane/types";
@@ -19,4 +19,5 @@ export const WORKSPACE_SETTINGS_ICONS: Record<TWorkspaceSettingsTabs, LucideIcon
   // GAM addition: Customer/Service billing settings
   services: Tag,
   customers: Users,
+  "state-templates": ListOrdered,
 };

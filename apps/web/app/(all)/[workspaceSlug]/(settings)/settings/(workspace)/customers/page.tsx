@@ -20,7 +20,7 @@ import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Input } from "@plane/ui";
-import type { TCustomerBillingType, TCustomerLanguage } from "@plane/types";
+import type { ICustomerServiceRate, TCustomerLanguage } from "@plane/types";
 // components
 import { NotAuthorizedView } from "@/components/auth-screens/not-authorized-view";
 import { PageHead } from "@/components/core/page-title";
@@ -45,7 +45,7 @@ function RateCard({
 }: {
   slug: string;
   customerId: string;
-  rates: { id: string; service: string; service_name: string; price: string }[];
+  rates: ICustomerServiceRate[];
   services: { id: string; name: string }[] | undefined;
 }) {
   const [serviceId, setServiceId] = useState("");
@@ -103,7 +103,9 @@ function RateCard({
                   if (e.target.value !== rate.price) handleUpdateRate(rate.id, e.target.value);
                 }}
               />
-              <span className="text-13 text-tertiary">EUR</span>
+              <span className="text-13 text-tertiary">
+                EUR {rate.service_billing_type === "monthly" ? translate("gam.per_month") : translate("gam.per_job")}
+              </span>
               <button
                 type="button"
                 onClick={() => handleDeleteRate(rate.id)}
@@ -138,13 +140,67 @@ function RateCard({
             placeholder={translate("gam.price")}
             className="w-28"
           />
-          <Button variant="neutral-primary" size="sm" onClick={handleAddRate} disabled={isSubmitting || !serviceId || !price}>
+          <Button variant="secondary" size="sm" onClick={handleAddRate} disabled={isSubmitting || !serviceId || !price}>
             Add rate
           </Button>
         </div>
       ) : (
         <p className="text-13 text-tertiary">All services already have a price for this customer.</p>
       )}
+    </div>
+  );
+}
+
+// GAM: edit a customer's details (name, contact email)
+function CustomerDetailsForm({
+  slug,
+  customer,
+}: {
+  slug: string;
+  customer: { id: string; name: string; contact_email: string };
+}) {
+  const [name, setName] = useState(customer.name);
+  const [contactEmail, setContactEmail] = useState(customer.contact_email ?? "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isChanged = name.trim() !== customer.name || contactEmail.trim() !== (customer.contact_email ?? "");
+
+  const handleSave = async () => {
+    if (!name.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await billingService.updateCustomer(slug, customer.id, {
+        name: name.trim(),
+        contact_email: contactEmail.trim(),
+      });
+      mutate(CUSTOMERS_SWR_KEY(slug));
+      setToast({ type: TOAST_TYPE.SUCCESS, title: translate("gam.saved"), message: name.trim() });
+    } catch (error: any) {
+      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not save the customer." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 bg-layer-1 px-4 pt-3">
+      <Input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={translate("gam.customer_name")}
+        className="w-full sm:w-52"
+      />
+      <Input
+        type="email"
+        value={contactEmail}
+        onChange={(e) => setContactEmail(e.target.value)}
+        placeholder={translate("gam.contact_email_optional")}
+        className="w-full sm:w-56"
+      />
+      <Button variant="primary" size="sm" onClick={handleSave} disabled={isSubmitting || !isChanged || !name.trim()}>
+        {translate("gam.save")}
+      </Button>
     </div>
   );
 }
@@ -160,7 +216,6 @@ function CustomersSettingsPage() {
   const [name, setName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [language, setLanguage] = useState<TCustomerLanguage>("el");
-  const [billingType, setBillingType] = useState<TCustomerBillingType>("per_job");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canPerformWorkspaceAdminActions = allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.WORKSPACE);
@@ -189,12 +244,10 @@ function CustomersSettingsPage() {
       await billingService.createCustomer(slug, {
         name: name.trim(),
         contact_email: contactEmail.trim(),
-        billing_type: billingType,
         language,
       });
       setName("");
       setContactEmail("");
-      setBillingType("per_job");
       setLanguage("el");
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
@@ -247,14 +300,6 @@ function CustomersSettingsPage() {
             className="w-full sm:w-56"
           />
           <select
-            value={billingType}
-            onChange={(e) => setBillingType(e.target.value as TCustomerBillingType)}
-            className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
-          >
-            <option value="per_job">{translate("gam.per_job")}</option>
-            <option value="retainer">{translate("gam.retainer")}</option>
-          </select>
-          <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as TCustomerLanguage)}
             className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
@@ -286,9 +331,6 @@ function CustomersSettingsPage() {
                         <ChevronRight className="size-4 text-tertiary" />
                       )}
                       <span className="text-14 text-primary">{customer.name}</span>
-                      <span className="rounded-sm bg-layer-1 px-2 py-0.5 text-11 text-tertiary">
-                        {customer.billing_type === "retainer" ? translate("gam.retainer") : translate("gam.per_job")}
-                      </span>
                       {customer.contact_email && (
                         <span className="text-12 text-tertiary">{customer.contact_email}</span>
                       )}
@@ -316,7 +358,10 @@ function CustomersSettingsPage() {
                     </button>
                   </div>
                   {isExpanded && (
-                    <RateCard slug={slug} customerId={customer.id} rates={customer.rates} services={services} />
+                    <>
+                      <CustomerDetailsForm slug={slug} customer={customer} />
+                      <RateCard slug={slug} customerId={customer.id} rates={customer.rates} services={services} />
+                    </>
                   )}
                 </div>
               );

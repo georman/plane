@@ -70,6 +70,9 @@ def _collect_and_push_metrics() -> None:
     Uses OTEL metrics SDK to push gauge metrics directly to the collector,
     replacing the previous span-based tracing approach.
     """
+    # GAM: never send usage metrics to Plane
+    return
+
     # Check if the instance is registered
     instance = Instance.objects.first()
 

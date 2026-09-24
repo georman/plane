@@ -4,16 +4,19 @@
  * See the LICENSE file for details.
  */
 
+import { useParams } from "next/navigation";
 import { Controller, useFormContext } from "react-hook-form";
+import useSWR from "swr";
 // plane imports
 import { NETWORK_CHOICES, ETabIndices } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import type { IProject } from "@plane/types";
 import { CustomSelect } from "@plane/ui";
 import { getTabIndex } from "@plane/utils";
 // components
 import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
 import { ProjectNetworkIcon } from "@/components/project/project-network-icon";
+import { stateTemplateService } from "@/services/state-template.service";
 
 type Props = {
   isMobile?: boolean;
@@ -24,6 +27,11 @@ function ProjectAttributes(props: Props) {
   const { t } = useTranslation();
   const { control } = useFormContext<IProject>();
   const { getIndex } = getTabIndex(ETabIndices.PROJECT_CREATE, isMobile);
+  // GAM: the project can start from a state template
+  const { workspaceSlug } = useParams();
+  const { data: stateTemplates } = useSWR(workspaceSlug ? `GAM_STATE_TEMPLATES_${workspaceSlug}` : null, () =>
+    stateTemplateService.fetchTemplates(workspaceSlug as string)
+  );
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Controller
@@ -91,6 +99,28 @@ function ProjectAttributes(props: Props) {
           else return <></>;
         }}
       />
+      {!!stateTemplates?.length && (
+        <Controller
+          name={"state_template" as keyof IProject}
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <select
+              value={(value as string | undefined) ?? ""}
+              onChange={(e) => onChange(e.target.value || undefined)}
+              className="h-7 flex-shrink-0 rounded-sm border border-subtle bg-surface-1 px-2 text-12"
+              aria-label={translate("gam.st.choose_template")}
+              title={translate("gam.st.choose_template")}
+            >
+              <option value="">{translate("gam.st.default_pipeline")}</option>
+              {stateTemplates.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+          )}
+        />
+      )}
     </div>
   );
 }

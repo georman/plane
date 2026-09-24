@@ -46,7 +46,8 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
   const { allowPermissions } = useUserPermissions();
   const { isExtendedProjectSidebarOpened, toggleExtendedProjectSidebar } = useAppTheme();
 
-  const { loader, getPartialProjectById, joinedProjectIds: joinedProjects, updateProjectView } = useProject();
+  const { loader, getPartialProjectById, joinedProjectIds: joinedProjects, updateProjectView, updateProject } =
+    useProject();
   // router params
   const { workspaceSlug } = useParams();
   const pathname = usePathname();
@@ -57,8 +58,35 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
     EUserPermissionsLevel.WORKSPACE
   );
 
-  // GAM: always list every project (the sidebar scrolls) - no "More" button
-  const displayedProjects = joinedProjects;
+  // GAM: always list every project (the sidebar scrolls) - no "More" button.
+  // Projects inside another project are listed, indented, right under it.
+  const parentOf = (projectId: string) => {
+    const parentId = getPartialProjectById(projectId)?.parent ?? null;
+    return parentId && joinedProjects.includes(parentId) ? parentId : null;
+  };
+  const displayedProjects: { id: string; depth: number }[] = joinedProjects
+    .filter((projectId) => !parentOf(projectId))
+    .flatMap((projectId) => [
+      { id: projectId, depth: 0 },
+      ...joinedProjects.filter((childId) => parentOf(childId) === projectId).map((childId) => ({ id: childId, depth: 1 })),
+    ]);
+
+  const setProjectParent = (projectId: string, parentId: string | null) => {
+    if (!workspaceSlug || (getPartialProjectById(projectId)?.parent ?? null) === parentId) return;
+    updateProject(workspaceSlug.toString(), projectId, { parent: parentId }).catch((error: any) => {
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: t("error"),
+        message: error?.parent?.[0] ?? t("something_went_wrong"),
+      });
+    });
+  };
+
+  // GAM: dropping a project onto another puts it inside that project
+  const handleOnProjectNest = (sourceId: string | undefined, destinationId: string | undefined) => {
+    if (!sourceId || !destinationId || sourceId === destinationId) return;
+    setProjectParent(sourceId, destinationId);
+  };
   const hasMoreProjects = false;
 
   const handleCopyText = (projectId: string) => {
@@ -89,6 +117,9 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
     const destinationIndex = shouldDropAtEnd ? joinedProjects.length : joinedProjects.indexOf(destinationId);
 
     if (joinedProjectsList.length <= 0) return;
+
+    // GAM: dropping between projects moves it into the same group as the project it lands next to
+    setProjectParent(sourceId, parentOf(destinationId));
 
     const updatedSortOrder = orderJoinedProjects(sourceIndex, destinationIndex, sourceId, joinedProjectsList);
     if (updatedSortOrder != undefined)
@@ -230,7 +261,7 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
               {isAllProjectsListOpen && (
                 <Disclosure.Panel as="div" className="flex flex-col gap-0.5" static>
                   <>
-                    {displayedProjects.map((projectId, index) => (
+                    {displayedProjects.map(({ id: projectId, depth }, index) => (
                       <SidebarProjectsListItem
                         key={projectId}
                         projectId={projectId}
@@ -240,6 +271,8 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
                         disableDrop={false}
                         isLastChild={index === displayedProjects.length - 1}
                         handleOnProjectDrop={handleOnProjectDrop}
+                        depth={depth}
+                        handleOnProjectNest={handleOnProjectNest}
                       />
                     ))}
                     {hasMoreProjects && (

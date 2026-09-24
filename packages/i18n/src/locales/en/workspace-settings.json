@@ -494,6 +494,11 @@
         "heading": "Customers",
         "description": "GAM's clients and their agreed price per service.",
         "title": "Customers"
+      },
+      "state_templates": {
+        "heading": "State templates",
+        "title": "State templates",
+        "description": "Ready-made sets of states. Pick one when creating a project, or apply it to a project from its States settings."
       }
     },
     "empty_state": {

@@ -48,7 +48,7 @@ export class BillingService extends APIService {
   }
 
   async deleteService(workspaceSlug: string, serviceId: string): Promise<void> {
-    return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/`).catch((error) => {
+    return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/`).then(() => undefined).catch((error) => {
       throw error?.response?.data;
     });
   }
@@ -79,7 +79,7 @@ export class BillingService extends APIService {
   }
 
   async deleteServiceTemplateItem(workspaceSlug: string, serviceId: string, itemId: string): Promise<void> {
-    return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/template-items/${itemId}/`).catch(
+    return this.delete(`/api/workspaces/${workspaceSlug}/services/${serviceId}/template-items/${itemId}/`).then(() => undefined).catch(
       (error) => {
         throw error?.response?.data;
       }
@@ -111,7 +111,7 @@ export class BillingService extends APIService {
   }
 
   async deleteCustomer(workspaceSlug: string, customerId: string): Promise<void> {
-    return this.delete(`/api/workspaces/${workspaceSlug}/customers/${customerId}/`).catch((error) => {
+    return this.delete(`/api/workspaces/${workspaceSlug}/customers/${customerId}/`).then(() => undefined).catch((error) => {
       throw error?.response?.data;
     });
   }
@@ -142,7 +142,7 @@ export class BillingService extends APIService {
   }
 
   async deleteCustomerRate(workspaceSlug: string, customerId: string, rateId: string): Promise<void> {
-    return this.delete(`/api/workspaces/${workspaceSlug}/customers/${customerId}/rates/${rateId}/`).catch(
+    return this.delete(`/api/workspaces/${workspaceSlug}/customers/${customerId}/rates/${rateId}/`).then(() => undefined).catch(
       (error) => {
         throw error?.response?.data;
       }
@@ -203,7 +203,7 @@ export class BillingService extends APIService {
   }
 
   async deleteIssueRecurrence(workspaceSlug: string, projectId: string, issueId: string): Promise<void> {
-    return this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`).catch(
+    return this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/recurrence/`).then(() => undefined).catch(
       (error) => {
         throw error?.response?.data;
       }

@@ -15,11 +15,13 @@ import { el, enUS } from "date-fns/locale";
 import { ISSUE_PRIORITIES, ROLE, STATE_GROUPS } from "@plane/constants";
 import { EUserWorkspaceRoles } from "@plane/types";
 import { translate, useTranslation } from "@plane/i18n";
+import { useProjectState } from "@/hooks/store/use-project-state";
 
 const DATE_LOCALES = { el, en: enUS } as const;
 
 export function DateLocaleSync() {
   const { currentLocale } = useTranslation();
+  const { relocalizeStates } = useProjectState();
   useEffect(() => {
     setDefaultOptions({ locale: DATE_LOCALES[currentLocale as keyof typeof DATE_LOCALES] ?? enUS });
     ISSUE_PRIORITIES.forEach((priority) => {
@@ -31,6 +33,7 @@ export function DateLocaleSync() {
     Object.entries(STATE_GROUPS).forEach(([key, group]) => {
       group.label = translate(`gam.state_group.${key}`);
     });
-  }, [currentLocale]);
+    relocalizeStates();
+  }, [currentLocale, relocalizeStates]);
   return null;
 }

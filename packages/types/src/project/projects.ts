@@ -33,6 +33,8 @@ export interface IPartialProject {
   guest_view_all_features?: boolean;
   project_lead?: IUserLite | string | null;
   network?: number;
+  // GAM: the project this one is shown under in the sidebar
+  parent?: string | null;
   // Timestamps
   created_at?: Date;
   updated_at?: Date;

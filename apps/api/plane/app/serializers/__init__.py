@@ -10,6 +10,7 @@ from .billing import (
     ServiceSerializer,
     ServiceTemplateItemSerializer,
 )
+from .state_template import StateTemplateItemSerializer, StateTemplateSerializer
 from .user import (
     UserSerializer,
     UserLiteSerializer,

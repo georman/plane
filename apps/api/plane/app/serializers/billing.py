@@ -23,16 +23,17 @@ class ServiceSerializer(BaseSerializer):
 
     class Meta:
         model = Service
-        fields = ["id", "workspace_id", "name", "is_active", "template_items"]
+        fields = ["id", "workspace_id", "name", "billing_type", "is_active", "template_items"]
         read_only_fields = ["workspace"]
 
 
 class CustomerServiceRateSerializer(BaseSerializer):
     service_name = serializers.CharField(source="service.name", read_only=True)
+    service_billing_type = serializers.CharField(source="service.billing_type", read_only=True)
 
     class Meta:
         model = CustomerServiceRate
-        fields = ["id", "customer_id", "service", "service_name", "price"]
+        fields = ["id", "customer_id", "service", "service_name", "service_billing_type", "price"]
         read_only_fields = ["customer"]
 
 
@@ -46,7 +47,6 @@ class CustomerSerializer(BaseSerializer):
             "workspace_id",
             "name",
             "contact_email",
-            "billing_type",
             "language",
             "is_active",
             "rates",
