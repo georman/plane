@@ -191,17 +191,18 @@ const TemplateRow = observer(function TemplateRow({
               />
               <Input
                 type="text"
-                defaultValue={item.name}
+                // Pipeline states are stored in Greek and shown in the viewer's language
+                key={`${item.id}-${stateDisplayName(item.name)}`}
+                defaultValue={stateDisplayName(item.name)}
                 onBlur={(e) => {
                   const trimmed = e.target.value.trim();
-                  if (trimmed && trimmed !== item.name) updateItem(item, { name: trimmed });
+                  if (trimmed && trimmed !== stateDisplayName(item.name)) updateItem(item, { name: trimmed });
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                 }}
                 className="min-w-40 flex-1"
                 aria-label={translate("gam.st.state_name")}
-                title={stateDisplayName(item.name)}
               />
               <GroupSelect value={item.group} onChange={(group) => updateItem(item, { group })} />
               <button
