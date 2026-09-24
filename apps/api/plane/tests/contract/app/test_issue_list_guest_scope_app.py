@@ -25,6 +25,7 @@ from plane.db.models import (
     Issue,
     Project,
     ProjectMember,
+    State,
     User,
     WorkspaceMember,
 )
@@ -34,12 +35,13 @@ LIST_URL = "/api/workspaces/{slug}/projects/{project_id}/issues/list/"
 
 @pytest.fixture
 def project(db, workspace, create_user):
-    """A project (guest_view_all_features defaults to False); owner is a member."""
+    """A project with guest_view_all_features off (GAM's default is on); owner is a member."""
     project = Project.objects.create(
         name="Scoped Project",
         identifier="SP",
         workspace=workspace,
         created_by=create_user,
+        guest_view_all_features=False,
     )
     ProjectMember.objects.create(
         project=project, member=create_user, workspace=workspace, role=20
@@ -73,14 +75,20 @@ def guest_client(guest):
     return client
 
 
-def _make_issue(name, project, workspace, author):
+def _make_issue(name, project, workspace, author, state_name="Έγκριση πελάτη"):
     """Create an issue with a deterministic ``created_by``.
 
     ``BaseModel.save`` auto-sets ``created_by`` from the current request user
     (None/anonymous under tests), so a ``created_by=`` kwarg to ``create`` is
     overwritten. Passing ``created_by_id`` to ``save`` sets it explicitly.
+
+    GAM: guests only see issues in client-visible states, so by default the
+    issue is in "Έγκριση πελάτη" (client approval).
     """
-    issue = Issue(name=name, project=project, workspace=workspace)
+    state, _ = State.objects.get_or_create(
+        name=state_name, project=project, workspace=workspace, defaults={"group": "started", "color": "#F97316"}
+    )
+    issue = Issue(name=name, project=project, workspace=workspace, state=state)
     issue.save(created_by_id=author.id)
     return issue
 
@@ -143,3 +151,19 @@ class TestIssueListGuestScope:
         assert response.status_code == status.HTTP_200_OK
         returned_ids = {str(row["id"]) for row in response.data}
         assert {str(own_issue.id), str(foreign_issue.id)} <= returned_ids
+
+    @pytest.mark.django_db
+    def test_guest_cannot_read_internal_stage_issue(self, guest_client, workspace, project, create_user):
+        """GAM: a guest never sees issues in internal stages, even with guest_view_all_features."""
+        project.guest_view_all_features = True
+        project.save(update_fields=["guest_view_all_features"])
+        visible = _make_issue("Proof for the client", project, workspace, create_user)
+        internal = _make_issue("Internal quotation", project, workspace, create_user, state_name="Προσφορά")
+
+        url = LIST_URL.format(slug=workspace.slug, project_id=project.id)
+        response = guest_client.get(url, {"issues": f"{visible.id},{internal.id}"})
+
+        assert response.status_code == status.HTTP_200_OK
+        returned_ids = {str(row["id"]) for row in response.data}
+        assert str(visible.id) in returned_ids
+        assert str(internal.id) not in returned_ids

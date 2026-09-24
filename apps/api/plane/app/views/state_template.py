@@ -5,7 +5,7 @@
 # GAM addition: state templates. Admins manage them in workspace settings;
 # project admins apply one to their project.
 
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Max
 
 from rest_framework import status
@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers import StateTemplateItemSerializer, StateTemplateSerializer
 from plane.db.models import Project, StateTemplate, StateTemplateItem, Workspace
+from plane.utils.gam_i18n import message
 from plane.utils.gam_state_templates import apply_state_template
 
 from .base import BaseAPIView, BaseViewSet
@@ -43,18 +44,20 @@ class StateTemplateViewSet(BaseViewSet):
         try:
             serializer = StateTemplateSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(workspace_id=workspace.id)
+                with transaction.atomic():
+                    serializer.save(workspace_id=workspace.id)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
-            return Response({"error": "A template with this name already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": message(request, "A template with this name already exists.", "Υπάρχει ήδη πρότυπο με αυτό το όνομα.")}, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission([ROLE.ADMIN], level="WORKSPACE")
     def partial_update(self, request, *args, **kwargs):
         serializer = StateTemplateSerializer(instance=self.get_object(), data=request.data, partial=True)
         if serializer.is_valid():
             try:
-                template = serializer.save()
+                with transaction.atomic():
+                    template = serializer.save()
                 # Only one default template per workspace
                 if template.is_default:
                     StateTemplate.objects.filter(workspace_id=template.workspace_id).exclude(pk=template.pk).update(
@@ -62,7 +65,7 @@ class StateTemplateViewSet(BaseViewSet):
                     )
             except IntegrityError:
                 return Response(
-                    {"error": "A template with this name already exists."}, status=status.HTTP_400_BAD_REQUEST
+                    {"error": message(request, "A template with this name already exists.", "Υπάρχει ήδη πρότυπο με αυτό το όνομα.")}, status=status.HTTP_400_BAD_REQUEST
                 )
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -124,6 +127,6 @@ class ProjectStateTemplateEndpoint(BaseAPIView):
         try:
             template = StateTemplate.objects.get(pk=request.data.get("template"), workspace__slug=slug)
         except (StateTemplate.DoesNotExist, ValueError):
-            return Response({"error": "Template not found."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": message(request, "Template not found.", "Το πρότυπο δεν βρέθηκε.")}, status=status.HTTP_400_BAD_REQUEST)
         result = apply_state_template(project, template, request.user)
         return Response(result, status=status.HTTP_200_OK)

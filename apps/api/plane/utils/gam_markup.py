@@ -18,6 +18,7 @@ from plane.db.models import FileAsset
 from plane.settings.storage import S3Storage
 
 MAX_MARKS = 30
+MAX_SIDE = 3000  # the pinned copy is for reading the notes, not for print
 MAX_TEXT = 500
 PIN = (220, 38, 38)
 
@@ -52,7 +53,9 @@ def _font(size):
 
 def draw_pins(data, marks):
     image = Image.open(io.BytesIO(data))
+    image.draft("RGB", (MAX_SIDE, MAX_SIDE))  # large JPEGs decode at reduced size
     image = image.convert("RGB")
+    image.thumbnail((MAX_SIDE, MAX_SIDE))
     width, height = image.size
     draw = ImageDraw.Draw(image)
     radius = max(12, min(width, height) // 40)

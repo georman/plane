@@ -38,7 +38,7 @@ import { ServicesWorkspaceSettingsHeader } from "./header";
 const SERVICES_SWR_KEY = (slug: string) => `GAM_SERVICES_${slug}`;
 
 const showError = (error: any, fallback: string) =>
-  setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? fallback });
+  setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? fallback });
 
 type TServiceRowProps = {
   slug: string;
@@ -61,7 +61,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       refresh();
     } catch (error: any) {
       setName(service.name);
-      showError(error, "Could not rename service.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -70,7 +70,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       await billingService.updateService(slug, service.id, { billing_type: billingType });
       refresh();
     } catch (error: any) {
-      showError(error, "Could not change the billing type.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -82,7 +82,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       setNewStep("");
       refresh();
     } catch (error: any) {
-      showError(error, "Could not add step.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -93,7 +93,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       await billingService.updateServiceTemplateItem(slug, service.id, step.id, { name: trimmed });
       refresh();
     } catch (error: any) {
-      showError(error, "Could not rename step.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -109,7 +109,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       ]);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not reorder steps.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -118,7 +118,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       await billingService.deleteServiceTemplateItem(slug, service.id, stepId);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not delete step.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -270,7 +270,7 @@ function ServicesSettingsPage() {
       setNewBillingType("per_job");
       mutate(SERVICES_SWR_KEY(slug));
     } catch (error: any) {
-      showError(error, "Could not create service.");
+      showError(error, translate("gam.error_generic"));
     } finally {
       setIsSubmitting(false);
     }
@@ -281,7 +281,7 @@ function ServicesSettingsPage() {
       await billingService.deleteService(slug, serviceId);
       mutate(SERVICES_SWR_KEY(slug));
     } catch (error: any) {
-      showError(error, "Could not delete service.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 

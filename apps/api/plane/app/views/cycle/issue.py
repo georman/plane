@@ -23,6 +23,7 @@ from .. import BaseViewSet
 from plane.app.serializers import CycleIssueSerializer
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.db.models import Cycle, CycleIssue, Issue, FileAsset, IssueLink
+from plane.utils.gam_guest import hide_internal_from_guests
 from plane.utils.grouper import (
     issue_group_values,
     issue_on_results,
@@ -114,6 +115,7 @@ class CycleIssueViewSet(BaseViewSet):
             .filter(project_id=project_id)
             .filter(workspace__slug=slug)
         )
+        issue_queryset = hide_internal_from_guests(issue_queryset, request.user)  # GAM
 
         # Apply filtering from filterset
         issue_queryset = self.filter_queryset(issue_queryset)

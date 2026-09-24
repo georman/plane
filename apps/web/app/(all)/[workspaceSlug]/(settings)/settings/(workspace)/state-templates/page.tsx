@@ -38,7 +38,7 @@ const STATE_TEMPLATES_SWR_KEY = (slug: string) => `GAM_STATE_TEMPLATES_${slug}`;
 const GROUPS: TStateTemplateGroup[] = ["backlog", "unstarted", "started", "completed", "cancelled"];
 
 const showError = (error: any, fallback: string) =>
-  setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? fallback });
+  setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? fallback });
 
 function GroupSelect({
   value,
@@ -90,7 +90,7 @@ const TemplateRow = observer(function TemplateRow({
       refresh();
     } catch (error: any) {
       setName(stateDisplayName(template.name));
-      showError(error, "Could not rename the template.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -99,7 +99,7 @@ const TemplateRow = observer(function TemplateRow({
       await stateTemplateService.updateItem(slug, template.id, item.id, data);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not update the state.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -108,7 +108,7 @@ const TemplateRow = observer(function TemplateRow({
       await stateTemplateService.updateTemplate(slug, template.id, { is_default: !template.is_default });
       refresh();
     } catch (error: any) {
-      showError(error, "Could not change the default template.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -123,7 +123,7 @@ const TemplateRow = observer(function TemplateRow({
       ]);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not reorder the states.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -132,7 +132,7 @@ const TemplateRow = observer(function TemplateRow({
       await stateTemplateService.deleteItem(slug, template.id, itemId);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not delete the state.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -148,7 +148,7 @@ const TemplateRow = observer(function TemplateRow({
       setNewItemName("");
       refresh();
     } catch (error: any) {
-      showError(error, "Could not add the state.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -320,7 +320,7 @@ function StateTemplatesSettingsPage() {
       setNewName("");
       mutate(STATE_TEMPLATES_SWR_KEY(slug));
     } catch (error: any) {
-      showError(error, "Could not create the template.");
+      showError(error, translate("gam.error_generic"));
     } finally {
       setIsSubmitting(false);
     }
@@ -332,7 +332,7 @@ function StateTemplatesSettingsPage() {
       await stateTemplateService.deleteTemplate(slug, templateId);
       mutate(STATE_TEMPLATES_SWR_KEY(slug));
     } catch (error: any) {
-      showError(error, "Could not delete the template.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 

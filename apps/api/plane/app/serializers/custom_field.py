@@ -20,7 +20,7 @@ class CustomFieldSerializer(BaseSerializer):
     def validate_name(self, name):
         name = name.strip()
         if not name:
-            raise serializers.ValidationError("The field needs a name.")
+            raise serializers.ValidationError("Το πεδίο χρειάζεται όνομα. / The field needs a name.")
         return name
 
     def validate_options(self, options):

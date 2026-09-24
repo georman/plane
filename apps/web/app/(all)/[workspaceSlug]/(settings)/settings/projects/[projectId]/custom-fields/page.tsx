@@ -33,7 +33,7 @@ import { CustomFieldsProjectSettingsHeader } from "./header";
 const TYPES: TCustomFieldType[] = ["text", "number", "date", "select", "checkbox"];
 const fieldsKey = (projectId: string) => `GAM_CUSTOM_FIELDS_${projectId}`;
 const showError = (error: any, fallback: string) =>
-  setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? error?.name?.[0] ?? fallback });
+  setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? error?.name?.[0] ?? fallback });
 
 function TypeSelect({ value, onChange }: { value: TCustomFieldType; onChange: (type: TCustomFieldType) => void }) {
   return (
@@ -71,7 +71,7 @@ function FieldRow({
       await customFieldService.updateField(slug, projectId, field.id, data);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not update the field.");
+      showError(error, translate("gam.error_generic"));
     }
   };
   const move = async (direction: -1 | 1) => {
@@ -84,7 +84,7 @@ function FieldRow({
       ]);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not reorder the fields.");
+      showError(error, translate("gam.error_generic"));
     }
   };
   const remove = async () => {
@@ -93,7 +93,7 @@ function FieldRow({
       await customFieldService.deleteField(slug, projectId, field.id);
       refresh();
     } catch (error: any) {
-      showError(error, "Could not delete the field.");
+      showError(error, translate("gam.error_generic"));
     }
   };
 
@@ -182,7 +182,7 @@ function CustomFieldsSettingsPage({ params }: Route.ComponentProps) {
       setName("");
       mutate(fieldsKey(projectId));
     } catch (error: any) {
-      showError(error, "Could not add the field.");
+      showError(error, translate("gam.error_generic"));
     } finally {
       setIsSubmitting(false);
     }

@@ -63,7 +63,7 @@ function RateCard({
       setPrice("");
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not add rate." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     } finally {
       setIsSubmitting(false);
     }
@@ -74,7 +74,7 @@ function RateCard({
       await billingService.updateCustomerRate(slug, customerId, rateId, { price: newPrice });
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not update rate." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     }
   };
 
@@ -83,7 +83,7 @@ function RateCard({
       await billingService.deleteCustomerRate(slug, customerId, rateId);
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not remove rate." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     }
   };
 
@@ -141,11 +141,11 @@ function RateCard({
             className="w-28"
           />
           <Button variant="secondary" size="sm" onClick={handleAddRate} disabled={isSubmitting || !serviceId || !price}>
-            Add rate
+            {translate("gam.add_rate")}
           </Button>
         </div>
       ) : (
-        <p className="text-13 text-tertiary">All services already have a price for this customer.</p>
+        <p className="text-13 text-tertiary">{translate("gam.all_services_priced")}</p>
       )}
     </div>
   );
@@ -176,7 +176,7 @@ function CustomerDetailsForm({
       mutate(CUSTOMERS_SWR_KEY(slug));
       setToast({ type: TOAST_TYPE.SUCCESS, title: translate("gam.saved"), message: name.trim() });
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not save the customer." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     } finally {
       setIsSubmitting(false);
     }
@@ -224,7 +224,7 @@ function CustomerPortalLink({ slug, customerId, hasEmail }: { slug: string; cust
       await navigator.clipboard.writeText(result.url);
       setToast({ type: TOAST_TYPE.SUCCESS, title: translate("gam.portal.copied"), message: result.url });
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not get the portal link." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     } finally {
       setIsBusy(false);
     }
@@ -291,7 +291,7 @@ function CustomersSettingsPage() {
       setLanguage("el");
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not create customer." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     } finally {
       setIsSubmitting(false);
     }
@@ -303,7 +303,7 @@ function CustomersSettingsPage() {
       await billingService.updateCustomer(slug, customerId, { language: newLanguage });
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not change the language." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     }
   };
 
@@ -312,7 +312,7 @@ function CustomersSettingsPage() {
       await billingService.deleteCustomer(slug, customerId);
       mutate(CUSTOMERS_SWR_KEY(slug));
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not delete customer." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     }
   };
 

@@ -25,8 +25,11 @@ const inputClass =
   "h-7 w-full rounded-sm border border-transparent bg-transparent px-2 text-body-xs-regular hover:border-subtle focus:border-subtle focus:outline-none disabled:cursor-not-allowed";
 
 export function IssueCustomFields({ workspaceSlug, projectId, issueId, disabled }: Props) {
-  const { data: fields } = useSWR(`GAM_CUSTOM_FIELDS_${projectId}`, () =>
-    customFieldService.fetchFields(workspaceSlug, projectId)
+  // Guests get no custom fields (the server refuses): don't retry
+  const { data: fields } = useSWR(
+    `GAM_CUSTOM_FIELDS_${projectId}`,
+    () => customFieldService.fetchFields(workspaceSlug, projectId),
+    { shouldRetryOnError: false }
   );
   const valuesKey = fields?.length ? `GAM_CUSTOM_FIELD_VALUES_${issueId}` : null;
   const { data: values, mutate } = useSWR(valuesKey, () =>
@@ -41,7 +44,7 @@ export function IssueCustomFields({ workspaceSlug, projectId, issueId, disabled 
       const updated = await customFieldService.updateValues(workspaceSlug, projectId, issueId, { [field.id]: value });
       mutate(updated as TCustomFieldValues, false);
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not save the value." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
       mutate();
     }
   };

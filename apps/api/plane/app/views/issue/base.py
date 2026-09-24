@@ -68,6 +68,7 @@ from plane.utils.grouper import (
     issue_on_results,
     issue_queryset_grouper,
 )
+from plane.utils.gam_guest import GAM_GUEST_VISIBLE_STATE_NAMES, hide_internal_from_guests
 from plane.utils.host import base_host
 from plane.utils.issue_filters import issue_filters
 from plane.utils.order_queryset import order_issue_queryset
@@ -76,23 +77,7 @@ from plane.utils.timezone_converter import user_timezone_converter
 
 from .. import BaseAPIView, BaseViewSet
 
-# GAM: names of the standardized pipeline states (see plane_stack.md memory)
-# that a client Guest is allowed to see. Work isn't shown to clients until
-# it's ready for their review - earlier internal stages (New request,
-# Quotation, Approved, In progress, Internal review) stay staff-only.
-GAM_GUEST_VISIBLE_STATE_NAMES = [
-    "Έγκριση πελάτη",
-    "Διορθώσεις",
-    "Έτοιμο για παράδοση",
-    "Παραδόθηκε",
-    "Τιμολογήθηκε",
-    # English names, for projects created before the Greek rename
-    "Client approval",
-    "Corrections",
-    "Ready for delivery",
-    "Delivered",
-    "Invoiced",
-]
+# GAM: client-visible states live in plane/utils/gam_guest.py
 
 
 class IssueListEndpoint(BaseAPIView):
@@ -122,6 +107,8 @@ class IssueListEndpoint(BaseAPIView):
             project__guest_view_all_features=False,
         ).exists():
             queryset = queryset.filter(created_by=request.user)
+        # GAM: clients don't see internal stages
+        queryset = hide_internal_from_guests(queryset, request.user)
 
         # Apply filtering from filterset
         queryset = self.filter_queryset(queryset)

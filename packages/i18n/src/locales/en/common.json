@@ -1094,6 +1094,10 @@
     },
     "states": {
       "default_not_deletable": "The default state can't be deleted. Make another state the default first."
-    }
+    },
+    "error": "Error",
+    "error_generic": "Something went wrong. Please try again.",
+    "all_services_priced": "All services already have a price for this customer.",
+    "add_rate": "Add price"
   }
 }

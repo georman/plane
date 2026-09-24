@@ -45,7 +45,7 @@ export const ApplyStateTemplate = observer(function ApplyStateTemplate({ workspa
       });
       setTemplateId("");
     } catch (error: any) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not apply the template." });
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
     } finally {
       setIsApplying(false);
     }

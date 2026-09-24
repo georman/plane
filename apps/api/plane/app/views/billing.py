@@ -29,6 +29,7 @@ from plane.db.models import (
     Workspace,
 )
 
+from plane.utils.gam_i18n import message
 from plane.utils.gam_portal import portal_url
 
 from .base import BaseAPIView, BaseViewSet
@@ -63,7 +64,7 @@ class ServiceViewSet(BaseViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
             return Response(
-                {"error": "A service with this name already exists."},
+                {"error": message(request, "A service with this name already exists.", "Υπάρχει ήδη υπηρεσία με αυτό το όνομα.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -114,7 +115,7 @@ class CustomerViewSet(BaseViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
             return Response(
-                {"error": "A customer with this name already exists."},
+                {"error": message(request, "A customer with this name already exists.", "Υπάρχει ήδη πελάτης με αυτό το όνομα.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -299,10 +300,10 @@ class CustomerPortalLinkEndpoint(BaseAPIView):
             return Response({"url": portal_url(customer)}, status=status.HTTP_200_OK)
         if action == "email":
             if not customer.contact_email:
-                return Response({"error": "This customer has no contact email."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": message(request, "This customer has no contact email.", "Ο πελάτης δεν έχει email επικοινωνίας.")}, status=status.HTTP_400_BAD_REQUEST)
             delivered_to = send_portal_link(customer)
             return Response({"url": portal_url(customer), "sent_to": delivered_to}, status=status.HTTP_200_OK)
-        return Response({"error": "Unknown action."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": message(request, "Unknown action.", "Άγνωστη ενέργεια.")}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def send_portal_link(customer):

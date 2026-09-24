@@ -28,6 +28,7 @@ from plane.db.models import (
     Project,
     CycleIssue,
 )
+from plane.utils.gam_guest import hide_internal_from_guests
 from plane.utils.grouper import (
     issue_group_values,
     issue_on_results,
@@ -82,7 +83,7 @@ class ModuleIssueViewSet(BaseViewSet):
         )
 
     def get_queryset(self):
-        return (
+        queryset = (
             Issue.issue_objects.filter(
                 project_id=self.kwargs.get("project_id"),
                 workspace__slug=self.kwargs.get("slug"),
@@ -90,6 +91,7 @@ class ModuleIssueViewSet(BaseViewSet):
                 issue_module__deleted_at__isnull=True,
             )
         ).distinct()
+        return hide_internal_from_guests(queryset, self.request.user)  # GAM
 
     @method_decorator(gzip_page)
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])

@@ -40,6 +40,7 @@ from plane.db.models import (
     IssueLabel,
     ModuleIssue,
 )
+from plane.utils.gam_guest import hide_internal_from_guests
 from plane.utils.issue_filters import issue_filters
 from plane.utils.order_queryset import VIEW_ORDER_BY_ALLOWLIST, order_issue_queryset, sanitize_order_by
 from plane.bgtasks.recent_visited_task import recent_visited_task
@@ -216,7 +217,10 @@ class WorkspaceViewIssuesViewSet(BaseViewSet):
         )
 
     def get_queryset(self):
-        return Issue.issue_objects.filter(workspace__slug=self.kwargs.get("slug"))
+        # GAM: clients don't see internal stages
+        return hide_internal_from_guests(
+            Issue.issue_objects.filter(workspace__slug=self.kwargs.get("slug")), self.request.user
+        )
 
     @method_decorator(gzip_page)
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")

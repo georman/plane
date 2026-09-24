@@ -27,6 +27,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 # Module imports
+from plane.utils.gam_guest import hide_internal_from_guests
 from plane.app.views.base import BaseAPIView
 from plane.app.permissions import WorkspaceUserPermission
 from plane.db.models import (
@@ -100,6 +101,7 @@ class GlobalSearchEndpoint(BaseAPIView):
             project__archived_at__isnull=True,
             workspace__slug=slug,
         )
+        issues = hide_internal_from_guests(issues, self.request.user)  # GAM
 
         if workspace_search == "false" and project_id:
             issues = issues.filter(project_id=project_id)
@@ -251,6 +253,7 @@ class GlobalSearchEndpoint(BaseAPIView):
             project__archived_at__isnull=True,
             workspace__slug=slug,
         ).filter(models.Q(issue_intake__status=0) | models.Q(issue_intake__status=-2))
+        issues = hide_internal_from_guests(issues, self.request.user)  # GAM
 
         if workspace_search == "false" and project_id:
             issues = issues.filter(project_id=project_id)

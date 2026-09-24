@@ -110,6 +110,8 @@ def render(language, title, body):
 
 def client_status(issue, language):
     index = 0 if language == "el" else 1
+    if not issue.state:
+        return IN_PROGRESS[index]
     if issue.state.group == "completed":
         return CLIENT_STATES.get(issue.state.name, DONE)[index]
     return CLIENT_STATES.get(issue.state.name, IN_PROGRESS)[index]
@@ -159,13 +161,13 @@ def client_portal(request, token):
     open_rows = [
         job_row(issue, language, t)
         for issue in sorted(issues, key=lambda i: (i.target_date is None, i.target_date, i.sequence_id))
-        if issue.state.group not in ("completed", "cancelled") and issue.id not in waiting_ids
+        if (not issue.state or issue.state.group not in ("completed", "cancelled")) and issue.id not in waiting_ids
     ]
     since = timezone.now() - timedelta(days=RECENT_DAYS)
     done_rows = [
         job_row(issue, language, t, f'<span class="badge ok">{escape(client_status(issue, language))}</span>')
         for issue in sorted(issues, key=lambda i: i.completed_at or since, reverse=True)
-        if issue.state.group == "completed" and issue.completed_at and issue.completed_at >= since
+        if issue.state and issue.state.group == "completed" and issue.completed_at and issue.completed_at >= since
     ]
     statement_rows = [
         f'<li><span>{escape(month_label(statement.period, language))}</span>'

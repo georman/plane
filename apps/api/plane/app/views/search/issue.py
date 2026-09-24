@@ -12,6 +12,7 @@ from rest_framework.response import Response
 # Module imports
 from .base import BaseAPIView
 from plane.db.models import Issue, ProjectMember, IssueRelation
+from plane.utils.gam_guest import hide_internal_from_guests
 from plane.utils.issue_search import search_issues
 
 
@@ -113,6 +114,7 @@ class IssueSearchEndpoint(BaseAPIView):
             project__project_projectmember__is_active=True,
             project__archived_at__isnull=True,
         )
+        issues = hide_internal_from_guests(issues, self.request.user)  # GAM
 
         if workspace_search == "false":
             issues = self.filter_issues_by_project(project_id, issues)
