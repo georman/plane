@@ -6,7 +6,7 @@
 
 from django.db import transaction
 
-from plane.db.models import Issue, State
+from plane.db.models import DraftIssue, Issue, State
 
 
 @transaction.atomic
@@ -49,12 +49,19 @@ def apply_state_template(project, template, user):
 
     removed, kept = 0, []
     for state in existing.values():
-        if Issue.all_objects.filter(state=state, deleted_at__isnull=True).exists():
+        in_use = (
+            Issue.all_objects.filter(state=state, deleted_at__isnull=True).exists()
+            or DraftIssue.objects.filter(state=state).exists()
+        )
+        if in_use:
             kept.append(state.name)
             continue
         if state.default and not default_item_state:
             kept.append(state.name)
             continue
+        if project.default_state_id == state.id:
+            project.default_state = default_item_state
+            project.save(update_fields=["default_state"])
         state.delete()
         removed += 1
     return {"added": added, "updated": updated, "removed": removed, "kept": kept}

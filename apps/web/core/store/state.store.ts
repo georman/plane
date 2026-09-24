@@ -237,6 +237,11 @@ export class StateStore implements IStateStore {
   fetchProjectStates = async (workspaceSlug: string, projectId: string) => {
     const statesResponse = await this.stateService.getStates(workspaceSlug, projectId);
     runInAction(() => {
+      // GAM: forget states that were removed on the server (e.g. by applying a state template)
+      const returnedIds = new Set(statesResponse.map((state) => state.id));
+      Object.values(this.stateMap).forEach((state) => {
+        if (state.project_id === projectId && !returnedIds.has(state.id)) delete this.stateMap[state.id];
+      });
       statesResponse.forEach((state) => {
         set(this.stateMap, [state.id], this.localize(state));
       });

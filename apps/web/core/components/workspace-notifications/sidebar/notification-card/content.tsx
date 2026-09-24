@@ -21,7 +21,7 @@ import {
   renderAdditionalValue,
   shouldShowConnector,
 } from "../../notification-card/content";
-import { translate } from "@plane/i18n"; // GAM addition: translations
+import { stateDisplayName, translate } from "@plane/i18n"; // GAM addition: translations
 
 // Types
 export type TNotificationFieldData = {
@@ -45,6 +45,10 @@ export type TNotificationContentMap = {
 
 // Base notification content map for core fields
 export const BASE_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {
+  // GAM: pipeline state names in the viewer's language
+  state: ({ newValue }) => ({
+    value: stateDisplayName(newValue ?? ""),
+  }),
   duplicate: ({ verb }) => ({
     action:
       verb === "created"

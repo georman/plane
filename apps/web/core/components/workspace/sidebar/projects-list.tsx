@@ -97,6 +97,7 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
   const handleOnProjectNest = (sourceId: string | undefined, destinationId: string | undefined) => {
     if (!sourceId || !destinationId || sourceId === destinationId) return;
     setProjectParent(sourceId, destinationId);
+    toggleProjectListOpen(destinationId, true);
   };
   const hasMoreProjects = false;
 
