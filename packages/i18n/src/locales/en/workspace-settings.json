@@ -487,12 +487,12 @@
       },
       "services": {
         "heading": "Services",
-        "description": "The types of billable work GAM offers (Design, CTP, SEO, IG Posts, ...).",
+        "description": "The types of billable work you offer (Design, CTP, SEO, IG Posts, ...).",
         "title": "Services"
       },
       "customers": {
         "heading": "Customers",
-        "description": "GAM's clients and their agreed price per service.",
+        "description": "Your clients and their agreed price per service.",
         "title": "Customers"
       },
       "state_templates": {

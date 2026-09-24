@@ -29,6 +29,8 @@ from plane.db.models import (
     Workspace,
 )
 
+from plane.utils.gam_portal import portal_url
+
 from .base import BaseAPIView, BaseViewSet
 
 
@@ -276,3 +278,53 @@ class IssueCustomerServiceEndpoint(BaseAPIView):
             issue_id=issue_id, issue__project_id=project_id, issue__workspace__slug=slug
         ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomerPortalLinkEndpoint(BaseAPIView):
+    """GAM: a customer's client portal link. GET: the link. POST {"action": "renew"}: new link
+    (the old one stops working). POST {"action": "email"}: email the link to the customer."""
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def get(self, request, slug, pk):
+        customer = Customer.objects.get(pk=pk, workspace__slug=slug)
+        return Response({"url": portal_url(customer)}, status=status.HTTP_200_OK)
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def post(self, request, slug, pk):
+        customer = Customer.objects.get(pk=pk, workspace__slug=slug)
+        action = request.data.get("action")
+        if action == "renew":
+            customer.portal_version += 1
+            customer.save(update_fields=["portal_version"])
+            return Response({"url": portal_url(customer)}, status=status.HTTP_200_OK)
+        if action == "email":
+            if not customer.contact_email:
+                return Response({"error": "This customer has no contact email."}, status=status.HTTP_400_BAD_REQUEST)
+            delivered_to = send_portal_link(customer)
+            return Response({"url": portal_url(customer), "sent_to": delivered_to}, status=status.HTTP_200_OK)
+        return Response({"error": "Unknown action."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def send_portal_link(customer):
+    from html import escape
+
+    from plane.bgtasks.gam_approval_task import email_button, email_shell, send_client_email
+    from plane.license.utils.gam_brand import get_brand
+
+    brand = get_brand()
+    url = portal_url(customer)
+    if customer.language == "en":
+        subject = f"Your jobs at {brand['name']}"
+        intro = "Here is your personal link to see your jobs, approvals and monthly statements at any time:"
+        button = "Open my jobs"
+        note = "Keep this link private: anyone with it can see your jobs."
+    else:
+        subject = f"Οι εργασίες σας στην {brand['name']}"
+        intro = "Αυτός είναι ο προσωπικός σας σύνδεσμος για να βλέπετε τις εργασίες, τις εγκρίσεις και τις μηνιαίες καταστάσεις σας:"
+        button = "Οι εργασίες μου"
+        note = "Κρατήστε τον σύνδεσμο για εσάς: όποιος τον έχει βλέπει τις εργασίες σας."
+    html = email_shell(
+        brand, customer.language,
+        f"<p>{escape(intro)}</p>{email_button(url, button)}<p style='color:#5a6862;font-size:13px'>{escape(note)}</p>",
+    )
+    return send_client_email(customer.contact_email, subject, html, f"{intro}\n{url}\n\n{note}")

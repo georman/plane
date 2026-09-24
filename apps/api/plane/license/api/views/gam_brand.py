@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from plane.license.api.permissions import InstanceAdminPermission
 from plane.license.models import InstanceConfiguration
 from plane.license.utils.gam_brand import DEFAULT_LOGO_PATH, get_brand
+from plane.license.utils.gam_legal_defaults import DEFAULTS as LEGAL_DEFAULTS
 from plane.settings.storage import S3Storage
 from plane.utils.cache import invalidate_cache
 
@@ -81,3 +82,12 @@ class BrandLogoEndpoint(BaseAPIView):
             config.value = ""
             config.save()
         return Response(get_brand(), status=status.HTTP_200_OK)
+
+
+class LegalDefaultsEndpoint(BaseAPIView):
+    """GAM: the standard Terms / Privacy texts (Markdown), shown in God mode > Legal to start editing from."""
+
+    permission_classes = [InstanceAdminPermission]
+
+    def get(self, request):
+        return Response(LEGAL_DEFAULTS, status=status.HTTP_200_OK)

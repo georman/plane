@@ -3,8 +3,8 @@
 from django.db import migrations
 
 BRAND_KEYS = {
-    "GAM_BRAND_NAME": "GAM",
-    "GAM_SUPPORT_EMAIL": "info@gam.gr",
+    "GAM_BRAND_NAME": "",
+    "GAM_SUPPORT_EMAIL": "",
     "GAM_BRAND_WEBSITE": "",
     "GAM_BRAND_LOGO": "",
 }

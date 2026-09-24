@@ -49,7 +49,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
       GAM_SUPPORT_EMAIL: config["GAM_SUPPORT_EMAIL"],
       GAM_BRAND_WEBSITE: config["GAM_BRAND_WEBSITE"],
       GAM_CLIENT_EMAILS: config["GAM_CLIENT_EMAILS"] || "test",
-      GAM_TEST_EMAIL: config["GAM_TEST_EMAIL"] || "info@gam.gr",
+      GAM_TEST_EMAIL: config["GAM_TEST_EMAIL"] || "",
     },
   });
   const clientEmailMode = watch("GAM_CLIENT_EMAILS");
@@ -120,7 +120,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
           name="GAM_BRAND_NAME"
           label="Brand name"
           description="Shown instead of the product name in every app, language, email and error page."
-          placeholder="GAM"
+          placeholder="Company"
           error={Boolean(errors.GAM_BRAND_NAME)}
           required
         />
@@ -130,7 +130,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
           name="GAM_SUPPORT_EMAIL"
           label="Support email"
           description="Used for every Contact support link and in error messages."
-          placeholder="info@gam.gr"
+          placeholder="info@company.com"
           error={Boolean(errors.GAM_SUPPORT_EMAIL)}
           required
         />
@@ -140,7 +140,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
           name="GAM_BRAND_WEBSITE"
           label="Website (optional)"
           description="Help, docs and contact links open this. When empty they open an email to support."
-          placeholder="https://www.gam.gr"
+          placeholder="https://www.company.com"
           error={Boolean(errors.GAM_BRAND_WEBSITE)}
           required={false}
         />
@@ -177,7 +177,7 @@ export const InstanceBrandingForm = observer(function InstanceBrandingForm(props
             name="GAM_TEST_EMAIL"
             label="Test address"
             description="Receives all client emails while in test mode."
-            placeholder="info@gam.gr"
+            placeholder="info@company.com"
             error={Boolean(errors.GAM_TEST_EMAIL)}
             required
           />

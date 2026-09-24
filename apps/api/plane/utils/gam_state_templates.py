@@ -9,6 +9,16 @@ from django.db import transaction
 from plane.db.models import DraftIssue, Issue, State
 
 
+def template_for_new_project(workspace, template_id=None):
+    """The template a new project starts from: the one picked, else the workspace default (or None)."""
+    from plane.db.models import StateTemplate
+
+    templates = StateTemplate.objects.filter(workspace=workspace)
+    if template_id:
+        return templates.filter(pk=template_id).first()
+    return templates.filter(is_default=True).first()
+
+
 @transaction.atomic
 def apply_state_template(project, template, user):
     """Make the project's states match the template.

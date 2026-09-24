@@ -15,6 +15,8 @@ from drf_spectacular.views import (
 
 from plane.app.views.gam_approval import client_approval
 from plane.app.views.gam_billing import billing_review
+from plane.app.views.gam_legal import legal_page
+from plane.app.views.gam_portal import client_portal, client_portal_statement
 
 handler404 = "plane.app.views.error_404.custom_404_view"
 
@@ -23,6 +25,15 @@ urlpatterns = [
     path("api/gam/approval/<str:token>/", client_approval, name="gam-client-approval"),
     # GAM addition: "Approve & send" for monthly billing statements (link emailed to GAM only)
     path("api/gam/billing/<str:token>/", billing_review, name="gam-billing-review"),
+    # GAM addition: public Terms of Service / Privacy Policy (served at /legal/<doc> via nginx)
+    path("api/gam/legal/<str:doc>/", legal_page, name="gam-legal-page"),
+    # GAM addition: client portal (personal link per customer, from Settings > Customers)
+    path("api/gam/portal/<str:token>/", client_portal, name="gam-client-portal"),
+    path(
+        "api/gam/portal/<str:token>/statement/<uuid:statement_id>/",
+        client_portal_statement,
+        name="gam-client-portal-statement",
+    ),
     path("api/", include("plane.app.urls")),
     path("api/public/", include("plane.space.urls")),
     path("api/instances/", include("plane.license.urls")),

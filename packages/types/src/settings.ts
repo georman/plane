@@ -39,7 +39,9 @@ export type TProjectSettingsTabs =
   | "states"
   | "labels"
   | "estimates"
-  | "automations";
+  | "automations"
+  // GAM addition
+  | "custom_fields";
 export type TProjectSettingsItem = {
   key: TProjectSettingsTabs;
   i18n_label: string;

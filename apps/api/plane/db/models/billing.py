@@ -53,6 +53,8 @@ class Customer(BaseModel):
     LANGUAGE_CHOICES = (("el", "Ελληνικά"), ("en", "English"))
     language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default="el")
     is_active = models.BooleanField(default=True)
+    # Client portal link; bumping it makes older links stop working
+    portal_version = models.PositiveIntegerField(default=1)
 
     class Meta:
         db_table = "gam_customers"

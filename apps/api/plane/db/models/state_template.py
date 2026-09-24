@@ -23,6 +23,8 @@ TEMPLATE_GROUP_CHOICES = [
 class StateTemplate(BaseModel):
     workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="state_templates")
     name = models.CharField(max_length=255)
+    # New projects start from this template unless another one is picked
+    is_default = models.BooleanField(default=False)
 
     class Meta:
         db_table = "gam_state_templates"

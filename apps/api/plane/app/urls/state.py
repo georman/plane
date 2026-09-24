@@ -5,10 +5,32 @@
 from django.urls import path
 
 
-from plane.app.views import StateViewSet, IntakeStateEndpoint, ProjectStateTemplateEndpoint
+from plane.app.views import (
+    CustomFieldViewSet,
+    IntakeStateEndpoint,
+    IssueCustomFieldValuesEndpoint,
+    ProjectStateTemplateEndpoint,
+    StateViewSet,
+)
 
 
 urlpatterns = [
+    # GAM: custom fields
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/custom-fields/",
+        CustomFieldViewSet.as_view({"get": "list", "post": "create"}),
+        name="project-custom-fields",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/custom-fields/<uuid:pk>/",
+        CustomFieldViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="project-custom-fields",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issues/<uuid:issue_id>/custom-field-values/",
+        IssueCustomFieldValuesEndpoint.as_view(),
+        name="issue-custom-field-values",
+    ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/state-template/",
         ProjectStateTemplateEndpoint.as_view(),

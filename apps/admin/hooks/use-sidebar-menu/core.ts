@@ -4,14 +4,22 @@
  * See the LICENSE file for details.
  */
 
-import { Image, BrainCog, Cog, Mail, Palette } from "lucide-react";
+import { Image, BrainCog, Cog, FileText, Mail, Palette } from "lucide-react";
 // plane imports
 import { LockIcon, WorkspaceIcon } from "@plane/propel/icons";
 // types
 import type { TSidebarMenuItem } from "./types";
 import { brandName } from "@plane/i18n"; // GAM addition: white label
 
-export type TCoreSidebarMenuKey = "general" | "branding" | "email" | "workspace" | "authentication" | "ai" | "image";
+export type TCoreSidebarMenuKey =
+  | "general"
+  | "branding"
+  | "legal"
+  | "email"
+  | "workspace"
+  | "authentication"
+  | "ai"
+  | "image";
 
 export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem> = {
   general: {
@@ -26,6 +34,13 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
     name: "Branding",
     description: "Name, support email, website and logo.",
     href: `/branding/`,
+  },
+  // GAM addition: public Terms of Service / Privacy Policy
+  legal: {
+    Icon: FileText,
+    name: "Legal",
+    description: "Terms of Service and Privacy Policy, in Greek and English.",
+    href: `/legal/`,
   },
   email: {
     Icon: Mail,

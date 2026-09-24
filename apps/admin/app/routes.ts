@@ -13,6 +13,7 @@ export default [
     route("general", "./(all)/(dashboard)/general/page.tsx"),
     // GAM addition: white-label brand settings
     route("branding", "./(all)/(dashboard)/branding/page.tsx"),
+    route("legal", "./(all)/(dashboard)/legal/page.tsx"),
     route("workspace", "./(all)/(dashboard)/workspace/page.tsx"),
     route("workspace/create", "./(all)/(dashboard)/workspace/create/page.tsx"),
     route("email", "./(all)/(dashboard)/email/page.tsx"),

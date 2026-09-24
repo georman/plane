@@ -11,6 +11,7 @@ from .billing import (
     ServiceTemplateItemSerializer,
 )
 from .state_template import StateTemplateItemSerializer, StateTemplateSerializer
+from .custom_field import CustomFieldSerializer
 from .user import (
     UserSerializer,
     UserLiteSerializer,

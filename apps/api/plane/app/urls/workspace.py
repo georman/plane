@@ -8,6 +8,7 @@ from django.urls import path
 from plane.authentication.views.impersonate import ImpersonateMemberEndpoint
 
 from plane.app.views import (
+    CustomerPortalLinkEndpoint,
     CustomerServiceRateViewSet,
     CustomerViewSet,
     ServiceTemplateItemViewSet,
@@ -165,6 +166,11 @@ urlpatterns = [
             {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
         ),
         name="workspace-customer",
+    ),
+    path(
+        "workspaces/<str:slug>/customers/<uuid:pk>/portal-link/",
+        CustomerPortalLinkEndpoint.as_view(),
+        name="workspace-customer-portal-link",
     ),
     path(
         "workspaces/<str:slug>/customers/<uuid:customer_id>/rates/",

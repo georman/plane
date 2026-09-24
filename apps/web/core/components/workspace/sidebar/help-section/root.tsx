@@ -7,7 +7,7 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { HelpCircle, User } from "lucide-react";
-import { brandHelpUrl, brandSupportEmail, useTranslation } from "@plane/i18n";
+import { brandHelpUrl, brandSupportEmail, SOURCE_CODE_URL, useTranslation } from "@plane/i18n";
 import { PageIcon } from "@plane/propel/icons";
 // ui
 import { CustomMenu } from "@plane/ui";
@@ -78,9 +78,10 @@ export const HelpMenuRoot = observer(function HelpMenuRoot() {
             <span className="text-11">{t("whats_new")}</span>
           </button>
         </CustomMenu.MenuItem>
-        <CustomMenu.MenuItem onClick={() => window.open(`${brandHelpUrl()}`, "_blank", "noopener,noreferrer")}>
+        {/* GAM: AGPL - the source code of this modified version */}
+        <CustomMenu.MenuItem onClick={() => window.open(SOURCE_CODE_URL, "_blank", "noopener,noreferrer")}>
           <div className="flex items-center gap-x-2 rounded-sm text-11">
-            <span className="text-11">Forum</span>
+            <span className="text-11">{t("gam.source_code")}</span>
           </div>
         </CustomMenu.MenuItem>
         <div className="mt-1 border-t border-subtle px-1 pt-2 text-11 text-secondary">

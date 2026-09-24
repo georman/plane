@@ -26,7 +26,6 @@ from plane.app.views.base import BaseAPIView, BaseViewSet
 from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.bgtasks.webhook_task import model_activity, webhook_activity
 from plane.db.models import (
-    StateTemplate,
     UserFavorite,
     DeployBoard,
     Intake,
@@ -41,7 +40,7 @@ from plane.db.models import (
     WorkspaceMember,
 )
 from plane.db.models.intake import IntakeIssueStatus
-from plane.utils.gam_state_templates import apply_state_template
+from plane.utils.gam_state_templates import apply_state_template, template_for_new_project
 from plane.utils.host import base_host
 from plane.utils.order_queryset import PROJECT_ORDER_BY_ALLOWLIST, sanitize_order_by
 
@@ -297,12 +296,10 @@ class ProjectViewSet(BaseViewSet):
                 ]
             )
 
-            # GAM: start from the chosen state template instead of the default pipeline
-            state_template_id = request.data.get("state_template")
-            if state_template_id:
-                template = StateTemplate.objects.filter(pk=state_template_id, workspace=workspace).first()
-                if template:
-                    apply_state_template(serializer.instance, template, request.user)
+            # GAM: start from the chosen state template, else the workspace's default template
+            template = template_for_new_project(workspace, request.data.get("state_template"))
+            if template:
+                apply_state_template(serializer.instance, template, request.user)
 
             project = self.get_queryset().filter(pk=serializer.data["id"]).first()
 

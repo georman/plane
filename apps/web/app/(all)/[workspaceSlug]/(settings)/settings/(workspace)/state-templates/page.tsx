@@ -103,6 +103,15 @@ const TemplateRow = observer(function TemplateRow({
     }
   };
 
+  const handleToggleDefault = async () => {
+    try {
+      await stateTemplateService.updateTemplate(slug, template.id, { is_default: !template.is_default });
+      refresh();
+    } catch (error: any) {
+      showError(error, "Could not change the default template.");
+    }
+  };
+
   const handleMove = async (index: number, direction: -1 | 1) => {
     const current = items[index];
     const neighbour = items[index + direction];
@@ -166,6 +175,19 @@ const TemplateRow = observer(function TemplateRow({
           className="flex-1 border-transparent hover:border-subtle"
           aria-label={translate("gam.st.template_name")}
         />
+        <button
+          type="button"
+          onClick={handleToggleDefault}
+          className={`shrink-0 rounded-sm border px-2 py-0.5 text-11 ${
+            template.is_default
+              ? "border-accent-strong bg-accent-subtle text-accent-primary"
+              : "border-subtle text-tertiary hover:text-primary"
+          }`}
+          title={translate("gam.st.default_template_hint")}
+          aria-pressed={template.is_default}
+        >
+          {template.is_default ? translate("gam.st.default_template") : translate("gam.st.make_default")}
+        </button>
         <span className="shrink-0 text-12 text-tertiary">{translate("gam.st.states", { count: items.length })}</span>
         <button
           type="button"

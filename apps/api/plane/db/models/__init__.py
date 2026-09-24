@@ -16,6 +16,7 @@ from .billing import (
 )
 from .recurrence import IssueRecurrence
 from .state_template import StateTemplate, StateTemplateItem
+from .custom_field import CustomField, IssueCustomFieldValue
 from .approval import ApprovalItemDecision, ApprovalRequest
 from .sla import IssueSLA
 from .cycle import Cycle, CycleIssue, CycleUserProperties

@@ -12,6 +12,7 @@ export function useSidebarMenu(): TSidebarMenuItem[] {
   return [
     coreSidebarMenuLinks.general,
     coreSidebarMenuLinks.branding,
+    coreSidebarMenuLinks.legal,
     coreSidebarMenuLinks.email,
     coreSidebarMenuLinks.authentication,
     coreSidebarMenuLinks.workspace,

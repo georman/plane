@@ -10,14 +10,15 @@ import os
 
 from plane.license.models import InstanceConfiguration
 
+# Neutral defaults: a new installation shows no company until its admin fills in Branding
 BRAND_KEYS = {
-    "GAM_BRAND_NAME": "GAM",
-    "GAM_SUPPORT_EMAIL": "info@gam.gr",
+    "GAM_BRAND_NAME": "Projects",
+    "GAM_SUPPORT_EMAIL": "",
     "GAM_BRAND_WEBSITE": "",
     "GAM_BRAND_LOGO": "",  # storage key of the uploaded logo; empty = built-in logo
     # Client emails stay in test mode (all sent to GAM_TEST_EMAIL) until switched to "live"
     "GAM_CLIENT_EMAILS": "test",
-    "GAM_TEST_EMAIL": "info@gam.gr",
+    "GAM_TEST_EMAIL": "",
 }
 BRAND_CATEGORY = "BRANDING"
 LOGO_PATH = "/api/instances/brand-logo/"
@@ -25,7 +26,7 @@ DEFAULT_LOGO_PATH = "/assets/gam-logo.png"
 
 
 def web_url():
-    return os.environ.get("WEB_URL", "https://project.gam.gr").rstrip("/")
+    return os.environ.get("WEB_URL", "http://localhost").rstrip("/")
 
 
 def get_brand():
@@ -33,7 +34,7 @@ def get_brand():
     value = lambda key: (values.get(key) or BRAND_KEYS[key]).strip()  # noqa: E731
     logo_key = value("GAM_BRAND_LOGO")
     return {
-        "name": value("GAM_BRAND_NAME") or "GAM",
+        "name": value("GAM_BRAND_NAME") or "Projects",
         "support_email": value("GAM_SUPPORT_EMAIL"),
         "website": value("GAM_BRAND_WEBSITE"),
         "has_custom_logo": bool(logo_key),
@@ -49,5 +50,5 @@ def client_email_settings():
         InstanceConfiguration.objects.filter(key__in=["GAM_CLIENT_EMAILS", "GAM_TEST_EMAIL"]).values_list("key", "value")
     )
     mode = (values.get("GAM_CLIENT_EMAILS") or "test").strip().lower()
-    test_email = (values.get("GAM_TEST_EMAIL") or "").strip() or BRAND_KEYS["GAM_TEST_EMAIL"]
+    test_email = (values.get("GAM_TEST_EMAIL") or "").strip() or get_brand()["support_email"]
     return ("live", None) if mode == "live" else ("test", test_email)

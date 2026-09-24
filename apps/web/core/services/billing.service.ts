@@ -102,6 +102,20 @@ export class BillingService extends APIService {
       });
   }
 
+  /** GAM: client portal link of a customer; action "renew" makes a new link, "email" sends it to the customer */
+  async customerPortalLink(
+    workspaceSlug: string,
+    customerId: string,
+    action?: "renew" | "email"
+  ): Promise<{ url: string; sent_to?: string | null }> {
+    const url = `/api/workspaces/${workspaceSlug}/customers/${customerId}/portal-link/`;
+    return (action ? this.post(url, { action }) : this.get(url))
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async updateCustomer(workspaceSlug: string, customerId: string, data: Partial<ICustomer>): Promise<ICustomer> {
     return this.patch(`/api/workspaces/${workspaceSlug}/customers/${customerId}/`, data)
       .then((response) => response?.data)

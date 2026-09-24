@@ -6,6 +6,7 @@ from django.urls import path
 
 from plane.license.api.views import (
     BrandLogoEndpoint,
+    LegalDefaultsEndpoint,
     EmailCredentialCheckEndpoint,
     InstanceAdminEndpoint,
     InstanceAdminSignInEndpoint,
@@ -24,6 +25,7 @@ from plane.license.api.views import (
 urlpatterns = [
     # GAM addition: white-label brand logo
     path("brand-logo/", BrandLogoEndpoint.as_view(), name="instance-brand-logo"),
+    path("legal-defaults/", LegalDefaultsEndpoint.as_view(), name="instance-legal-defaults"),
     path("", InstanceEndpoint.as_view(), name="instance"),
     path("admins/", InstanceAdminEndpoint.as_view(), name="instance-admins"),
     path("admins/me/", InstanceAdminUserMeEndpoint.as_view(), name="instance-admins"),

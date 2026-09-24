@@ -29,6 +29,7 @@ import { ButtonAvatars } from "@/components/dropdowns/member/avatar";
 import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
 import { PriorityDropdown } from "@/components/dropdowns/priority";
 import { StateDropdown } from "@/components/dropdowns/state/dropdown";
+import { IssueCustomFields } from "@/components/issues/issue-detail/custom-fields";
 import { SidebarPropertyListItem } from "@/components/common/layout/sidebar/property-list-item";
 // helpers
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
@@ -243,6 +244,9 @@ export const PeekOverviewProperties = observer(function PeekOverviewProperties(p
         <SidebarPropertyListItem icon={LabelPropertyIcon} label={t("common.labels")}>
           <IssueLabel workspaceSlug={workspaceSlug} projectId={projectId} issueId={issueId} disabled={disabled} />
         </SidebarPropertyListItem>
+
+        {/* GAM: the project's custom fields */}
+        <IssueCustomFields workspaceSlug={workspaceSlug} projectId={projectId} issueId={issueId} disabled={disabled} />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-KEYS = {"GAM_CLIENT_EMAILS": "test", "GAM_TEST_EMAIL": "info@gam.gr"}
+KEYS = {"GAM_CLIENT_EMAILS": "test", "GAM_TEST_EMAIL": ""}
 
 
 def create_keys(apps, schema_editor):

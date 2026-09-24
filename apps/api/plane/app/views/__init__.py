@@ -3,6 +3,7 @@
 # See the LICENSE file for details.
 
 from .billing import (
+    CustomerPortalLinkEndpoint,
     CustomerServiceRateViewSet,
     CustomerViewSet,
     IssueCustomerServiceEndpoint,
@@ -11,6 +12,7 @@ from .billing import (
 )
 from .recurrence import IssueRecurrenceEndpoint
 from .state_template import ProjectStateTemplateEndpoint, StateTemplateItemViewSet, StateTemplateViewSet
+from .custom_field import CustomFieldViewSet, IssueCustomFieldValuesEndpoint
 from .project.base import (
     ProjectViewSet,
     ProjectIdentifierEndpoint,

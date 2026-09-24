@@ -96,8 +96,19 @@ export type TInstanceBrandConfigurationKeys =
   | "GAM_CLIENT_EMAILS"
   | "GAM_TEST_EMAIL";
 
+// GAM addition: Terms of Service / Privacy Policy (Markdown, Greek and English)
+export type TInstanceLegalConfigurationKeys =
+  | "GAM_LEGAL_COMPANY"
+  | "GAM_LEGAL_ADDRESS"
+  | "GAM_LEGAL_UPDATED"
+  | "GAM_LEGAL_TERMS_EL"
+  | "GAM_LEGAL_TERMS_EN"
+  | "GAM_LEGAL_PRIVACY_EL"
+  | "GAM_LEGAL_PRIVACY_EN";
+
 export type TInstanceConfigurationKeys =
   | TInstanceBrandConfigurationKeys
+  | TInstanceLegalConfigurationKeys
   | TInstanceAIConfigurationKeys
   | TInstanceEmailConfigurationKeys
   | TInstanceImageConfigurationKeys

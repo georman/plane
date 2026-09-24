@@ -22,6 +22,8 @@ export interface IStateTemplate {
   id: string;
   workspace_id: string;
   name: string;
+  // New projects start from this template unless another one is picked
+  is_default: boolean;
   items: IStateTemplateItem[];
 }
 

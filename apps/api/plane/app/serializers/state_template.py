@@ -21,5 +21,5 @@ class StateTemplateSerializer(BaseSerializer):
 
     class Meta:
         model = StateTemplate
-        fields = ["id", "workspace_id", "name", "items"]
+        fields = ["id", "workspace_id", "name", "is_default", "items"]
         read_only_fields = ["workspace"]

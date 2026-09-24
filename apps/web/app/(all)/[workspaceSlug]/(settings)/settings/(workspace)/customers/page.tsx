@@ -205,6 +205,46 @@ function CustomerDetailsForm({
   );
 }
 
+// GAM: the customer's personal client portal link
+function CustomerPortalLink({ slug, customerId, hasEmail }: { slug: string; customerId: string; hasEmail: boolean }) {
+  const [isBusy, setIsBusy] = useState(false);
+  const run = async (action: "copy" | "email" | "renew") => {
+    if (action === "renew" && !window.confirm(translate("gam.portal.renew_confirm"))) return;
+    setIsBusy(true);
+    try {
+      const result = await billingService.customerPortalLink(slug, customerId, action === "copy" ? undefined : action);
+      if (action === "email") {
+        setToast({
+          type: TOAST_TYPE.SUCCESS,
+          title: translate("gam.portal.emailed"),
+          message: result.sent_to ?? translate("gam.portal.not_sent"),
+        });
+        return;
+      }
+      await navigator.clipboard.writeText(result.url);
+      setToast({ type: TOAST_TYPE.SUCCESS, title: translate("gam.portal.copied"), message: result.url });
+    } catch (error: any) {
+      setToast({ type: TOAST_TYPE.ERROR, title: "Error", message: error?.error ?? "Could not get the portal link." });
+    } finally {
+      setIsBusy(false);
+    }
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-2 bg-layer-1 px-4 pt-3">
+      <span className="text-13 text-secondary">{translate("gam.portal.title")}:</span>
+      <Button variant="secondary" size="sm" disabled={isBusy} onClick={() => run("copy")}>
+        {translate("gam.portal.copy")}
+      </Button>
+      <Button variant="secondary" size="sm" disabled={isBusy || !hasEmail} onClick={() => run("email")}>
+        {translate("gam.portal.email")}
+      </Button>
+      <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => run("renew")}>
+        {translate("gam.portal.renew")}
+      </Button>
+    </div>
+  );
+}
+
 function CustomersSettingsPage() {
   const { workspaceSlug } = useParams();
   const slug = workspaceSlug as string;
@@ -360,6 +400,7 @@ function CustomersSettingsPage() {
                   {isExpanded && (
                     <>
                       <CustomerDetailsForm slug={slug} customer={customer} />
+                      <CustomerPortalLink slug={slug} customerId={customer.id} hasEmail={!!customer.contact_email} />
                       <RateCard slug={slug} customerId={customer.id} rates={customer.rates} services={services} />
                     </>
                   )}

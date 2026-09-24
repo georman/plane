@@ -54,7 +54,12 @@ class StateTemplateViewSet(BaseViewSet):
         serializer = StateTemplateSerializer(instance=self.get_object(), data=request.data, partial=True)
         if serializer.is_valid():
             try:
-                serializer.save()
+                template = serializer.save()
+                # Only one default template per workspace
+                if template.is_default:
+                    StateTemplate.objects.filter(workspace_id=template.workspace_id).exclude(pk=template.pk).update(
+                        is_default=False
+                    )
             except IntegrityError:
                 return Response(
                     {"error": "A template with this name already exists."}, status=status.HTTP_400_BAD_REQUEST

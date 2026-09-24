@@ -19,8 +19,8 @@ export type TBrand = {
 
 const STORAGE_KEY = "gam_brand";
 export const DEFAULT_BRAND: TBrand = {
-  name: "GAM",
-  support_email: "info@gam.gr",
+  name: "Projects",
+  support_email: "",
   website: "",
   logo_url: "/assets/gam-logo.png",
 };
@@ -39,6 +39,8 @@ let currentBrand: TBrand = readStoredBrand();
 const listeners = new Set<(brand: TBrand) => void>();
 
 export const getBrand = (): TBrand => currentBrand;
+/** AGPL: users of this modified version can get its source code here. */
+export const SOURCE_CODE_URL = "https://github.com/georman/plane/tree/gam-greek-locale";
 export const brandName = (): string => currentBrand.name || DEFAULT_BRAND.name;
 export const brandSupportEmail = (): string => currentBrand.support_email || DEFAULT_BRAND.support_email;
 export const brandLogoUrl = (): string => currentBrand.logo_url || DEFAULT_BRAND.logo_url;

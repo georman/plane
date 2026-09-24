@@ -26,6 +26,7 @@ from plane.license.utils.gam_brand import get_brand
 from plane.settings.storage import S3Storage
 from plane.utils.gam_approval import batch_posts, corrections_state, next_state_after, read_token
 from plane.utils.gam_client_texts import client_language, texts
+from plane.utils.gam_markup import parse_marks, save_markup
 from plane.utils.gam_worktime import TZ
 
 PAGE = """<!doctype html>
@@ -53,19 +54,89 @@ PAGE = """<!doctype html>
   .badge {{ display:inline-block; padding:4px 10px; border-radius:999px; font-weight:bold; font-size:14px; }}
   .badge.ok {{ background:#e3f3ea; color:#1f6f4a; }} .badge.warn {{ background:#fdecea; color:#b42318; }}
   .ok {{ color:#1f6f4a; }} .warn {{ color:#b42318; }}
+  .proof {{ position:relative; display:inline-block; max-width:100%; cursor:crosshair; }}
+  .proof img {{ display:block; }}
+  .pin {{ position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#dc2626;
+          color:#fff; border:2px solid #fff; font:bold 13px/22px Arial, sans-serif; text-align:center;
+          box-shadow:0 1px 4px rgba(0,0,0,.4); pointer-events:none; }}
+  .marks {{ margin:8px 0 0; padding:0; list-style:none; display:grid; gap:6px; }}
+  .marks li {{ display:flex; gap:8px; align-items:center; }}
+  .marks .num {{ flex:none; width:24px; height:24px; border-radius:50%; background:#dc2626; color:#fff;
+                 font:bold 12px/24px Arial, sans-serif; text-align:center; }}
+  .marks input {{ flex:1; font:inherit; padding:8px; border:1px solid #d7dfdb; border-radius:6px; }}
+  .marks button {{ padding:6px 10px; font-weight:normal; background:#fff; border:1px solid #aab5b0; }}
+  .hint {{ font-size:14px; }}
 </style></head>
-<body><main>
+<body data-markup-placeholder="{markup_placeholder}" data-markup-remove="{markup_remove}"><main>
 <img src="{logo_url}" alt="{brand_name}" width="110">
 {body}
-</main></body></html>"""
+</main>
+<script>
+// GAM: click on a proof image to pin a numbered note; the notes are sent
+// with "Request changes" or a comment (hidden field "marks").
+(function () {{
+  var marks = [];
+  var placeholder = document.body.getAttribute("data-markup-placeholder") || "";
+  var removeLabel = document.body.getAttribute("data-markup-remove") || "x";
+  function render() {{
+    document.querySelectorAll(".proof").forEach(function (proof) {{
+      proof.querySelectorAll(".pin").forEach(function (pin) {{ pin.remove(); }});
+      var list = proof.parentNode.querySelector(".marks");
+      if (list) list.innerHTML = "";
+      marks.forEach(function (mark, index) {{
+        if (mark.asset !== proof.dataset.asset) return;
+        var pin = document.createElement("span");
+        pin.className = "pin"; pin.textContent = index + 1;
+        pin.style.left = mark.x + "%"; pin.style.top = mark.y + "%";
+        proof.appendChild(pin);
+        var row = document.createElement("li");
+        var num = document.createElement("span"); num.className = "num"; num.textContent = index + 1;
+        var input = document.createElement("input"); input.value = mark.text; input.placeholder = placeholder;
+        input.oninput = function () {{ mark.text = input.value; }};
+        var remove = document.createElement("button"); remove.type = "button"; remove.textContent = removeLabel;
+        remove.onclick = function () {{ marks.splice(marks.indexOf(mark), 1); render(); }};
+        row.appendChild(num); row.appendChild(input); row.appendChild(remove);
+        list.appendChild(row);
+        if (mark.focus) {{ input.focus(); mark.focus = false; }}
+      }});
+    }});
+  }}
+  document.querySelectorAll(".proof img").forEach(function (img) {{
+    img.addEventListener("click", function (event) {{
+      var box = img.getBoundingClientRect();
+      marks.push({{
+        asset: img.parentNode.dataset.asset, issue: img.parentNode.dataset.issue,
+        x: (event.clientX - box.left) / box.width * 100, y: (event.clientY - box.top) / box.height * 100,
+        text: "", focus: true
+      }});
+      render();
+    }});
+  }});
+  document.querySelectorAll("form").forEach(function (form) {{
+    var note = form.querySelector("textarea[name=note]");
+    if (!note) return;
+    form.addEventListener("submit", function () {{
+      var item = form.querySelector("input[name=item]");
+      var chosen = marks.filter(function (mark) {{ return !item || mark.issue === item.value; }});
+      var field = form.querySelector("input[name=marks]") || document.createElement("input");
+      field.type = "hidden"; field.name = "marks";
+      field.value = JSON.stringify(chosen.map(function (m) {{ return {{ asset: m.asset, x: m.x, y: m.y, text: m.text }}; }}));
+      form.appendChild(field);
+    }});
+  }});
+}})();
+</script>
+</body></html>"""
 
 
 def page(title, body, language):
     brand = get_brand()
+    t = texts(language)
     return HttpResponse(
         PAGE.format(
             lang=language, title=escape(title), body=body,
             brand_name=escape(brand["name"]), logo_url=escape(brand["logo_url"]),
+            markup_placeholder=escape(t["markup_placeholder"]), markup_remove=escape(t["markup_remove"]),
         )
     )
 
@@ -83,8 +154,13 @@ def files_html(request, issue, t):
         if not url:
             continue
         if (asset.attributes.get("type") or "").startswith("image/"):
+            # GAM: clicking the image pins a note (see the page script); full size opens from the link
             parts.append(
-                f'<a href="{escape(url)}" target="_blank" rel="noopener"><img src="{escape(url)}" alt="{escape(name)}"></a>'
+                f'<div><p class="muted hint">{t["markup_hint"]}</p>'
+                f'<div class="proof" data-asset="{asset.id}" data-issue="{issue.id}">'
+                f'<img src="{escape(url)}" alt="{escape(name)}"></div>'
+                f'<ul class="marks"></ul>'
+                f'<a class="muted hint" href="{escape(url)}" target="_blank" rel="noopener">{t["open_full"]}</a></div>'
             )
         else:
             parts.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">📎 {escape(name)}</a>')
@@ -192,19 +268,32 @@ def client_approval(request, token):
         action = request.POST.get("action")
         note = (request.POST.get("note") or "").strip()
         who = escape(approval.recipient_email)
+        # GAM: notes pinned on the proof images
+        assets = {str(a.id): a for item in [issue, *posts] for a in proof_files(item)}
+        marks = parse_marks(request.POST.get("marks"), assets)
+        if action == "changes_item":
+            marks = [m for m in marks if str(assets[m["asset"]].issue_id) == request.POST.get("item")]
+        pinned_note = note or ("(σημειώσεις πάνω στην εικόνα)" if marks else "")
+
+        def keep_marks():
+            if marks:
+                save_markup(marks, assets, approval.requested_by_id, approval.recipient_email, add_comment)
 
         if action == "comment":
-            if not note:
+            if not note and not marks:
                 return page(issue.name, form_html(request, approval, posts, decided, t, error=t["need_comment"]), language)
-            add_comment(issue, approval.requested_by_id, f"<p>💬 Σχόλιο πελάτη ({who}):</p>{note_html(note)}")
+            if note:
+                add_comment(issue, approval.requested_by_id, f"<p>💬 Σχόλιο πελάτη ({who}):</p>{note_html(note)}")
+            keep_marks()
             return message_page(t["done_comment_title"], t["done_comment_text"], language, "ok")
 
         if not posts:  # single item
             if action == "approve":
                 finish(approval, "approved")
                 return done_page("approved", language)
-            if action == "changes" and note:
-                finish(approval, "changes", note)
+            if action == "changes" and pinned_note:
+                finish(approval, "changes", pinned_note)
+                keep_marks()
                 return done_page("changes", language)
             return page(issue.name, form_html(request, approval, posts, decided, t, error=t["need_note"]), language)
 
@@ -217,8 +306,9 @@ def client_approval(request, token):
             post = by_id[request.POST["item"]]
             if action == "approve_item":
                 decide_post(approval, post, "approved")
-            elif note:
-                decide_post(approval, post, "changes", note)
+            elif pinned_note:
+                decide_post(approval, post, "changes", pinned_note)
+                keep_marks()
             else:
                 return page(issue.name, form_html(request, approval, posts, decided, t, error=t["need_note"]), language)
 
@@ -237,7 +327,7 @@ def changes_form(t, item_id=None):
     action = "changes_item" if item_id else "changes"
     return f"""<details><summary>{t['request_changes']}</summary>
   <form method="post"><input type="hidden" name="action" value="{action}">{item_field}
-    <label>{t['changes_label']}<textarea name="note" required></textarea></label>
+    <label>{t['changes_label']}<textarea name="note"></textarea></label>
     <button class="changes" type="submit">{t['send_changes']}</button>
   </form></details>"""
 

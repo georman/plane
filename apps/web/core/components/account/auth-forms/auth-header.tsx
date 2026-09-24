@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 import useSWR from "swr";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import type { IWorkspaceMemberInvitation } from "@plane/types";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
@@ -24,33 +24,31 @@ type TAuthHeader = {
   currentAuthStep: EAuthSteps;
 };
 
+// GAM: texts go through translate(), which swaps "Plane" for the brand set in Admin → Branding
+const title = (subHeaderKey: string) => ({ header: translate("gam.auth.header"), subHeader: translate(subHeaderKey) });
+const signIn = () => title("gam.auth.welcome_back");
+const signUp = () => title("gam.auth.create_account");
 const Titles = {
   [EAuthModes.SIGN_IN]: {
-    [EAuthSteps.EMAIL]: {
-      header: "GAM Projects",
-      subHeader: "Welcome back to GAM.",
+    get [EAuthSteps.EMAIL]() {
+      return signIn();
     },
-    [EAuthSteps.PASSWORD]: {
-      header: "GAM Projects",
-      subHeader: "Welcome back to GAM.",
+    get [EAuthSteps.PASSWORD]() {
+      return signIn();
     },
-    [EAuthSteps.UNIQUE_CODE]: {
-      header: "GAM Projects",
-      subHeader: "Welcome back to GAM.",
+    get [EAuthSteps.UNIQUE_CODE]() {
+      return signIn();
     },
   },
   [EAuthModes.SIGN_UP]: {
-    [EAuthSteps.EMAIL]: {
-      header: "GAM Projects",
-      subHeader: "Create your GAM account.",
+    get [EAuthSteps.EMAIL]() {
+      return signUp();
     },
-    [EAuthSteps.PASSWORD]: {
-      header: "GAM Projects",
-      subHeader: "Create your GAM account.",
+    get [EAuthSteps.PASSWORD]() {
+      return signUp();
     },
-    [EAuthSteps.UNIQUE_CODE]: {
-      header: "GAM Projects",
-      subHeader: "Create your GAM account.",
+    get [EAuthSteps.UNIQUE_CODE]() {
+      return signUp();
     },
   },
 };

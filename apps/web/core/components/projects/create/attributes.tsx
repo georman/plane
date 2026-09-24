@@ -32,6 +32,7 @@ function ProjectAttributes(props: Props) {
   const { data: stateTemplates } = useSWR(workspaceSlug ? `GAM_STATE_TEMPLATES_${workspaceSlug}` : null, () =>
     stateTemplateService.fetchTemplates(workspaceSlug as string)
   );
+  const defaultTemplate = stateTemplates?.find((template) => template.is_default);
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Controller
@@ -111,7 +112,11 @@ function ProjectAttributes(props: Props) {
               aria-label={translate("gam.st.choose_template")}
               title={translate("gam.st.choose_template")}
             >
-              <option value="">{translate("gam.st.default_pipeline")}</option>
+              <option value="">
+                {defaultTemplate
+                  ? translate("gam.st.default_named", { name: stateDisplayName(defaultTemplate.name) })
+                  : translate("gam.st.default_states")}
+              </option>
               {stateTemplates.map((template) => (
                 <option key={template.id} value={template.id}>
                   {stateDisplayName(template.name)}

@@ -1013,7 +1013,7 @@
       "resolution": "Resolution",
       "started": "Started",
       "unfinished": "Unfinished",
-      "tpl_gam_pipeline": "GAM pipeline",
+      "tpl_gam_pipeline": "Plane pipeline",
       "tpl_simple": "Simple",
       "tpl_basic_roadmap": "Basic roadmap",
       "tpl_extended_roadmap": "Extended roadmap",
@@ -1039,11 +1039,58 @@
       "none": "No templates yet.",
       "delete_confirm": "Delete this template? Projects that already use its states keep them.",
       "choose_template": "State template",
-      "default_pipeline": "Default (GAM pipeline)",
       "apply": "Apply template",
       "apply_confirm": "Apply this template to the project? States with work items are always kept.",
       "applied": "Template applied: {added} added, {updated} updated, {removed} removed.",
-      "kept": "Kept because they have work items: {names}"
+      "kept": "Kept because they have work items: {names}",
+      "default_template": "Default for new projects",
+      "make_default": "Make default",
+      "default_template_hint": "New projects start with this template unless another one is picked.",
+      "default_named": "Default ({name})",
+      "default_states": "Default states"
+    },
+    "auth": {
+      "header": "Plane Projects",
+      "welcome_back": "Welcome back to Plane.",
+      "create_account": "Create your Plane account."
+    },
+    "source_code": "Source code",
+    "legal": {
+      "by_signing_in": "By signing in, you understand and agree to \n our",
+      "by_signing_up": "By creating an account, you understand and agree to \n our",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "cf": {
+      "title": "Custom fields",
+      "description": "Extra fields for this project's work items (quantity, paper type, PO number...). They appear in each work item's properties.",
+      "type": "Type",
+      "types": {
+        "text": "Text",
+        "number": "Number",
+        "date": "Date",
+        "select": "Dropdown",
+        "checkbox": "Checkbox"
+      },
+      "name": "Field name",
+      "name_placeholder": "Field name, e.g. Quantity",
+      "add": "Add field",
+      "none": "No custom fields yet.",
+      "options": "Options",
+      "options_placeholder": "Options, separated by commas",
+      "delete_confirm": "Delete the field \"{name}\"? Its values on work items are hidden.",
+      "empty": "Empty"
+    },
+    "portal": {
+      "title": "Client portal",
+      "copy": "Copy link",
+      "email": "Email link to customer",
+      "renew": "New link",
+      "renew_confirm": "Make a new link? The old link stops working.",
+      "copied": "Link copied",
+      "emailed": "Link sent",
+      "not_sent": "Not sent: client emails are in test mode without a test address."
     }
   }
 }

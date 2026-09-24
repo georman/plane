@@ -39,6 +39,7 @@ from plane.db.models import (
     ProjectPage,
 )
 from plane.bgtasks.webhook_task import model_activity, webhook_activity
+from plane.utils.gam_state_templates import apply_state_template, template_for_new_project
 from plane.utils.exception_logger import log_exception
 from .base import BaseAPIView
 from plane.utils.host import base_host
@@ -269,6 +270,11 @@ class ProjectListCreateAPIEndpoint(BaseAPIView):
                             for state in DEFAULT_STATES
                         ]
                     )
+
+                    # GAM: the workspace's default state template, like projects created in the app
+                    template = template_for_new_project(serializer.instance.workspace)
+                    if template:
+                        apply_state_template(serializer.instance, template, request.user)
 
                     project = self.get_queryset().filter(pk=serializer.instance.id).first()
 

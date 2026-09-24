@@ -339,6 +339,11 @@ export const coreRoutes: RouteConfigEntry[] = [
               ":workspaceSlug/settings/projects/:projectId/states",
               "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/states/page.tsx"
             ),
+            // GAM: Project custom fields
+            route(
+              ":workspaceSlug/settings/projects/:projectId/custom-fields",
+              "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/custom-fields/page.tsx"
+            ),
             // Project Labels
             route(
               ":workspaceSlug/settings/projects/:projectId/labels",

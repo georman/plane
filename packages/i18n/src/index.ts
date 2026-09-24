@@ -32,6 +32,7 @@ export {
   brandSupportEmail,
   DEFAULT_BRAND,
   getBrand,
+  SOURCE_CODE_URL,
   setBrand,
   subscribeToBrand,
 } from "./brand";

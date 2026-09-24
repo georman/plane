@@ -153,6 +153,15 @@ export class InstanceService extends APIService {
       });
   }
 
+  /** GAM: the standard Terms / Privacy texts (Markdown) by document and language */
+  async getLegalDefaults(): Promise<Record<"terms" | "privacy", Record<"el" | "en", string>>> {
+    return this.get("/api/instances/legal-defaults/")
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async removeBrandLogo(): Promise<void> {
     return this.delete("/api/instances/brand-logo/")
       .then(() => undefined)

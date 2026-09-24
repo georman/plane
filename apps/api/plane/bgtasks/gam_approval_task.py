@@ -51,11 +51,11 @@ def proof_files(issue):
         entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
         is_uploaded=True,
         deleted_at__isnull=True,
-    ).order_by("-created_at")
+    ).exclude(attributes__has_key="gam_markup").order_by("-created_at")  # client markup copies are not proofs
 
 
 def approval_url(approval):
-    base = os.environ.get("WEB_URL", "https://project.gam.gr").rstrip("/")
+    base = os.environ.get("WEB_URL", "http://localhost").rstrip("/")
     return f"{base}/api/gam/approval/{make_token(approval)}/"
 
 
@@ -78,6 +78,9 @@ def send_client_email(to, subject, html, text, files=()):
     if mode == "live":
         send_email(to, subject, html, text, files)
         return to
+    if not test_email:
+        logging.getLogger("plane.worker").warning("Client emails are in test mode with no test address; %r not sent", subject)
+        return None
     banner = (
         '<div style="background:#fff4e5;border:1px solid #f0a020;padding:10px 14px;margin-bottom:16px;'
         'font-family:Arial,sans-serif;font-size:14px">🧪 <strong>ΔΟΚΙΜΗ / TEST</strong> – '
@@ -187,7 +190,10 @@ def send_approval_request(issue_id, state_id, actor_id):
 
         approval.sent_at = timezone.now()
         approval.save(update_fields=["sent_at"])
-        note = "" if delivered_to == email else f" (δοκιμαστική λειτουργία: στάλθηκε στο {escape(delivered_to)})"
+        if delivered_to is None:
+            note = " (δοκιμαστική λειτουργία χωρίς διεύθυνση δοκιμής: δεν στάλθηκε)"
+        else:
+            note = "" if delivered_to == email else f" (δοκιμαστική λειτουργία: στάλθηκε στο {escape(delivered_to)})"
         add_comment(issue, actor_id, f"<p>📧 Στάλθηκε email έγκρισης στο {escape(email)}{note}.</p>")
         logging.getLogger("plane.worker").info("GAM approval request sent for %s", issue_id)
     except Exception as e:

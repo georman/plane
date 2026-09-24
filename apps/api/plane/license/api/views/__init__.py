@@ -28,4 +28,4 @@ from .workspace import (
 )
 
 # GAM addition: brand logo
-from .gam_brand import BrandLogoEndpoint
+from .gam_brand import BrandLogoEndpoint, LegalDefaultsEndpoint

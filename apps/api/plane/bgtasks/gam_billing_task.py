@@ -11,6 +11,7 @@
 # the client's language, through the client-email test/live switch.
 
 import calendar
+import logging
 import uuid
 from datetime import date
 from decimal import Decimal
@@ -189,7 +190,10 @@ def send_review_email(statement, pdf):
     from plane.bgtasks.gam_approval_task import email_button, send_email
 
     brand = get_brand()
-    reviewer = brand["support_email"] or "info@gam.gr"
+    reviewer = brand["support_email"]
+    if not reviewer:
+        logging.getLogger("plane.worker").warning("No support email in Branding; billing statement %s not sent for review", statement.id)
+        return
     customer = statement.customer
     period = month_label(statement.period, "el")
     target = customer.contact_email or "(χωρίς email πελάτη)"
@@ -251,7 +255,7 @@ def send_statement_to_client(statement):
         [(pdf_filename(statement), read_pdf(statement), "application/pdf")],
     )
     statement.sent_at = timezone.now()
-    statement.sent_to = delivered_to
+    statement.sent_to = delivered_to or ""
     # In test mode the email went to the test address: the statement stays a draft
     if delivered_to == statement.customer.contact_email:
         statement.status = "sent"
