@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
+import { translate } from "@plane/i18n";
 import { Loader } from "lucide-react";
 import { CloseIcon } from "@plane/propel/icons";
 // plane imports
@@ -25,14 +26,16 @@ type TStateDelete = {
 };
 
 export const StateDelete = observer(function StateDelete(props: TStateDelete) {
-  const { totalStates, state, deleteStateCallback } = props;
+  const { state, deleteStateCallback } = props;
   // hooks
   const { isMobile } = usePlatformOS();
   // states
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   // derived values
-  const isDeleteDisabled = state.default ? true : totalStates === 1 ? true : false;
+  // GAM: the last state of a group can be deleted (the group stays, empty, so a state can be added back);
+  // only the default state is protected, so a project always keeps at least one state
+  const isDeleteDisabled = !!state.default;
 
   const handleDeleteState = async () => {
     if (isDeleteDisabled) return;
@@ -89,7 +92,7 @@ export const StateDelete = observer(function StateDelete(props: TStateDelete) {
       >
         <Tooltip
           tooltipContent={
-            state.default ? "Cannot delete the default state." : totalStates === 1 ? `Cannot have an empty group.` : ``
+            state.default ? translate("gam.states.default_not_deletable") : ``
           }
           isMobile={isMobile}
           disabled={!isDeleteDisabled}

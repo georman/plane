@@ -1091,6 +1091,9 @@
       "copied": "Link copied",
       "emailed": "Link sent",
       "not_sent": "Not sent: client emails are in test mode without a test address."
+    },
+    "states": {
+      "default_not_deletable": "The default state can't be deleted. Make another state the default first."
     }
   }
 }
