@@ -17,7 +17,7 @@ import { ArrowDown, ArrowUp, ChevronDown, ChevronRight, Trash2 } from "lucide-re
 import useSWR, { mutate } from "swr";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IService, IServiceTemplateItem } from "@plane/types";
@@ -137,7 +137,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
           aria-label="Service name"
         />
         <span className="shrink-0 text-12 text-tertiary">
-          {steps.length} {steps.length === 1 ? "step" : "steps"}
+          {translate("gam.steps", { count: steps.length })}
         </span>
         <button
           type="button"
@@ -151,7 +151,7 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
       {isOpen && (
         <div className="mt-3 ml-6 flex flex-col gap-2">
           <p className="text-12 text-tertiary">
-            These steps are added as sub-items when a work item is set to this service.
+            {translate("gam.steps_hint")}
           </p>
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center gap-2">
@@ -200,14 +200,14 @@ const ServiceRow = observer(function ServiceRow({ slug, service, onDelete }: TSe
               type="text"
               value={newStep}
               onChange={(e) => setNewStep(e.target.value)}
-              placeholder="Add a step, e.g. Send proof to client"
+              placeholder={translate("gam.step_placeholder")}
               className="flex-1"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddStep();
               }}
             />
             <Button variant="secondary" onClick={handleAddStep} disabled={!newStep.trim()}>
-              Add step
+              {translate("gam.add_step")}
             </Button>
           </div>
         </div>
@@ -277,14 +277,14 @@ function ServicesSettingsPage() {
             type="text"
             value={newServiceName}
             onChange={(e) => setNewServiceName(e.target.value)}
-            placeholder="e.g. Design, CTP, SEO, IG Posts"
+            placeholder={translate("gam.service_placeholder")}
             className="w-80"
             onKeyDown={(e) => {
               if (e.key === "Enter") handleCreate();
             }}
           />
           <Button variant="primary" onClick={handleCreate} disabled={isSubmitting || !newServiceName.trim()}>
-            Add service
+            {translate("gam.add_service")}
           </Button>
         </div>
         <div className="mt-6 divide-y divide-subtle border-t border-subtle">
@@ -293,7 +293,7 @@ function ServicesSettingsPage() {
               <ServiceRow key={service.id} slug={slug} service={service} onDelete={handleDelete} />
             ))
           ) : (
-            <p className="py-6 text-14 text-tertiary">No services yet - add one above.</p>
+            <p className="py-6 text-14 text-tertiary">{translate("gam.no_services")}</p>
           )}
         </div>
       </div>

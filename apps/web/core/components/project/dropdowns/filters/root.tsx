@@ -18,6 +18,7 @@ import { FilterAccess } from "./access";
 import { FilterCreatedDate } from "./created-at";
 import { FilterLead } from "./lead";
 import { FilterMembers } from "./members";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   displayFilters: TProjectDisplayFilters;
@@ -42,7 +43,7 @@ export const ProjectFiltersSelection = observer(function ProjectFiltersSelection
           <input
             type="text"
             className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
-            placeholder="Search"
+            placeholder={translate("search")}
             value={filtersSearchQuery}
             onChange={(e) => setFiltersSearchQuery(e.target.value)}
             autoFocus={!isMobile}

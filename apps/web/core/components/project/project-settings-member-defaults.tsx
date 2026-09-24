@@ -11,7 +11,7 @@ import { Controller, useForm } from "react-hook-form";
 import useSWR from "swr";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IProject, IUserLite, IWorkspace } from "@plane/types";
 import { Loader, ToggleSwitch } from "@plane/ui";
@@ -139,7 +139,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
 
   return (
     <div className="my-6 flex flex-col gap-y-6">
-      <DefaultSettingItem title="Project Lead" description="Select the project lead for the project.">
+      <DefaultSettingItem title={translate("project_settings.members.project_lead")} description={translate("gam.project_lead_desc")}>
         {currentProjectDetails ? (
           <Controller
             control={control}
@@ -160,7 +160,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
           </Loader>
         )}
       </DefaultSettingItem>
-      <DefaultSettingItem title="Default Assignee" description="Select the default assignee for the project.">
+      <DefaultSettingItem title={translate("project_settings.members.default_assignee")} description={translate("gam.default_assignee_desc")}>
         {currentProjectDetails ? (
           <Controller
             control={control}
@@ -183,8 +183,8 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
       </DefaultSettingItem>
       {currentProjectDetails && (
         <DefaultSettingItem
-          title="Guest access"
-          description="This will allow guests to have view access to all the project work items."
+          title={translate("gam.guest_access")}
+          description={translate("gam.guest_access_desc")}
         >
           <div className="flex items-center justify-end">
             <ToggleSwitch

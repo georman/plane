@@ -5,7 +5,7 @@
  */
 
 import { Pencil, ExternalLink, Link, Trash2, ArchiveRestoreIcon } from "lucide-react";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { ArchiveIcon } from "@plane/propel/icons";
 import type { TContextMenuItem } from "@plane/ui";
 
@@ -80,7 +80,7 @@ export const useQuickActionsFactory = () => {
 
     createCopyLayoutLinkMenuItem: (handler: () => void): TContextMenuItem => ({
       key: "copy-link",
-      title: "Copy link",
+      title: translate("copy_link"),
       icon: Link,
       action: handler,
     }),

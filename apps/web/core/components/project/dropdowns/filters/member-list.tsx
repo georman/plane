@@ -14,6 +14,7 @@ import { EUserProjectRoles, EUserWorkspaceRoles } from "@plane/types";
 import { CustomMenu } from "@plane/ui";
 // components
 import { FilterHeader, FilterOption } from "@/components/issues/issue-layouts/filters";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 interface IRoleOption {
   value: string;
@@ -27,15 +28,15 @@ type Props = {
 };
 
 const PROJECT_ROLE_OPTIONS: IRoleOption[] = [
-  { value: String(EUserProjectRoles.ADMIN), label: "Admin" },
-  { value: String(EUserProjectRoles.MEMBER), label: "Member" },
-  { value: String(EUserProjectRoles.GUEST), label: "Guest" },
+  { value: String(EUserProjectRoles.ADMIN), label: translate("role_details.admin.title") },
+  { value: String(EUserProjectRoles.MEMBER), label: translate("common.member") },
+  { value: String(EUserProjectRoles.GUEST), label: translate("role_details.guest.title") },
 ];
 
 const WORKSPACE_ROLE_OPTIONS: IRoleOption[] = [
-  { value: String(EUserWorkspaceRoles.ADMIN), label: "Admin" },
-  { value: String(EUserWorkspaceRoles.MEMBER), label: "Member" },
-  { value: String(EUserWorkspaceRoles.GUEST), label: "Guest" },
+  { value: String(EUserWorkspaceRoles.ADMIN), label: translate("role_details.admin.title") },
+  { value: String(EUserWorkspaceRoles.MEMBER), label: translate("common.member") },
+  { value: String(EUserWorkspaceRoles.GUEST), label: translate("role_details.guest.title") },
   { value: "suspended", label: "Suspended" },
 ];
 
@@ -102,7 +103,7 @@ export const MemberListFiltersDropdown = observer(function MemberListFiltersDrop
       customButton={
         <div className="relative">
           <Button variant="secondary" size="lg" className="flex items-center gap-2">
-            <span>Filters</span>
+            <span>{translate("common.filters")}</span>
             <ChevronDownIcon className="h-3 w-3" />
           </Button>
           {appliedFiltersCount > 0 && (

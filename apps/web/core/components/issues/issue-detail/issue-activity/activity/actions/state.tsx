@@ -10,6 +10,7 @@ import { StatePropertyIcon } from "@plane/propel/icons";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
 import { IssueActivityBlockComponent, IssueLink } from "./";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 // icons
 
 type TIssueStateActivity = { activityId: string; showIssue?: boolean; ends: "top" | "bottom" | undefined };
@@ -31,7 +32,7 @@ export const IssueStateActivity = observer(function IssueStateActivity(props: TI
       ends={ends}
     >
       <>
-        set the state to <span className="font-medium text-primary">{activity.new_value}</span>
+        {translate("gam.set_state_to")} <span className="font-medium text-primary">{activity.new_value}</span>
         {showIssue ? ` for ` : ``}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>

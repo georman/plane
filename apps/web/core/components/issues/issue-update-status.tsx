@@ -9,6 +9,7 @@ import { observer } from "mobx-react";
 import { RefreshCw } from "lucide-react";
 // types
 import type { TNameDescriptionLoader } from "@plane/types";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   isSubmitting: TNameDescriptionLoader;
@@ -27,7 +28,7 @@ export const NameDescriptionUpdateStatus = observer(function NameDescriptionUpda
         {isSubmitting !== "submitted" && isSubmitting !== "saved" && (
           <RefreshCw className="size-3.5 animate-spin stroke-tertiary" />
         )}
-        <span className="text-13 text-tertiary">{isSubmitting === "submitting" ? "Saving..." : "Saved"}</span>
+        <span className="text-13 text-tertiary">{isSubmitting === "submitting" ? translate("gam.saving") : translate("gam.saved")}</span>
       </div>
     </>
   );

@@ -9,6 +9,7 @@ import { PanelLeft } from "lucide-react";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { IconButton } from "@plane/propel/icon-button";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const AppSidebarToggleButton = observer(function AppSidebarToggleButton() {
   // store hooks
@@ -19,6 +20,7 @@ export const AppSidebarToggleButton = observer(function AppSidebarToggleButton()
       size="base"
       variant="ghost"
       icon={PanelLeft}
+      aria-label={translate("gam.menu")}
       onClick={() => {
         if (sidebarPeek) toggleSidebarPeek(false);
         toggleSidebar();

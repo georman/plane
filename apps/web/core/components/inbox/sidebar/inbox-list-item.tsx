@@ -22,7 +22,7 @@ import { useProjectInbox } from "@/hooks/store/use-project-inbox";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local imports
 import { InboxIssueStatus } from "../inbox-issue-status";
-import { brandName } from "@plane/i18n"; // GAM addition: white label
+import { brandName, translate } from "@plane/i18n"; // GAM addition: white label
 
 type InboxIssueListItemProps = {
   workspaceSlug: string;
@@ -83,7 +83,7 @@ export const InboxIssueListItem = observer(function InboxIssueListItem(props: In
           <div className="flex items-center justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <Tooltip
-                tooltipHeading="Created on"
+                tooltipHeading={translate("common.created_on")}
                 tooltipContent={`${renderFormattedDate(issue.created_at ?? "")}`}
                 isMobile={isMobile}
               >

@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { observer } from "mobx-react";
 // plane imports
 import { ROLE_DETAILS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Logo } from "@plane/propel/emoji-icon-picker";
 import { IconButton } from "@plane/propel/icon-button";
 // hooks
@@ -48,7 +48,7 @@ export const ProjectSettingsSidebarHeader = observer(function ProjectSettingsSid
           icon={ArrowLeft}
           onClick={() => router.push(`/${currentWorkspace?.slug}/projects/${projectId}/issues/`)}
         />
-        <p>Project settings</p>
+        <p>{translate("gam.project_settings")}</p>
       </div>
       <div className="mt-1.5 flex items-center gap-2 truncate px-5 py-0.5">
         <div className="grid size-8 shrink-0 place-items-center rounded bg-layer-2">

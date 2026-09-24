@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { observer } from "mobx-react";
 // plane imports
 import { ROLE_DETAILS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { IconButton } from "@plane/propel/icon-button";
 // components
 import { WorkspaceLogo } from "@/components/workspace/logo";
@@ -41,7 +41,7 @@ export const WorkspaceSettingsSidebarHeader = observer(function WorkspaceSetting
           icon={ArrowLeft}
           onClick={() => router.push(`/${currentWorkspace?.slug}/`)}
         />
-        <p>Workspace settings</p>
+        <p>{translate("workspace_settings.label")}</p>
       </div>
       <div className="mt-1.5 flex items-center justify-between gap-2 px-5 py-0.5">
         <div className="flex items-center gap-2 truncate">

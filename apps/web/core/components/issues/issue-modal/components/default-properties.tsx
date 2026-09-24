@@ -10,7 +10,7 @@ import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import useSWR from "swr";
 import { ETabIndices, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { ParentPropertyIcon } from "@plane/propel/icons";
 // types
 import type { ISearchIssueResponse, TIssue, TIssueRecurrenceFrequency } from "@plane/types";
@@ -201,7 +201,7 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
         }}
         className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
       >
-        <option value="">Customer...</option>
+        <option value="">{translate("gam.customer_placeholder")}</option>
         {(gamCustomers ?? []).map((customer) => (
           <option key={customer.id} value={customer.id}>
             {customer.name}
@@ -217,7 +217,7 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
         disabled={!customerId}
         className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <option value="">{customerId ? "Service..." : "Select a customer first"}</option>
+        <option value="">{customerId ? translate("gam.service_select") : translate("gam.select_customer_first")}</option>
         {availableCustomerServices.map((rate) => (
           <option key={rate.service} value={rate.service}>
             {rate.service_name}
@@ -234,10 +234,10 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
         className="h-7 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 text-caption-sm-regular"
         aria-label="Repeat"
       >
-        <option value="">Does not repeat</option>
-        <option value="weekly">Repeats weekly</option>
-        <option value="monthly">Repeats monthly</option>
-        <option value="yearly">Repeats yearly</option>
+        <option value="">{translate("gam.does_not_repeat")}</option>
+        <option value="weekly">{translate("gam.repeats_weekly")}</option>
+        <option value="monthly">{translate("gam.repeats_monthly")}</option>
+        <option value="yearly">{translate("gam.repeats_yearly")}</option>
       </select>
       <Controller
         control={control}

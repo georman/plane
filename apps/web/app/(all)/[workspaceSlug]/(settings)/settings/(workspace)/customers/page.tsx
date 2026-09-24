@@ -16,7 +16,7 @@ import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import useSWR, { mutate } from "swr";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Input } from "@plane/ui";
@@ -123,7 +123,7 @@ function RateCard({
             onChange={(e) => setServiceId(e.target.value)}
             className="w-40 rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
           >
-            <option value="">Choose a service...</option>
+            <option value="">{translate("gam.choose_service")}</option>
             {availableServices.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -135,7 +135,7 @@ function RateCard({
             step="0.01"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            placeholder="Price"
+            placeholder={translate("gam.price")}
             className="w-28"
           />
           <Button variant="neutral-primary" size="sm" onClick={handleAddRate} disabled={isSubmitting || !serviceId || !price}>
@@ -236,14 +236,14 @@ function CustomersSettingsPage() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Customer name"
+            placeholder={translate("gam.customer_name")}
             className="w-full sm:w-52"
           />
           <Input
             type="email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
-            placeholder="Contact email (optional)"
+            placeholder={translate("gam.contact_email_optional")}
             className="w-full sm:w-56"
           />
           <select
@@ -251,8 +251,8 @@ function CustomersSettingsPage() {
             onChange={(e) => setBillingType(e.target.value as TCustomerBillingType)}
             className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13"
           >
-            <option value="per_job">Per-job</option>
-            <option value="retainer">Retainer</option>
+            <option value="per_job">{translate("gam.per_job")}</option>
+            <option value="retainer">{translate("gam.retainer")}</option>
           </select>
           <select
             value={language}
@@ -264,7 +264,7 @@ function CustomersSettingsPage() {
             <option value="en">English</option>
           </select>
           <Button variant="primary" onClick={handleCreate} disabled={isSubmitting || !name.trim()}>
-            Add customer
+            {translate("gam.add_customer")}
           </Button>
         </div>
 
@@ -287,13 +287,13 @@ function CustomersSettingsPage() {
                       )}
                       <span className="text-14 text-primary">{customer.name}</span>
                       <span className="rounded-sm bg-layer-1 px-2 py-0.5 text-11 text-tertiary">
-                        {customer.billing_type === "retainer" ? "Retainer" : "Per-job"}
+                        {customer.billing_type === "retainer" ? translate("gam.retainer") : translate("gam.per_job")}
                       </span>
                       {customer.contact_email && (
                         <span className="text-12 text-tertiary">{customer.contact_email}</span>
                       )}
                       <span className="text-12 text-tertiary">
-                        {customer.rates.length} rate{customer.rates.length === 1 ? "" : "s"} set
+                        {translate("gam.rates_set", { count: customer.rates.length })}
                       </span>
                     </button>
                     <select
@@ -322,7 +322,7 @@ function CustomersSettingsPage() {
               );
             })
           ) : (
-            <p className="py-6 text-14 text-tertiary">No customers yet - add one above.</p>
+            <p className="py-6 text-14 text-tertiary">{translate("gam.no_customers")}</p>
           )}
         </div>
       </div>

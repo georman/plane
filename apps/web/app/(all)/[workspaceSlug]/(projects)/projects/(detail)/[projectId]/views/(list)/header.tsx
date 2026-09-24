@@ -19,6 +19,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const ProjectViewsHeader = observer(function ProjectViewsHeader() {
   const { workspaceSlug, projectId } = useParams();
@@ -54,7 +55,7 @@ export const ProjectViewsHeader = observer(function ProjectViewsHeader() {
               size="lg"
               onClick={() => toggleCreateViewModal(true)}
             >
-              Add view
+              {translate("gam.add_view")}
             </Button>
           </div>
         </Header.RightItem>

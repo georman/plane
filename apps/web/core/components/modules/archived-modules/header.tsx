@@ -23,6 +23,7 @@ import { ModuleFiltersSelection, ModuleOrderByDropdown } from "@/components/modu
 // hooks
 import { useMember } from "@/hooks/store/use-member";
 import { useModuleFilter } from "@/hooks/store/use-module-filter";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const ArchivedModulesHeader = observer(function ArchivedModulesHeader() {
   // router
@@ -140,7 +141,7 @@ export const ArchivedModulesHeader = observer(function ArchivedModulesHeader() {
         />
         <FiltersDropdown
           icon={<ListFilter className="h-3 w-3" />}
-          title="Filters"
+          title={translate("common.filters")}
           placement="bottom-end"
           isFiltersApplied={isFiltersApplied}
         >

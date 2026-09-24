@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 import { INBOX_STATUS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { CloseIcon } from "@plane/propel/icons";
 import type { TInboxIssueStatus } from "@plane/types";
 // constants
@@ -29,7 +29,7 @@ export const InboxIssueAppliedFiltersStatus = observer(function InboxIssueApplie
   if (filteredValues.length === 0) return <></>;
   return (
     <Tag>
-      <div className="text-11 text-secondary">Status</div>
+      <div className="text-11 text-secondary">{translate("common.state")}</div>
       {filteredValues.map((value) => {
         const optionDetail = currentOptionDetail(value);
         if (!optionDetail) return <></>;

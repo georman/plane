@@ -9,7 +9,7 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 // plane package imports
-import { useTranslation } from "@plane/i18n";
+import { translateOr, useTranslation } from "@plane/i18n";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
 import type { TChartData } from "@plane/types";
 // hooks
@@ -27,6 +27,16 @@ const RadarChart = lazy(function RadarChart() {
 });
 
 const analyticsService = new AnalyticsService();
+
+const INSIGHT_LABEL_KEYS: Record<string, string> = {
+  work_items: "issues",
+  cycles: "cycles",
+  modules: "modules",
+  intake: "intake",
+  members: "members",
+  pages: "pages",
+  views: "views",
+};
 
 const ProjectInsights = observer(function ProjectInsights() {
   const params = useParams();
@@ -72,7 +82,11 @@ const ProjectInsights = observer(function ProjectInsights() {
             <Suspense fallback={<ProjectInsightsLoader />}>
               <RadarChart
                 className="h-[350px] w-full text-accent-primary lg:w-3/5"
-                data={projectInsightsData}
+                data={projectInsightsData.map((item) => ({
+                  ...item,
+                  // GAM: the server sends English names; show them in the interface language
+                  name: translateOr(INSIGHT_LABEL_KEYS[String(item.key)] ?? "", String(item.name)),
+                }))}
                 dataKey="key"
                 radars={[
                   {
@@ -105,7 +119,7 @@ const ProjectInsights = observer(function ProjectInsights() {
               </div>
               {projectInsightsData?.map((item) => (
                 <div key={item.key} className="flex items-center justify-between text-13 text-primary">
-                  <div>{item.name}</div>
+                  <div>{translateOr(INSIGHT_LABEL_KEYS[String(item.key)] ?? "", String(item.name))}</div>
                   <div className="flex items-center gap-1">
                     {/* <TrendPiece key={item.key} size='xs' /> */}
                     <div className="text-secondary">{item.count}</div>

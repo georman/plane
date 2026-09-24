@@ -15,7 +15,7 @@ import {
   EXPORTERS_LIST,
   // ISSUE_DISPLAY_FILTERS_BY_PAGE,
 } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 // import { Tooltip } from "@plane/propel/tooltip";
@@ -169,7 +169,7 @@ export const ExportForm = observer(function ExportForm(props: Props) {
                             return projectDetails?.identifier;
                           })
                           .join(", ")
-                      : "All projects"
+                      : translate("workspace_analytics.all_projects")
                   }
                   optionsClassName="max-w-48 sm:max-w-[532px]"
                   placement="bottom-end"

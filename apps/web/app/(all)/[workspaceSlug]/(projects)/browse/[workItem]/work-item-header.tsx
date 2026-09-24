@@ -19,6 +19,7 @@ import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const WorkItemDetailsHeader = observer(function WorkItemDetailsHeader() {
   // router
@@ -44,7 +45,7 @@ export const WorkItemDetailsHeader = observer(function WorkItemDetailsHeader() {
           <Breadcrumbs.Item
             component={
               <BreadcrumbLink
-                label="Work Items"
+                label={translate("issues")}
                 href={`/${workspaceSlug}/projects/${projectId}/issues/`}
                 icon={<WorkItemsIcon className="h-4 w-4 text-tertiary" />}
               />

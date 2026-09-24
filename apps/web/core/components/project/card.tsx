@@ -33,6 +33,7 @@ import { CoverImage } from "@/components/common/cover-image";
 import { DeleteProjectModal } from "./delete-project-modal";
 import { JoinProjectModal } from "./join-project-modal";
 import { ArchiveRestoreProjectModal } from "./archive-restore-modal";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   project: IProject;
@@ -126,7 +127,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
     {
       key: "settings",
       action: () => router.push(`/${workspaceSlug}/settings/projects/${project.id}`),
-      title: "Settings",
+      title: translate("settings"),
       icon: Settings,
       shouldRender: !isArchived && (hasAdminRole || hasMemberRole),
     },
@@ -147,7 +148,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
     {
       key: "copy-link",
       action: handleCopyText,
-      title: "Copy link",
+      title: translate("copy_link"),
       icon: LinkIcon,
       shouldRender: !isArchived,
     },
@@ -274,13 +275,13 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
           <p className="line-clamp-2 text-13 break-words text-tertiary">
             {project.description && project.description.trim() !== ""
               ? project.description
-              : `Created on ${renderFormattedDate(project.created_at)}`}
+              : translate("gam.created_on_date", { date: renderFormattedDate(project.created_at) })}
           </p>
           <div className="item-center flex justify-between">
             <div className="flex items-center justify-center gap-2">
               <Tooltip
                 isMobile={isMobile}
-                tooltipHeading="Members"
+                tooltipHeading={translate("members")}
                 tooltipContent={
                   project.members && project.members.length > 0 ? `${project.members.length} Members` : "No Member"
                 }

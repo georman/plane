@@ -41,7 +41,7 @@ import {
 } from "@plane/propel/icons";
 import { store } from "@/lib/store-context";
 import type { TProjectActivity } from "@plane/types";
-import { brandName } from "@plane/i18n"; // GAM addition: white label
+import { brandName, translate } from "@plane/i18n"; // GAM addition: white label
 
 type ActivityIconMap = {
   [key: string]: FC<{ className?: string }>;
@@ -151,7 +151,7 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       return {
         message: (
           <>
-            set the state to <span className="font-medium text-primary">{newValue || "none"}</span>
+            {translate("gam.set_state_to")} <span className="font-medium text-primary">{newValue || "none"}</span>
           </>
         ),
       };

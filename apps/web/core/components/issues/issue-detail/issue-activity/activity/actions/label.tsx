@@ -11,6 +11,7 @@ import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useLabel } from "@/hooks/store/use-label";
 // components
 import { IssueActivityBlockComponent, IssueLink, LabelActivityChip } from "./";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type TIssueLabelActivity = { activityId: string; showIssue?: boolean; ends: "top" | "bottom" | undefined };
 
@@ -34,7 +35,7 @@ export const IssueLabelActivity = observer(function IssueLabelActivity(props: TI
       ends={ends}
     >
       <>
-        {activity.old_value === "" ? `added a new label ` : `removed the label `}
+        {activity.old_value === "" ? `${translate("gam.added_label")} ` : `${translate("gam.removed_label")} `}
         <LabelActivityChip
           name={activity.old_value === "" ? activity.new_value : activity.old_value}
           color={activity.old_value === "" ? newLabelColor : oldLabelColor}

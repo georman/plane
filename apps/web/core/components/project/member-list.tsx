@@ -8,7 +8,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel, MEMBER_TRACKER_ELEMENTS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { SearchIcon } from "@plane/propel/icons";
 // components
@@ -88,7 +88,7 @@ export const ProjectMemberList = observer(function ProjectMemberList(props: TPro
             <SearchIcon className="h-3.5 w-3.5" />
             <input
               className="w-full max-w-[234px] border-none bg-transparent text-13 placeholder:text-placeholder focus:outline-none"
-              placeholder="Search"
+              placeholder={translate("search")}
               value={searchQuery}
               autoFocus
               onChange={(e) => setSearchQuery(e.target.value)}

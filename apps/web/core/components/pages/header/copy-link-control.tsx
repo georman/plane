@@ -16,6 +16,7 @@ import { cn } from "@plane/utils";
 import { usePageOperations } from "@/hooks/use-page-operations";
 // store
 import type { TPageInstance } from "@/store/pages/base-page";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   page: TPageInstance;
@@ -57,13 +58,13 @@ export const PageCopyLinkControl = observer(function PageCopyLinkControl({ page 
   }, [pageOperations]);
 
   return (
-    <Tooltip tooltipContent={isCopied ? "Copied!" : "Copy link"} position="bottom">
+    <Tooltip tooltipContent={isCopied ? translate("gam.copied") : translate("copy_link")} position="bottom">
       <IconButton
         variant="ghost"
         size="lg"
         icon={isCopied ? CheckIcon : LinkIcon}
         onClick={handleCopy}
-        aria-label={isCopied ? "Copied link" : "Copy link"}
+        aria-label={isCopied ? translate("gam.copied") : translate("copy_link")}
         className={cn(isCopied && "text-success-primary")}
       />
     </Tooltip>

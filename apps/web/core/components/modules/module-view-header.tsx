@@ -12,7 +12,7 @@ import { ListFilter } from "lucide-react";
 import { MODULE_VIEW_LAYOUTS } from "@plane/constants";
 import { useOutsideClickDetector } from "@plane/hooks";
 // types
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { SearchIcon, CloseIcon } from "@plane/propel/icons";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { TModuleFilters } from "@plane/types";
@@ -125,7 +125,7 @@ export const ModuleViewHeader = observer(function ModuleViewHeader() {
           <input
             ref={inputRef}
             className="w-full max-w-[234px] border-none bg-transparent text-13 text-primary placeholder:text-placeholder focus:outline-none"
-            placeholder="Search"
+            placeholder={translate("search")}
             value={searchQuery}
             onChange={(e) => updateSearchQuery(e.target.value)}
             onKeyDown={handleInputKeyDown}
@@ -155,7 +155,7 @@ export const ModuleViewHeader = observer(function ModuleViewHeader() {
       />
       <FiltersDropdown
         icon={<ListFilter className="h-3 w-3" />}
-        title="Filters"
+        title={translate("common.filters")}
         placement="bottom-end"
         isFiltersApplied={isFiltersApplied}
       >

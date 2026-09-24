@@ -20,6 +20,7 @@ import type { EPageStoreType } from "@/hooks/store";
 import type { TPageInstance } from "@/store/pages/base-page";
 // local imports
 import { PageActions } from "../dropdowns";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   page: TPageInstance;
@@ -56,7 +57,7 @@ export const BlockItemAction = observer(function BlockItemAction(props: Props) {
       <Minus className="-mx-3 h-5 w-5 rotate-90 text-placeholder" strokeWidth={1} />
 
       {/* page info */}
-      <Tooltip tooltipContent={`Created on ${renderFormattedDate(created_at)}`}>
+      <Tooltip tooltipContent={translate("gam.created_on_date", { date: renderFormattedDate(created_at) })}>
         <span className="grid h-4 w-4 cursor-default place-items-center">
           <Info className="h-4 w-4 text-tertiary" />
         </span>

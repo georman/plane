@@ -15,6 +15,7 @@ import { Toast } from "@plane/propel/toast";
 import { resolveGeneralTheme } from "@plane/utils";
 // mobx store provider
 import { StoreProvider } from "@/lib/store-context";
+import { DateLocaleSync } from "@/components/common/date-locale-sync"; // GAM addition
 
 // lazy imports
 const AppProgressBar = lazy(function AppProgressBar() {
@@ -43,6 +44,7 @@ export function AppProvider(props: IAppProvider) {
       <>
         <AppProgressBar />
         <TranslationProvider>
+          <DateLocaleSync />
           <Toast theme={resolveGeneralTheme(resolvedTheme)} />
           <StoreWrapper>
             <InstanceWrapper>

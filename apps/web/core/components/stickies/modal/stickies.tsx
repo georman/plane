@@ -15,6 +15,7 @@ import { useSticky } from "@/hooks/use-stickies";
 import { StickiesTruncated } from "../layout/stickies-truncated";
 import { useStickyOperations } from "../sticky/use-operations";
 import { StickySearch } from "./search";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type TProps = {
   handleClose?: () => void;
@@ -49,7 +50,7 @@ export const Stickies = observer(function Stickies(props: TProps) {
             className="my-auto flex gap-1 text-13 font-medium text-accent-primary"
             disabled={creatingSticky}
           >
-            <PlusIcon className="my-auto size-4" /> <span>Add sticky</span>
+            <PlusIcon className="my-auto size-4" /> <span>{translate("stickies.add")}</span>
             {creatingSticky && (
               <div className="ml-2 flex items-center justify-center">
                 <div

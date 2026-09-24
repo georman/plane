@@ -18,6 +18,7 @@ import useSize from "@/hooks/use-window-size";
 // plane web components
 import { AppSidebarToggleButton } from "./sidebar-toggle-button";
 import { IconButton } from "@plane/propel/icon-button";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type TSidebarWrapperProps = {
   title: string;
@@ -54,7 +55,7 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
           {/* Workspace switcher and settings */}
 
           <div className="flex items-center justify-between gap-2 px-2">
-            <span className="pt-1 text-16 font-medium text-primary">{title}</span>
+            <span className="pt-1 text-16 font-medium text-primary">{title === "Projects" ? translate("projects") : title}</span>
             <div className="flex items-center gap-2">
               {title === "Projects" && (
                 <IconButton

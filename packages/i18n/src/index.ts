@@ -36,3 +36,6 @@ export {
   subscribeToBrand,
 } from "./brand";
 export type { TBrand } from "./brand";
+
+// GAM addition: translate outside React components (and in components without the hook)
+export { translate, translateOr } from "./core/translate";

@@ -6,14 +6,16 @@
 
 import { replaceUnderscoreIfSnakeCase } from "@plane/utils";
 import type { TNotificationContentMap } from "@/components/workspace-notifications/sidebar/notification-card/content";
+import { translateOr } from "@plane/i18n"; // GAM addition: translations
 
 // Additional notification content map for CE (empty - EE extends this)
 export const ADDITIONAL_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {};
 
 // Fallback action renderer for fields not in the map
 export const renderAdditionalAction = (notificationField: string, verb: string | undefined) => {
-  const baseAction = !["comment", "archived_at"].includes(notificationField) ? verb : "";
-  return `${baseAction} ${replaceUnderscoreIfSnakeCase(notificationField)}`;
+  const baseAction = !["comment", "archived_at"].includes(notificationField) && verb ? translateOr(`gam.notif.verb.${verb}`, verb) : "";
+  const fieldLabel = translateOr(`gam.notif.field.${notificationField}`, replaceUnderscoreIfSnakeCase(notificationField));
+  return `${baseAction} ${fieldLabel}`;
 };
 
 // Fallback value renderer for fields not in the map

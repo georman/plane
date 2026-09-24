@@ -23,6 +23,7 @@ import { useSticky } from "@/hooks/use-stickies";
 import { STICKY_COLORS_LIST } from "../editor/sticky-editor/color-palette";
 import { AllStickiesModal } from "./modal";
 import { StickyNote } from "./sticky";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const StickyActionBar = observer(function StickyActionBar() {
   // states
@@ -100,7 +101,7 @@ export const StickyActionBar = observer(function StickyActionBar() {
             </button>
           </Tooltip>
         )}
-        <Tooltip tooltipContent="Add sticky" isMobile={false} position="left">
+        <Tooltip tooltipContent={translate("stickies.add")} isMobile={false} position="left">
           <button
             className="btn btn--icon shadow-sm flex h-10 w-10 items-center justify-center rounded-full bg-surface-1"
             onClick={() => {

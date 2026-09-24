@@ -9,7 +9,7 @@ import { intersection } from "lodash-es";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // types
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IUser, IImporterService } from "@plane/types";
@@ -136,7 +136,7 @@ export const Exporter = observer(function Exporter(props: Props) {
                       return projectDetails?.identifier;
                     })
                     .join(", ")
-                : "All projects"
+                : translate("workspace_analytics.all_projects")
             }
             onOpen={() => setIsSelectOpen(true)}
             onClose={() => setIsSelectOpen(false)}

@@ -25,6 +25,7 @@ import { useMember } from "@/hooks/store/use-member";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 // GAM addition: admin "log in as member" feature
 import { impersonationService } from "@/services/impersonation.service";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export interface RowData {
   member: IWorkspaceMember;
@@ -105,11 +106,11 @@ export function NameColumn(props: NameProps) {
               <button
                 type="button"
                 onClick={handleImpersonate}
-                title={`Log in as ${display_name || email}`}
+                title={translate("gam.log_in_as_user", { name: display_name || email })}
                 className="flex flex-shrink-0 items-center gap-1 rounded-md px-2 py-1 text-11 text-tertiary opacity-0 transition-opacity group-hover:opacity-100 hover:bg-layer-1-hover"
               >
                 <LogIn className="size-3.5" />
-                Log in as
+                {translate("gam.log_in_as")}
               </button>
             )}
 

@@ -23,6 +23,7 @@ import { useProject } from "@/hooks/store/use-project";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
 import { EPageStoreType, usePageStore } from "@/hooks/store";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const PagesListHeader = observer(function PagesListHeader() {
   // states
@@ -80,7 +81,7 @@ export const PagesListHeader = observer(function PagesListHeader() {
       {canCurrentUserCreatePage && (
         <Header.RightItem>
           <Button variant="primary" size="lg" onClick={handleCreatePage} loading={isCreatingPage}>
-            {isCreatingPage ? "Adding" : "Add page"}
+            {isCreatingPage ? translate("gam.adding") : translate("wiki_collections.header.add_page")}
           </Button>
         </Header.RightItem>
       )}

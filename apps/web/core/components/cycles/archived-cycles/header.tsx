@@ -22,6 +22,7 @@ import { FiltersDropdown } from "@/components/issues/issue-layouts/filters";
 import { useCycleFilter } from "@/hooks/store/use-cycle-filter";
 // local imports
 import { CycleFiltersSelection } from "../dropdowns";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const ArchivedCyclesHeader = observer(function ArchivedCyclesHeader() {
   // router
@@ -121,7 +122,7 @@ export const ArchivedCyclesHeader = observer(function ArchivedCyclesHeader() {
         </div>
         <FiltersDropdown
           icon={<ListFilter className="h-3 w-3" />}
-          title="Filters"
+          title={translate("common.filters")}
           placement="bottom-end"
           isFiltersApplied={isFiltersApplied}
         >

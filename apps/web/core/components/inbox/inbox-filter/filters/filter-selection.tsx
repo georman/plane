@@ -17,6 +17,7 @@ import { FilterLabels } from "./labels";
 import { FilterMember } from "./members";
 import { FilterPriority } from "./priority";
 import { FilterStatus } from "./status";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelection() {
   // hooks
@@ -36,7 +37,7 @@ export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelec
           <input
             type="text"
             className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
-            placeholder="Search"
+            placeholder={translate("search")}
             value={filtersSearchQuery}
             onChange={(e) => setFiltersSearchQuery(e.target.value)}
             autoFocus={!isMobile}

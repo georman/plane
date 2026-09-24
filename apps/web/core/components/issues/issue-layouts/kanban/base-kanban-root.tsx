@@ -32,6 +32,7 @@ import type { IQuickActionProps, TRenderQuickActions } from "../list/list-view-t
 import { getSourceFromDropPayload } from "../utils";
 import { KanBan } from "./default";
 import { KanBanSwimLanes } from "./swimlanes";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export type KanbanStoreType =
   | EIssuesStoreType.PROJECT
@@ -256,7 +257,7 @@ export const BaseKanBanRoot = observer(function BaseKanBanRoot(props: IBaseKanBa
             isDragOverDelete ? "bg-danger-primary blur-2xl" : ""
           } transition duration-300`}
         >
-          Drop here to delete the work item.
+          {translate("gam.drop_to_delete")}
         </div>
       </div>
       <IssueLayoutHOC layout={EIssueLayoutTypes.KANBAN}>

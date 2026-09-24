@@ -25,6 +25,7 @@ import type { EPageStoreType } from "@/hooks/store";
 import { usePageFlag } from "@/hooks/use-page-flag";
 // store types
 import type { TPageInstance } from "@/store/pages/base-page";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export type TPageActions =
   | "full-screen"
@@ -108,7 +109,7 @@ export const PageActions = observer(function PageActions(props: Props) {
         {
           key: "copy-link",
           action: pageOperations.copyLink,
-          title: "Copy link",
+          title: translate("copy_link"),
           icon: LinkIcon,
           shouldRender: true,
         },

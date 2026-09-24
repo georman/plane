@@ -26,6 +26,7 @@ import { DropdownButton } from "./buttons";
 import { BUTTON_VARIANTS_WITH_TEXT } from "./constants";
 // types
 import type { TDropdownProps } from "./types";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = TDropdownProps & {
   clearIconClassName?: string;
@@ -139,7 +140,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
         className={buttonClassName}
         isActive={isOpen}
         tooltipHeading={placeholder}
-        tooltipContent={value ? renderFormattedDate(value, formatToken) : "None"}
+        tooltipContent={value ? renderFormattedDate(value, formatToken) : translate("none")}
         showTooltip={showTooltip}
         variant={buttonVariant}
         renderToolTipByDefault={renderByDefault}

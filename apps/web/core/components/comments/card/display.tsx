@@ -23,6 +23,7 @@ import { CommentCardEditForm } from "./edit-form";
 import { EmojiReactionButton, EmojiReactionPicker } from "@plane/propel/emoji-reaction";
 import { Avatar, Tooltip } from "@plane/ui";
 import { useMember } from "@/hooks/store/use-member";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 export type TCommentCardDisplayProps = {
   activityOperations: TCommentsOperations;
@@ -121,7 +122,7 @@ export const CommentCardDisplay = observer(function CommentCardDisplay(props: TC
         <div className="flex flex-1 flex-wrap items-center gap-1">
           <div className="text-caption-sm-medium">{displayName}</div>
           <div className="text-caption-sm-regular text-tertiary">
-            commented{" "}
+            {translate("gam.commented_inline")}{" "}
             <Tooltip
               tooltipContent={`${renderFormattedDate(comment.created_at)} at ${renderFormattedTime(comment.created_at)}`}
               position="bottom"

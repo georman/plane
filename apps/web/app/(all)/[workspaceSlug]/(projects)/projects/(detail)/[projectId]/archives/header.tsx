@@ -20,6 +20,7 @@ import { useAppRouter } from "@/hooks/use-app-router";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type TProps = {
   activeTab: "issues" | "cycles" | "modules";
@@ -33,7 +34,7 @@ const PROJECT_ARCHIVES_BREADCRUMB_LIST: {
   };
 } = {
   issues: {
-    label: "Work items",
+    label: translate("issues"),
     href: "/issues",
     icon: WorkItemsIcon,
   },
@@ -77,7 +78,7 @@ export const ProjectArchivesHeader = observer(function ProjectArchivesHeader(pro
               component={
                 <BreadcrumbLink
                   href={`/${workspaceSlug}/projects/${projectId}/archives/issues`}
-                  label="Archives"
+                  label={translate("gam.archives")}
                   icon={<ArchiveIcon className="h-4 w-4 text-tertiary" />}
                 />
               }

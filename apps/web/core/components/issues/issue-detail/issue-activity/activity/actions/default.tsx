@@ -13,6 +13,7 @@ import { capitalizeFirstLetter } from "@plane/utils";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // local imports
 import { IssueActivityBlockComponent } from "./";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type TIssueDefaultActivity = { activityId: string; ends: "top" | "bottom" | undefined };
 
@@ -38,11 +39,11 @@ export const IssueDefaultActivity = observer(function IssueDefaultActivity(props
         {activity.verb === "created" ? (
           source && source !== EInboxIssueSource.IN_APP ? (
             <span>
-              created the work item via{" "}
+              {translate("gam.created_work_item_via")}{" "}
               <span className="font-medium">{capitalizeFirstLetter(source.toLowerCase() || "")}</span>.
             </span>
           ) : (
-            <span> created the work item.</span>
+            <span> {translate("gam.created_work_item")}</span>
           )
         ) : (
           <span> deleted a work item.</span>

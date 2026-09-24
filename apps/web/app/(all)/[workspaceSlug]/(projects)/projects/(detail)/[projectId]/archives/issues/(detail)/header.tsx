@@ -21,6 +21,7 @@ import { useProject } from "@/hooks/store/use-project";
 import { ProjectBreadcrumb } from "@/components/breadcrumbs/project";
 // services
 import { IssueService } from "@/services/issue";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 const issueService = new IssueService();
 
@@ -46,7 +47,7 @@ export const ProjectArchivedIssueDetailsHeader = observer(function ProjectArchiv
             component={
               <BreadcrumbLink
                 href={`/${workspaceSlug}/projects/${projectId}/archives/issues`}
-                label="Archives"
+                label={translate("gam.archives")}
                 icon={<ArchiveIcon className="h-4 w-4 text-tertiary" />}
               />
             }

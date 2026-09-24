@@ -13,6 +13,7 @@ import { CustomSearchSelect } from "@plane/ui";
 import { cn } from "@plane/utils";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
+import { translate } from "@plane/i18n"; // GAM addition: translations
 
 type Props = {
   value: string[] | undefined;
@@ -59,7 +60,7 @@ export const ProjectSelect = observer(function ProjectSelect(props: Props) {
                   ?.filter((p) => value.includes(p))
                   .map((p) => getProjectById(p)?.name)
                   .join(", ")
-              : "All projects"}
+              : translate("workspace_analytics.all_projects")}
           <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
         </div>
       }
