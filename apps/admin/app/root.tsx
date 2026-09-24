@@ -24,7 +24,7 @@ import { brandName } from "@plane/i18n"; // GAM addition: white label
 
 const APP_TITLE = `${brandName()} | Project management`;
 const APP_DESCRIPTION =
-  "Open-source project management tool to manage work items, sprints, and product roadmaps with peace of mind.";
+  "Project management";
 
 export const links: LinksFunction = () => [
   { rel: "apple-touch-icon", sizes: "180x180", href: appleTouchIcon },
@@ -72,7 +72,6 @@ export const meta: Route.MetaFunction = () => [
     content:
       "software development, customer feedback, software, accelerate, code management, release management, project management, work items tracking, agile, scrum, kanban, collaboration",
   },
-  { name: "twitter:site", content: "@planepowers" },
 ];
 
 export default function Root() {

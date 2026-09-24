@@ -42,15 +42,16 @@ function ProfileSettingsPage(props: Route.ComponentProps) {
     <>
       <PageHead title={`${t("profile.label")} - ${t("general_settings")}`} />
       <div className="relative size-full">
-        <div className="flex size-full">
+        {/* GAM: on phones the settings menu sits above the form as a short scrollable strip */}
+        <div className="flex size-full flex-col overflow-y-auto md:flex-row md:overflow-visible">
           <ProfileSettingsSidebarRoot
             activeTab={profileTabId as TProfileSettingsTabs}
-            className="w-[250px]"
+            className="max-h-[35vh] w-full shrink-0 overflow-y-auto border-r-0 border-b border-subtle md:max-h-none md:w-[250px] md:border-r md:border-b-0"
             updateActiveTab={(tab) => router.push(`/settings/profile/${tab}`)}
           />
           <ProfileSettingsContent
             activeTab={profileTabId as TProfileSettingsTabs}
-            className="mx-auto w-fit max-w-225 grow px-page-x py-20"
+            className="mx-auto w-full max-w-225 grow px-4 py-6 md:w-fit md:px-page-x md:py-20"
           />
         </div>
       </div>

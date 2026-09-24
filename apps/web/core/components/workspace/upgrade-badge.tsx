@@ -13,7 +13,12 @@ type TUpgradeBadge = {
   size?: "sm" | "md";
 };
 
-export function UpgradeBadge(props: TUpgradeBadge) {
+// GAM: no upgrade badges in the white-labelled app (paid upstream plans don't apply)
+export function UpgradeBadge(_props: TUpgradeBadge): null {
+  return null;
+}
+
+export function UpstreamUpgradeBadge(props: TUpgradeBadge) {
   const { className, size = "sm" } = props;
 
   const { t } = useTranslation();

@@ -4,14 +4,14 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { useParams, usePathname } from "next/navigation";
 import { SIDEBAR_WIDTH } from "@plane/constants";
 import { useLocalStorage } from "@plane/hooks";
 // components
-import { ResizableSidebar } from "@/components/sidebar/resizable-sidebar";
+import { ResizableSidebar, useIsSmallScreen } from "@/components/sidebar/resizable-sidebar";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 // local imports
@@ -38,6 +38,14 @@ export const ProjectAppSidebar = observer(function ProjectAppSidebar() {
   const isAnyExtendedSidebarOpen = isExtendedSidebarOpened;
 
   const isNotificationsPath = pathname.includes(`/${workspaceSlug}/notifications`);
+
+  const isSmallScreen = useIsSmallScreen();
+
+  // GAM: on phones the sidebar starts closed and closes after every navigation
+  useEffect(() => {
+    if (isSmallScreen) toggleSidebar(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, isSmallScreen]);
 
   // handlers
   const handleWidthChange = (width: number) => setValue(width);

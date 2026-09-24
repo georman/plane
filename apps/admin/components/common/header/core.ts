@@ -6,6 +6,7 @@
 
 export const CORE_HEADER_SEGMENT_LABELS: Record<string, string> = {
   general: "General",
+  branding: "Branding", // GAM addition
   ai: "Artificial Intelligence",
   email: "Email",
   authentication: "Authentication",

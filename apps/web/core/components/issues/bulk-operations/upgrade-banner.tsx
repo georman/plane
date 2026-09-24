@@ -12,7 +12,12 @@ type Props = {
   className?: string;
 };
 
-export function BulkOperationsUpgradeBanner(props: Props) {
+// GAM: no upgrade ads in the white-labelled app
+export function BulkOperationsUpgradeBanner(_props: Props): null {
+  return null;
+}
+
+export function UpstreamBulkOperationsUpgradeBanner(props: Props) {
   const { className } = props;
 
   return (

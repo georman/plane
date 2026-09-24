@@ -12,23 +12,13 @@ import maintenanceModeDarkModeImage from "@/app/assets/instance/maintenance-mode
 import maintenanceModeLightModeImage from "@/app/assets/instance/maintenance-mode-light.svg?url";
 // layouts
 import DefaultLayout from "@/layouts/default-layout";
-import { brandHelpUrl, brandSupportEmail } from "@plane/i18n"; // GAM addition: white label
+import { brandSupportEmail } from "@plane/i18n"; // GAM addition: white label
 
 const linkMap = [
   {
     key: "mail_to",
     label: "Contact Support",
     value: `mailto:${brandSupportEmail()}`,
-  },
-  {
-    key: "status",
-    label: "Status Page",
-    value: `${brandHelpUrl()}`,
-  },
-  {
-    key: "twitter_handle",
-    label: "@planepowers",
-    value: "https://x.com/planepowers",
   },
 ];
 

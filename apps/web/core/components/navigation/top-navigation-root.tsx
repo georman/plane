@@ -133,15 +133,16 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
         })}
       >
       {/* Workspace Menu */}
-      <div className="flex-1 shrink-0">
+      {/* GAM: on phones the search bar shrinks so the right-hand icons stay on screen */}
+      <div className="shrink-0 md:flex-1">
         <WorkspaceMenuRoot variant="top-navigation" />
       </div>
       {/* Power K Search */}
-      <div className="shrink-0">
+      <div className="mx-2 min-w-0 flex-1 md:mx-0 md:flex-none md:shrink-0">
         <TopNavPowerK />
       </div>
       {/* Additional Actions */}
-      <div className="flex flex-1 shrink-0 items-center justify-end gap-1">
+      <div className="flex shrink-0 items-center justify-end gap-1 md:flex-1">
         <Tooltip tooltipContent="Inbox" position="bottom">
           <AppSidebarItem
             variant="link"

@@ -231,20 +231,20 @@ function CustomersSettingsPage() {
           title={t("workspace_settings.settings.customers.title")}
           description={t("workspace_settings.settings.customers.description")}
         />
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <Input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Customer name"
-            className="w-52"
+            className="w-full sm:w-52"
           />
           <Input
             type="email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="Contact email (optional)"
-            className="w-56"
+            className="w-full sm:w-56"
           />
           <select
             value={billingType}
@@ -274,10 +274,10 @@ function CustomersSettingsPage() {
               const isExpanded = expandedId === customer.id;
               return (
                 <div key={customer.id}>
-                  <div className="flex items-center justify-between py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-y-2 py-3">
                     <button
                       type="button"
-                      className="flex flex-1 items-center gap-2 text-left"
+                      className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-left"
                       onClick={() => setExpandedId(isExpanded ? null : customer.id)}
                     >
                       {isExpanded ? (

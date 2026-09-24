@@ -103,18 +103,21 @@ export const WorkspaceMembersListItem = observer(function WorkspaceMembersListIt
           onSubmit={() => handleRemove(removeMemberModal.member.id)}
         />
       )}
-      <Table<RowData>
-        columns={columns ?? []}
-        data={
-          (memberDetails?.filter((member): member is IWorkspaceMember => member !== null) ?? []) as unknown as RowData[]
-        }
-        keyExtractor={(rowData) => rowData?.member.id ?? ""}
-        tHeadClassName="border-b border-subtle"
-        thClassName="text-left font-medium divide-x-0 text-placeholder"
-        tBodyClassName="divide-y-0"
-        tBodyTrClassName="divide-x-0 p-4 h-10 text-secondary"
-        tHeadTrClassName="divide-x-0"
-      />
+      {/* GAM: the table scrolls sideways on phones instead of cutting columns off */}
+      <div className="w-full overflow-x-auto">
+        <Table<RowData>
+          columns={columns ?? []}
+          data={
+            (memberDetails?.filter((member): member is IWorkspaceMember => member !== null) ?? []) as unknown as RowData[]
+          }
+          keyExtractor={(rowData) => rowData?.member.id ?? ""}
+          tHeadClassName="border-b border-subtle"
+          thClassName="text-left font-medium divide-x-0 text-placeholder"
+          tBodyClassName="divide-y-0"
+          tBodyTrClassName="divide-x-0 p-4 h-10 text-secondary"
+          tHeadTrClassName="divide-x-0"
+        />
+      </div>
     </div>
   );
 });

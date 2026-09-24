@@ -31,6 +31,21 @@ interface ResizableSidebarProps {
   isAnySidebarDropdownOpen?: boolean;
 }
 
+const SMALL_SCREEN_QUERY = "(max-width: 767px)";
+
+/** GAM: true on phone-sized screens (updates on rotate/resize). */
+export function useIsSmallScreen() {
+  const [isSmall, setIsSmall] = useState(false); // set after mount to keep the first render identical
+  useEffect(() => {
+    const query = window.matchMedia(SMALL_SCREEN_QUERY);
+    const update = () => setIsSmall(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return isSmall;
+}
+
 export function ResizableSidebar({
   showPeek = false,
   togglePeek,
@@ -57,7 +72,10 @@ export function ResizableSidebar({
   const initialWidthRef = useRef<number>(0);
   const initialMouseXRef = useRef<number>(0);
   // hooks
-  const { isMobile } = usePlatformOS();
+  const { isMobile: isMobileDevice } = usePlatformOS();
+  // GAM: phones and small tablets by width too, not only by user agent
+  const isSmallScreen = useIsSmallScreen();
+  const isMobile = isMobileDevice || isSmallScreen;
   // handlers
   const setShowPeek = useCallback(
     (value: boolean) => {
@@ -176,6 +194,15 @@ export function ResizableSidebar({
 
   return (
     <>
+      {/* GAM: on small screens the open sidebar floats over the page; tapping the dimmed page closes it */}
+      {isMobile && !isCollapsed && (
+        <div
+          className="fixed inset-0 z-10 bg-black/30"
+          onClick={() => toggleCollapsedProp(true)}
+          aria-hidden="true"
+          data-prevent-outside-click
+        />
+      )}
       {/* Main Sidebar */}
       <div
         id="main-sidebar"

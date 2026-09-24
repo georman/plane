@@ -78,16 +78,19 @@ export const ProjectMemberListItem = observer(function ProjectMemberListItem(pro
           onSubmit={() => handleRemove(removeMemberModal.member.id)}
         />
       )}
-      <Table
-        columns={columns}
-        data={(memberDetails?.filter((member): member is IProjectMemberDetails => member !== null) ?? []) as any}
-        keyExtractor={(rowData) => rowData?.member.id ?? ""}
-        tHeadClassName="border-b border-subtle"
-        thClassName="text-left font-medium divide-x-0 text-placeholder"
-        tBodyClassName="divide-y-0"
-        tBodyTrClassName="divide-x-0 p-4 h-[40px] text-secondary"
-        tHeadTrClassName="divide-x-0"
-      />
+      {/* GAM: the table scrolls sideways on phones instead of cutting columns off */}
+      <div className="w-full overflow-x-auto">
+        <Table
+          columns={columns}
+          data={(memberDetails?.filter((member): member is IProjectMemberDetails => member !== null) ?? []) as any}
+          keyExtractor={(rowData) => rowData?.member.id ?? ""}
+          tHeadClassName="border-b border-subtle"
+          thClassName="text-left font-medium divide-x-0 text-placeholder"
+          tBodyClassName="divide-y-0"
+          tBodyTrClassName="divide-x-0 p-4 h-[40px] text-secondary"
+          tHeadTrClassName="divide-x-0"
+        />
+      </div>
     </>
   );
 });
