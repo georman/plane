@@ -9,9 +9,10 @@ from django.core import signing
 from plane.db.models import State, StateGroup
 
 # Entering one of these states sends the client an approval email
-APPROVAL_STATE_NAMES = {"client approval", "for approval"}
+# (English names kept for projects created before the Greek rename)
+APPROVAL_STATE_NAMES = {"έγκριση πελάτη", "client approval", "for approval"}
 # "Request changes" sends the item here; "Approve" skips over it
-CORRECTIONS_STATE_NAME = "corrections"
+CORRECTIONS_STATE_NAMES = {"διορθώσεις", "corrections"}
 
 # Same order the Plane UI shows states in: by group, then by sequence
 GROUP_ORDER = [
@@ -42,14 +43,14 @@ def next_state_after(state):
     if state.id not in ids:
         return None
     for candidate in states[ids.index(state.id) + 1 :]:
-        if candidate.name.strip().lower() != CORRECTIONS_STATE_NAME:
+        if candidate.name.strip().lower() not in CORRECTIONS_STATE_NAMES:
             return candidate
     return None
 
 
 def corrections_state(project_id):
     for state in State.objects.filter(project_id=project_id):
-        if state.name.strip().lower() == CORRECTIONS_STATE_NAME:
+        if state.name.strip().lower() in CORRECTIONS_STATE_NAMES:
             return state
     return None
 

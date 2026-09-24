@@ -81,6 +81,12 @@ from .. import BaseAPIView, BaseViewSet
 # it's ready for their review - earlier internal stages (New request,
 # Quotation, Approved, In progress, Internal review) stay staff-only.
 GAM_GUEST_VISIBLE_STATE_NAMES = [
+    "Έγκριση πελάτη",
+    "Διορθώσεις",
+    "Έτοιμο για παράδοση",
+    "Παραδόθηκε",
+    "Τιμολογήθηκε",
+    # English names, for projects created before the Greek rename
     "Client approval",
     "Corrections",
     "Ready for delivery",

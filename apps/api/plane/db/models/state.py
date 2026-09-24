@@ -25,17 +25,17 @@ class StateGroup(models.TextChoices):
 # Plane's Backlog/Todo/In Progress/Done. Sequences follow the pipeline order
 # so "next state" (used by client approvals) is simply the next one in line.
 DEFAULT_STATES = [
-    {"name": "New request", "color": "#60646C", "sequence": 15000, "group": StateGroup.BACKLOG.value, "default": True},
-    {"name": "Quotation", "color": "#8B5CF6", "sequence": 20000, "group": StateGroup.BACKLOG.value},
-    {"name": "Approved", "color": "#3B82F6", "sequence": 25000, "group": StateGroup.UNSTARTED.value},
-    {"name": "In progress", "color": "#F59E0B", "sequence": 35000, "group": StateGroup.STARTED.value},
-    {"name": "Internal review", "color": "#EAB308", "sequence": 40000, "group": StateGroup.STARTED.value},
-    {"name": "Client approval", "color": "#F97316", "sequence": 45000, "group": StateGroup.STARTED.value},
-    {"name": "Corrections", "color": "#EF4444", "sequence": 50000, "group": StateGroup.STARTED.value},
-    {"name": "Ready for delivery", "color": "#14B8A6", "sequence": 55000, "group": StateGroup.STARTED.value},
-    {"name": "Delivered", "color": "#46A758", "sequence": 60000, "group": StateGroup.COMPLETED.value},
-    {"name": "Invoiced", "color": "#22C55E", "sequence": 65000, "group": StateGroup.COMPLETED.value},
-    {"name": "Cancelled", "color": "#9AA4BC", "sequence": 70000, "group": StateGroup.CANCELLED.value},
+    {"name": "Νέο αίτημα", "color": "#60646C", "sequence": 15000, "group": StateGroup.BACKLOG.value, "default": True},
+    {"name": "Προσφορά", "color": "#8B5CF6", "sequence": 20000, "group": StateGroup.BACKLOG.value},
+    {"name": "Εγκρίθηκε", "color": "#3B82F6", "sequence": 25000, "group": StateGroup.UNSTARTED.value},
+    {"name": "Σε εξέλιξη", "color": "#F59E0B", "sequence": 35000, "group": StateGroup.STARTED.value},
+    {"name": "Εσωτερικός έλεγχος", "color": "#EAB308", "sequence": 40000, "group": StateGroup.STARTED.value},
+    {"name": "Έγκριση πελάτη", "color": "#F97316", "sequence": 45000, "group": StateGroup.STARTED.value},
+    {"name": "Διορθώσεις", "color": "#EF4444", "sequence": 50000, "group": StateGroup.STARTED.value},
+    {"name": "Έτοιμο για παράδοση", "color": "#14B8A6", "sequence": 55000, "group": StateGroup.STARTED.value},
+    {"name": "Παραδόθηκε", "color": "#46A758", "sequence": 60000, "group": StateGroup.COMPLETED.value},
+    {"name": "Τιμολογήθηκε", "color": "#22C55E", "sequence": 65000, "group": StateGroup.COMPLETED.value},
+    {"name": "Ακυρώθηκε", "color": "#9AA4BC", "sequence": 70000, "group": StateGroup.CANCELLED.value},
     {"name": "Triage", "color": "#4E5355", "sequence": 75000, "group": StateGroup.TRIAGE.value},
 ]
 
