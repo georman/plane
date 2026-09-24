@@ -42,14 +42,14 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   // store hooks
   const { t } = useTranslation();
-  const { toggleCreateProjectModal } = useCommandPalette();
+  const { toggleCreateProjectModal, getIsProjectListOpen, toggleProjectListOpen } = useCommandPalette();
   const { allowPermissions } = useUserPermissions();
   const { isExtendedProjectSidebarOpened, toggleExtendedProjectSidebar } = useAppTheme();
 
   const { loader, getPartialProjectById, joinedProjectIds: joinedProjects, updateProjectView, updateProject } =
     useProject();
   // router params
-  const { workspaceSlug } = useParams();
+  const { workspaceSlug, projectId: URLProjectId } = useParams();
   const pathname = usePathname();
 
   // auth
@@ -64,12 +64,23 @@ export const SidebarProjectsList = observer(function SidebarProjectsList() {
     const parentId = getPartialProjectById(projectId)?.parent ?? null;
     return parentId && joinedProjects.includes(parentId) ? parentId : null;
   };
+  // They show only while the parent is expanded (its arrow), like its Work items, Cycles, ...
   const displayedProjects: { id: string; depth: number }[] = joinedProjects
     .filter((projectId) => !parentOf(projectId))
     .flatMap((projectId) => [
       { id: projectId, depth: 0 },
-      ...joinedProjects.filter((childId) => parentOf(childId) === projectId).map((childId) => ({ id: childId, depth: 1 })),
+      ...(getIsProjectListOpen(projectId)
+        ? joinedProjects
+            .filter((childId) => parentOf(childId) === projectId)
+            .map((childId) => ({ id: childId, depth: 1 }))
+        : []),
     ]);
+
+  // Opening a grouped project (e.g. from a link) expands its parent so it stays visible
+  const URLProjectParentId = URLProjectId ? parentOf(URLProjectId.toString()) : null;
+  useEffect(() => {
+    if (URLProjectParentId) toggleProjectListOpen(URLProjectParentId, true);
+  }, [URLProjectParentId, toggleProjectListOpen]);
 
   const setProjectParent = (projectId: string, parentId: string | null) => {
     if (!workspaceSlug || (getPartialProjectById(projectId)?.parent ?? null) === parentId) return;
