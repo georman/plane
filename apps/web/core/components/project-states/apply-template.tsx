@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import useSWR from "swr";
-import { translate } from "@plane/i18n";
+import { stateDisplayName, translate } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { useProjectState } from "@/hooks/store/use-project-state";
@@ -62,7 +62,7 @@ export const ApplyStateTemplate = observer(function ApplyStateTemplate({ workspa
         <option value="">{translate("gam.st.choose_template")}…</option>
         {templates.map((template) => (
           <option key={template.id} value={template.id}>
-            {template.name}
+            {stateDisplayName(template.name)}
           </option>
         ))}
       </select>

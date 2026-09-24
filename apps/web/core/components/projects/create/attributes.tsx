@@ -9,7 +9,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import useSWR from "swr";
 // plane imports
 import { NETWORK_CHOICES, ETabIndices } from "@plane/constants";
-import { translate, useTranslation } from "@plane/i18n";
+import { stateDisplayName, translate, useTranslation } from "@plane/i18n";
 import type { IProject } from "@plane/types";
 import { CustomSelect } from "@plane/ui";
 import { getTabIndex } from "@plane/utils";
@@ -114,7 +114,7 @@ function ProjectAttributes(props: Props) {
               <option value="">{translate("gam.st.default_pipeline")}</option>
               {stateTemplates.map((template) => (
                 <option key={template.id} value={template.id}>
-                  {template.name}
+                  {stateDisplayName(template.name)}
                 </option>
               ))}
             </select>

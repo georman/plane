@@ -75,7 +75,8 @@ const TemplateRow = observer(function TemplateRow({
   onDelete: (templateId: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState(template.name);
+  // Template names are shown in the viewer's language, like state names
+  const [name, setName] = useState(stateDisplayName(template.name));
   const [newItemName, setNewItemName] = useState("");
   const [newItemGroup, setNewItemGroup] = useState<TStateTemplateGroup>("started");
   const items = [...template.items].sort((a, b) => a.sequence - b.sequence);
@@ -83,12 +84,12 @@ const TemplateRow = observer(function TemplateRow({
 
   const handleRename = async () => {
     const trimmed = name.trim();
-    if (!trimmed || trimmed === template.name) return setName(template.name);
+    if (!trimmed || trimmed === stateDisplayName(template.name)) return setName(stateDisplayName(template.name));
     try {
       await stateTemplateService.updateTemplate(slug, template.id, { name: trimmed });
       refresh();
     } catch (error: any) {
-      setName(template.name);
+      setName(stateDisplayName(template.name));
       showError(error, "Could not rename the template.");
     }
   };
