@@ -6,7 +6,7 @@
 
 from rest_framework import serializers
 
-from plane.db.models import Customer, CustomerServiceRate, IssueCustomerService, Service, ServiceTemplateItem
+from plane.db.models import Customer, CustomerServiceRate, IssueCustomerService, Project, Service, ServiceTemplateItem
 
 from .base import BaseSerializer
 
@@ -39,6 +39,38 @@ class CustomerServiceRateSerializer(BaseSerializer):
 
 class CustomerSerializer(BaseSerializer):
     rates = CustomerServiceRateSerializer(many=True, read_only=True)
+    # Projects whose work is done for this customer (a project has at most one customer)
+    project_ids = serializers.PrimaryKeyRelatedField(
+        source="projects", many=True, required=False, queryset=Project.objects.all()
+    )
+
+    def validate_project_ids(self, projects):
+        workspace_id = self.instance.workspace_id if self.instance else self.context.get("workspace_id")
+        if any(str(project.workspace_id) != str(workspace_id) for project in projects):
+            raise serializers.ValidationError("Project not found in this workspace.")
+        return projects
+
+    def _set_projects(self, customer, projects):
+        # Projects removed from the list are unlinked; the ones added move over
+        # from whichever customer they had before.
+        Project.objects.filter(customer=customer).exclude(id__in=[p.id for p in projects]).update(customer=None)
+        Project.objects.filter(id__in=[p.id for p in projects]).update(customer=customer)
+        # the response should show the new list, not the one prefetched before saving
+        getattr(customer, "_prefetched_objects_cache", {}).pop("projects", None)
+
+    def create(self, validated_data):
+        projects = validated_data.pop("projects", None)
+        customer = super().create(validated_data)
+        if projects is not None:
+            self._set_projects(customer, projects)
+        return customer
+
+    def update(self, instance, validated_data):
+        projects = validated_data.pop("projects", None)
+        customer = super().update(instance, validated_data)
+        if projects is not None:
+            self._set_projects(customer, projects)
+        return customer
 
     class Meta:
         model = Customer
@@ -50,6 +82,7 @@ class CustomerSerializer(BaseSerializer):
             "language",
             "is_active",
             "rates",
+            "project_ids",
         ]
         read_only_fields = ["workspace"]
 

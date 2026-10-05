@@ -12,7 +12,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2, X } from "lucide-react";
 import useSWR, { mutate } from "swr";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
@@ -27,6 +27,7 @@ import { PageHead } from "@/components/core/page-title";
 import { SettingsContentWrapper } from "@/components/settings/content-wrapper";
 import { SettingsHeading } from "@/components/settings/heading";
 // hooks
+import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
@@ -204,6 +205,75 @@ function CustomerDetailsForm({
     </div>
   );
 }
+
+// GAM: the projects whose work is done for this customer
+const CustomerProjects = observer(function CustomerProjects({
+  slug,
+  customerId,
+  projectIds,
+}: {
+  slug: string;
+  customerId: string;
+  projectIds: string[];
+}) {
+  const { workspaceProjectIds, getProjectById } = useProject();
+  const [isBusy, setIsBusy] = useState(false);
+
+  const save = async (newProjectIds: string[]) => {
+    setIsBusy(true);
+    try {
+      await billingService.updateCustomer(slug, customerId, { project_ids: newProjectIds });
+      mutate(CUSTOMERS_SWR_KEY(slug));
+    } catch (error: any) {
+      setToast({ type: TOAST_TYPE.ERROR, title: translate("gam.error"), message: error?.error ?? translate("gam.error_generic") });
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const availableProjectIds = (workspaceProjectIds ?? []).filter((id) => !projectIds.includes(id));
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 bg-layer-1 px-4 pt-3">
+      <span className="text-13 text-secondary" title={translate("gam.projects_hint")}>
+        {translate("gam.projects")}:
+      </span>
+      {projectIds.length === 0 && <span className="text-13 text-tertiary">{translate("gam.no_projects_linked")}</span>}
+      {projectIds.map((projectId) => (
+        <span
+          key={projectId}
+          className="flex items-center gap-1 rounded-sm border border-subtle bg-surface-1 px-2 py-0.5 text-13"
+        >
+          {getProjectById(projectId)?.name ?? projectId}
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={() => save(projectIds.filter((id) => id !== projectId))}
+            className="text-tertiary hover:text-danger-primary"
+            aria-label={`Unlink ${getProjectById(projectId)?.name ?? "project"}`}
+          >
+            <X className="size-3" />
+          </button>
+        </span>
+      ))}
+      {availableProjectIds.length > 0 && (
+        <select
+          value=""
+          disabled={isBusy}
+          onChange={(e) => e.target.value && save([...projectIds, e.target.value])}
+          className="rounded-sm border border-subtle bg-surface-1 px-2 py-1 text-13"
+        >
+          <option value="">{translate("gam.link_project")}</option>
+          {availableProjectIds.map((projectId) => (
+            <option key={projectId} value={projectId}>
+              {getProjectById(projectId)?.name}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
+});
 
 // GAM: the customer's personal client portal link
 function CustomerPortalLink({ slug, customerId, hasEmail }: { slug: string; customerId: string; hasEmail: boolean }) {
@@ -400,6 +470,7 @@ function CustomersSettingsPage() {
                   {isExpanded && (
                     <>
                       <CustomerDetailsForm slug={slug} customer={customer} />
+                      <CustomerProjects slug={slug} customerId={customer.id} projectIds={customer.project_ids ?? []} />
                       <CustomerPortalLink slug={slug} customerId={customer.id} hasEmail={!!customer.contact_email} />
                       <RateCard slug={slug} customerId={customer.id} rates={customer.rates} services={services} />
                     </>

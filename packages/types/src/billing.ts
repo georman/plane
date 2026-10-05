@@ -45,6 +45,8 @@ export interface ICustomer {
   language: TCustomerLanguage;
   is_active: boolean;
   rates: ICustomerServiceRate[];
+  // projects whose work is done for this customer
+  project_ids: string[];
 }
 
 export interface IIssueCustomerService {

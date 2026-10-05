@@ -90,7 +90,7 @@ class CustomerViewSet(BaseViewSet):
             super()
             .get_queryset()
             .filter(workspace__slug=self.kwargs.get("slug"))
-            .prefetch_related("rates", "rates__service")
+            .prefetch_related("rates", "rates__service", "projects")
             .order_by("name")
         )
 
@@ -108,7 +108,7 @@ class CustomerViewSet(BaseViewSet):
     def create(self, request, slug):
         workspace = Workspace.objects.get(slug=slug)
         try:
-            serializer = CustomerSerializer(data=request.data)
+            serializer = CustomerSerializer(data=request.data, context={"workspace_id": workspace.id})
             if serializer.is_valid():
                 serializer.save(workspace_id=workspace.id)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -125,6 +125,39 @@ class TestClientPortal:
 
 
 @pytest.mark.contract
+class TestCustomerProjects:
+    @pytest.mark.django_db
+    def test_projects_link_to_one_customer_in_the_same_workspace(self, session_client, workspace, project, create_user):
+        first = Customer.objects.create(workspace=workspace, name="First")
+        second = Customer.objects.create(workspace=workspace, name="Second")
+        url = f"/api/workspaces/{workspace.slug}/customers/"
+
+        response = session_client.patch(f"{url}{first.id}/", {"project_ids": [str(project.id)]}, format="json")
+        assert response.status_code == 200 and response.data["project_ids"] == [project.id]
+        project.refresh_from_db()
+        assert project.customer_id == first.id
+
+        # linking it to another customer moves it over
+        session_client.patch(f"{url}{second.id}/", {"project_ids": [str(project.id)]}, format="json")
+        project.refresh_from_db()
+        assert project.customer_id == second.id
+        listed = {c["name"]: c["project_ids"] for c in session_client.get(url).data}
+        assert listed == {"First": [], "Second": [project.id]}
+
+        session_client.patch(f"{url}{second.id}/", {"project_ids": []}, format="json")
+        project.refresh_from_db()
+        assert project.customer_id is None
+
+        # a project from another workspace is refused
+        other_workspace = type(workspace).objects.create(name="Other", slug="other-ws", owner=create_user)
+        other = Project.objects.create(name="Other", identifier="OT", workspace=other_workspace)
+        response = session_client.patch(f"{url}{first.id}/", {"project_ids": [str(other.id)]}, format="json")
+        assert response.status_code == 400
+        other.refresh_from_db()
+        assert other.customer_id is None
+
+
+@pytest.mark.contract
 class TestLegalPages:
     @pytest.mark.django_db
     def test_pages_render_in_both_languages(self):

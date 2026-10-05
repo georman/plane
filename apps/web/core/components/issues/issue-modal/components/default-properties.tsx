@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -89,6 +89,19 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
   // price for - there's no point picking a service GAM hasn't agreed a
   // rate for with this client.
   const selectedCustomer = (gamCustomers ?? []).find((customer) => customer.id === customerId);
+  // A project linked to a customer (Settings → Customers → Projects) fills in
+  // that customer, unless someone already picked one by hand.
+  const autoCustomerIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gamCustomers || !projectId) return;
+    const linkedCustomerId = gamCustomers.find((customer) => customer.project_ids?.includes(projectId))?.id ?? null;
+    if (customerId !== null && customerId !== autoCustomerIdRef.current) return;
+    autoCustomerIdRef.current = linkedCustomerId;
+    if (linkedCustomerId === customerId) return;
+    onCustomerChange(linkedCustomerId);
+    onServiceChange(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gamCustomers, projectId]);
   const availableCustomerServices = selectedCustomer?.rates ?? [];
   // store hooks
   const { t } = useTranslation();
@@ -220,7 +233,10 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
         <option value="">{customerId ? translate("gam.service_select") : translate("gam.select_customer_first")}</option>
         {availableCustomerServices.map((rate) => (
           <option key={rate.service} value={rate.service}>
-            {rate.service_name}
+            {rate.service_name} –{" "}
+            {translate(rate.service_billing_type === "monthly" ? "gam.price_per_month" : "gam.price_per_job", {
+              price: Number(rate.price).toLocaleString("el-GR"),
+            })}
           </option>
         ))}
       </select>

@@ -118,6 +118,10 @@ class Project(BaseModel):
     archived_at = models.DateTimeField(null=True)
     # GAM: shown nested under this project in the sidebar (one level; display only)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="children")
+    # GAM: the client this project's work is done for; new work items in it default to this customer
+    customer = models.ForeignKey(
+        "db.Customer", on_delete=models.SET_NULL, null=True, blank=True, related_name="projects"
+    )
     # timezone
     TIMEZONE_CHOICES = tuple(zip(pytz.common_timezones, pytz.common_timezones))
     timezone = models.CharField(max_length=255, default="UTC", choices=TIMEZONE_CHOICES)
