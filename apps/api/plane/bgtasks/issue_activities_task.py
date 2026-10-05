@@ -1599,6 +1599,21 @@ def issue_activity(
         except Exception as e:
             log_exception(e)
 
+        # GAM addition: a service label on the item sets its customer + service for billing
+        try:
+            if issue_id and (
+                type == "issue.activity.created"
+                or (
+                    type == "issue.activity.updated"
+                    and {"labels", "label_ids"} & set(json.loads(requested_data or "{}") or {})
+                )
+            ):
+                from plane.utils.gam_service_labels import sync_issue_service_from_labels
+
+                sync_issue_service_from_labels(issue_id, actor_id)
+        except Exception as e:
+            log_exception(e)
+
         if notification:
             notifications.delay(
                 type=type,

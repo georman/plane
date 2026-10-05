@@ -158,6 +158,43 @@ class TestCustomerProjects:
 
 
 @pytest.mark.contract
+class TestServiceLabels:
+    @pytest.mark.django_db
+    def test_service_label_sets_and_clears_billing_link(self, session_client, workspace, project, create_user):
+        from plane.db.models import CustomerServiceRate, IssueLabel, Label
+        from plane.utils.gam_service_labels import sync_issue_service_from_labels
+
+        customer = Customer.objects.create(workspace=workspace, name="Client")
+        adaptation = Service.objects.create(workspace=workspace, name="Adaptation")
+        url = f"/api/workspaces/{workspace.slug}/customers/{customer.id}/"
+        session_client.patch(url, {"project_ids": [str(project.id)]}, format="json")
+        # adding a price creates the label in the customer's projects
+        session_client.post(f"{url}rates/", {"service": str(adaptation.id), "price": "20"}, format="json")
+        label = Label.objects.get(project=project, name="Adaptation")
+        other_label = Label.objects.create(project=project, workspace=workspace, name="Urgent")
+
+        issue = Issue.objects.create(name="Box", project=project, workspace=workspace)
+        IssueLabel.objects.create(issue=issue, label=other_label, project=project, workspace=workspace)
+        sync_issue_service_from_labels(issue.id, create_user.id)
+        assert not IssueCustomerService.objects.filter(issue=issue).exists()
+
+        IssueLabel.objects.create(issue=issue, label=label, project=project, workspace=workspace)
+        sync_issue_service_from_labels(issue.id, create_user.id)
+        link = IssueCustomerService.objects.get(issue=issue)
+        assert (link.customer_id, link.service_id) == (customer.id, adaptation.id)
+
+        IssueLabel.objects.filter(issue=issue, label=label).delete()
+        sync_issue_service_from_labels(issue.id, create_user.id)
+        assert not IssueCustomerService.all_objects.filter(issue=issue).exists()
+
+        # and it can be set again afterwards
+        IssueLabel.all_objects.filter(issue=issue, label=label).delete()
+        IssueLabel.objects.create(issue=issue, label=label, project=project, workspace=workspace)
+        sync_issue_service_from_labels(issue.id, create_user.id)
+        assert IssueCustomerService.objects.filter(issue=issue, service=adaptation).exists()
+
+
+@pytest.mark.contract
 class TestLegalPages:
     @pytest.mark.django_db
     def test_pages_render_in_both_languages(self):

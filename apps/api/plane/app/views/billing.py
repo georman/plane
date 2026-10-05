@@ -31,6 +31,7 @@ from plane.db.models import (
 
 from plane.utils.gam_i18n import message
 from plane.utils.gam_portal import portal_url
+from plane.utils.gam_service_labels import ensure_service_labels, set_issue_service
 
 from .base import BaseAPIView, BaseViewSet
 
@@ -158,7 +159,8 @@ class CustomerServiceRateViewSet(BaseViewSet):
         try:
             serializer = CustomerServiceRateSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(customer_id=customer_id)
+                rate = serializer.save(customer_id=customer_id)
+                ensure_service_labels(rate.customer)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
@@ -263,21 +265,14 @@ class IssueCustomerServiceEndpoint(BaseAPIView):
                 {"error": "Both customer and service are required."}, status=status.HTTP_400_BAD_REQUEST
             )
         issue = Issue.objects.get(pk=issue_id, project_id=project_id, workspace__slug=slug)
-        previous_service_id = (
-            IssueCustomerService.objects.filter(issue=issue).values_list("service_id", flat=True).first()
-        )
-        link, _ = IssueCustomerService.objects.update_or_create(
-            issue=issue, defaults={"customer_id": customer_id, "service_id": service_id}
-        )
-        if str(previous_service_id) != str(service_id):
-            create_service_sub_items(issue, service_id, request.user)
+        link = set_issue_service(issue, customer_id, service_id, request.user)
         return Response(IssueCustomerServiceSerializer(link).data, status=status.HTTP_200_OK)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")
     def delete(self, request, slug, project_id, issue_id):
         IssueCustomerService.objects.filter(
             issue_id=issue_id, issue__project_id=project_id, issue__workspace__slug=slug
-        ).delete()
+        ).delete(soft=False)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

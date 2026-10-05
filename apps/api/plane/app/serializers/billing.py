@@ -57,6 +57,9 @@ class CustomerSerializer(BaseSerializer):
         Project.objects.filter(id__in=[p.id for p in projects]).update(customer=customer)
         # the response should show the new list, not the one prefetched before saving
         getattr(customer, "_prefetched_objects_cache", {}).pop("projects", None)
+        from plane.utils.gam_service_labels import ensure_service_labels
+
+        ensure_service_labels(customer)
 
     def create(self, validated_data):
         projects = validated_data.pop("projects", None)
